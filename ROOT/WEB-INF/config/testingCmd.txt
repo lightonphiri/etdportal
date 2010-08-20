@@ -1,0 +1,27 @@
+java -classpath "C:\teaching\2008-XML\xalan.jar;C:\teaching\2008-XML\xercesImpl.jar;C:\teaching\2008-XML\xercesSamples.jar;C:\teaching\2008-XML\LearningXML\dist\LearningXML.jar" XPathTest "C:\teaching\2008-XML\Study\XMLandJava\department.xml" "//*[local-name()='email']/text()
+
+
+java -classpath "C:\teaching\2008-XML\xalan.jar;C:\teaching\2008-XML\xercesImpl.jar;C:\teaching\2008-XML\xercesSamples.jar;C:\teaching\2008-XML\LearningXML\dist\LearningXML.jar" parser.MemoryUsageSAX "C:\teaching\2008-XML\LearningXML\memtest.xml"
+
+
+java -classpath "C:\teaching\2008-XML\xalan.jar;C:\teaching\2008-XML\xercesImpl.jar;C:\teaching\2008-XML\xercesSamples.jar;C:\teaching\2008-XML\LearningXML\dist\LearningXML.jar" parser.MemoryUsageDOM org.apache.xerces.dom.DocumentImpl true "C:\teaching\2008-XML\LearningXML\memtest.xml"
+
+java -classpath "C:\teaching\2008-XML\xalan.jar;C:\teaching\2008-XML\xercesImpl.jar;C:\teaching\2008-XML\xercesSamples.jar;C:\teaching\2008-XML\LearningXML\dist\LearningXML.jar" SimpleParse "C:\teaching\2008-XML\LearningXML\memtest.xml"
+
+
+
+java -classpath "C:\teaching\2008-XML\xalan.jar;C:\teaching\2008-XML\xercesImpl.jar;C:\teaching\2008-XML\xercesSamples.jar;C:\teaching\2008-XML\LearningXML\dist\LearningXML.jar" dom.Counter -v "C:\teaching\2008-XML\Slides\Examples\DTD\exercise2_1.xml"
+
+
+java -classpath "C:\teaching\2008-XML\xalan.jar;C:\teaching\2008-XML\xercesImpl.jar; C:\teaching\2008- XML\xercesSamples.jar;C:\teaching\2008-XML\LearningXML\dist\LearningXML.jar"  org.apache.xalan.xslt.Process -XSL uct.xsl -IN uct3.xml -OUT uct_out.html
+
+
+C:\teaching\2008-XML\fop-0.20.5\fop -fo uct_out.fo -pdf uct_out.pdf
+
+
+
+java -classpath "C:\teaching\2008-XML\xalan.jar;C:\teaching\2008-XML\xercesImpl.jar;C:\teaching\2008-XML\xercesSamples.jar;C:\teaching\2008-XML\LearningXML\dist\LearningXML.jar" dom.Counter -s -v -f -p dom.wrappers.Xerces "C:\teaching\2008-XML\csc3002f_2007_xmlws\csc3002f_2007_xmlws_assignment\solution\order3.xml"
+java -cp xalan.jar:xercesImpl.jar:xercesSamples.jar:.  org.apache.xalan.xslt.Process -XSL viewsnippets.xsl -IN recordrf.xml -OUT snippet.html
+java -cp xalan.jar:xercesImpl.jar:xercesSamples.jar:.  org.apache.xalan.xslt.Process -XSL viewsnippets.xsl -IN recorddc.xml -OUT snippet.html
+java -cp xalan.jar:xercesImpl.jar:xercesSamples.jar:.  org.apache.xalan.xslt.Process -XSL viewsnippets.xsl -IN recordet.xml -OUT snippet.html
+

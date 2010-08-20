@@ -1,0 +1,11 @@
+
+*** These modified files were found in JOE when it aborted on Thu Feb 11 06:27:49 2010
+*** JOE was aborted by UNIX signal 1
+
+*** File '(Unnamed)'
+/etc/apt/sources.list
+default
+server.xml
+/etc/apache2/sites-enabled/default
+/etc/apache2/sites-enabled/000-default
+Index.java

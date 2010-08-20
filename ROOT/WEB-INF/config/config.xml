@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configData>
+	<configFile>
+		<repositoryURL>http://www.netd.ac.za/OAI-PMH/</repositoryURL>
+		<indexDirectory>../config/index</indexDirectory>
+		<lastHarvest>2010-06-07T02:08:55Z</lastHarvest>
+		<databaseUrl>jdbc:mysql://localhost:3306/dbp</databaseUrl>
+		<databaseUsername>dbp</databaseUsername>
+		<databasePassword>dbp</databasePassword>
+		<servletUrl>http://www.netd.ac.za/portal/</servletUrl>
+	</configFile>
+</configData>

@@ -1,0 +1,439 @@
+/*
+*@author Tatenda M. Chipeperekwa
+*@date   17/06/09
+*@description The ConfigurationManager class is used to
+*store all the configuration information that is kept in
+*the config.xml file in the program directory. All the 
+*other parts of the application will use this class to
+*extract configuration information.
+*
+*/
+
+   import javax.xml.parsers.DocumentBuilder;
+   import javax.xml.parsers.DocumentBuilderFactory;
+   import javax.xml.parsers.ParserConfigurationException;
+
+   import org.w3c.dom.Document;
+   import org.w3c.dom.Element;
+   import org.w3c.dom.NodeList;
+   import org.xml.sax.SAXException;
+   
+   import javax.xml.transform.Source;
+   import javax.xml.transform.stream.StreamSource;
+   import javax.xml.validation.*;
+   import org.xml.sax.SAXException;
+   import java.io.IOException;
+
+   import java.sql.Timestamp;
+   import java.util.Date;
+   import java.io.BufferedWriter;
+   import java.io.FileWriter;
+   import java.io.File;
+   import java.sql.*;
+	
+
+public class ConfigurationManager
+{
+
+    private String indexDirectory;	       		//stores the specified index directory
+    private String repositoryURL;				//URL of the repository to be harvested
+    private String metadataPrefix;				//the metadataPrefix that is being used
+    private Timestamp lastHarvest;				//stores the date of the last harvest    
+    private Connection databaseConnection; 		//connection object for the local database	
+    private String databaseUrl;				//url of the database in the server
+    private String databaseUsername;			//stores the username used to access the database
+    private String databasePassword;			//stores the corresponding password used to access the database
+    private String configFileName;				//stores the name of the config file used
+    private String servletUrl;				//Stores the URL of the servlet that handles the browse requests
+
+    public ConfigurationManager()
+    {
+	  servletUrl="";	
+         repositoryURL="";
+         metadataPrefix="";
+	  indexDirectory="";
+	  lastHarvest=null;
+    }
+    
+
+  /**
+   public void configureApplication()
+   This method is used to extract the configuration
+   information from the file stored on disk,config.xml.		
+   */
+   public void configureApplication(String configFileName,Boolean indexing)
+   {
+
+	  File trial = new File(configFileName);	
+	  setConfigFileName(configFileName);//saving the name of the configuration file name
+
+	  //stores the configuration information passed to the program
+         Document newConfigFile=null;
+	   
+         //get the factory
+         DocumentBuilderFactory configFactory = DocumentBuilderFactory.newInstance();
+      
+	  //Document builder
+         DocumentBuilder configBuilder=null;
+
+
+	  
+	   try
+          {
+	
+		  //Using factory get an instance of document builder
+	         configBuilder = configFactory.newDocumentBuilder();
+	   }
+             catch(ParserConfigurationException pce) {
+               pce.printStackTrace();
+          }
+
+
+          try
+          {
+		 //parse using builder to get DOM representation of the XML file
+         	 //newConfigFile = configBuilder.parse(configFileName);
+         	 newConfigFile = configBuilder.parse(trial.getAbsolutePath());
+
+	   }
+               catch(SAXException se) {
+               se.printStackTrace();
+          }    
+		catch(IOException ioe){
+		ioe.printStackTrace();
+	   }
+
+
+
+         try
+         {
+		 //get the root elememt
+        	 Element configRoot = newConfigFile.getDocumentElement();
+      
+         	 //get a nodelist of <configFile> elements
+         	 NodeList configList = configRoot.getElementsByTagName("configFile");
+               
+
+         		if(configList != null && configList.getLength() > 0)
+         		{
+           		 	for(int i = 0 ; i < configList.getLength();i++) 
+            			{
+            
+               			   //get the configFile element
+                           		   Element configElement = (Element)configList.item(i);
+            
+         	 			  //extracting the fields to set Configuration data
+                 			  String repositoryURL= getTagValue(configElement,"repositoryURL");
+					  String indexDirectory=getTagValue(configElement,"indexDirectory");
+  					  String metadataPrefix=getTagValue(configElement,"metadataPrefix");
+					  String lastHarvest=getTagValue(configElement,"lastHarvest");
+					  String databaseUrl=getTagValue(configElement,"databaseUrl");  
+					  String databasePassword=getTagValue(configElement,"databasePassword");  
+					  String databaseUsername=getTagValue(configElement,"databaseUsername");
+					  String servletUrl=getTagValue(configElement,"servletUrl");
+ 	  
+	
+						
+					    if(repositoryURL.equals("Not Available")|| servletUrl.equals("Not Available")||indexDirectory.equals("Not Available")||metadataPrefix.equals("Not Available"))
+					    {
+							System.out.println("Error Condition.\n Please provide sufficient configuartion data");
+							System.out.println();
+							System.exit(0);
+					    }else
+					    {	
+							setRepositoryURL(repositoryURL);
+							
+							
+							if(indexing)
+							{
+							    deleteIndexDirectory(new File(indexDirectory));	
+							    setIndexDirectory(indexDirectory);
+							    //System.out.println("Deleted");
+							}
+							
+							
+							setMetadataPrefix(metadataPrefix);
+							setLastHarvest(Timestamp.valueOf(lastHarvest));
+							setDatabaseUrl(databaseUrl);
+							setDatabaseUsername(databaseUsername);
+							setDatabasePassword(databasePassword);
+							setServletUrl(servletUrl);
+							
+					    }	
+		    
+            			}
+        	 	}else
+	  			{
+					System.out.println("Error Condition.\nNo data sources specified in configuration file.\n");
+					System.exit(0);
+
+	 			}
+           }  catch(Exception e)//Exception condition that results from undefined elements in the configFile element
+	    {
+				e.printStackTrace();
+			
+	    }	
+
+   	}	
+	
+
+	
+    	//Used to get the tag value for elements in the document tree
+	private String getTagValue(Element recordElement, String tagName)
+	{
+		String tagValue="";//temporary variable
+		try{
+				  NodeList tagList = recordElement.getElementsByTagName(tagName);
+				 
+         			  if(tagList != null && tagList.getLength() > 0) 
+				  {
+             				  Element tag = (Element)tagList.item(0);
+			                	if(tag.getFirstChild().getNodeValue() != null)
+						{
+							tagValue=tag.getFirstChild().getNodeValue();
+						       return tagValue;
+						}
+						else{return "";}
+         			  }else
+				  {return "";}	
+		}catch(Exception e)
+		{	//some config files might have a tag but the tag might not contain any value
+			//Uncomment the next line to view tag without value
+			//System.out.println("Cannot extract value for: " + tagName);
+			return "Not Available.";	
+		}
+		
+	}
+	
+	/*
+	public static boolean deleteAllFiles(File dir) 
+	@param dir this is the directory that has been
+		   specified to contain the index for 
+		   lucene.
+	This method will simply check if the directory
+	already exists,and if it does it will then delete
+	it before the indexWriter attempts to write to the
+	index. The method recursively deletes all the contents
+	of the specified index directory.
+		   
+	*/
+        public boolean deleteIndexDirectory(File indexDirectory) 
+	{
+		if(!indexDirectory.exists()) {
+		    return true;
+		}
+		boolean deleted = true;
+		if(indexDirectory.isDirectory()) {
+		    File[] files = indexDirectory.listFiles();
+		    for(int i = 0; i < files.length; i++) {
+			deleted &= deleteIndexDirectory(files[i]);
+		    }
+		    deleted = indexDirectory.delete();//Delete the IndexDirectory itself
+		} else {
+		    deleted = indexDirectory.delete();
+		}
+		return deleted;
+      }
+        
+    //Accessor methods for instance variables
+        
+       public String getRepositoryURL()
+       {
+        return repositoryURL;
+       
+       }
+       
+       public String getDatabaseUsername()
+       {
+        return databaseUsername;
+       
+       }
+       public String getConfigFileName()
+       {
+        return configFileName;
+       
+       }
+  
+       public String getDatabasePassword()
+       {
+        return databasePassword;
+       
+       }
+
+       public String getDatabaseUrl()
+       {
+        return databaseUrl;
+       
+       }
+       
+       
+        public String getIndexDirectory ()
+       {
+        return indexDirectory;
+       
+       }
+        public String getMetadataPrefix ()
+       {
+        return metadataPrefix;
+       
+       }
+        public Timestamp getLastHarvest ()
+       {
+        return lastHarvest;
+       
+       }
+        
+    //Mutator methods
+       public void setConfigFileName(String param)
+       {
+        configFileName=param;
+       
+       } 
+       public void setRepositoryURL(String param )
+       {
+        repositoryURL =param;
+       
+       }
+       
+       public void setDatabaseUsername(String param)
+       {
+	  databaseUsername=param;
+       
+       }
+  
+       public void setDatabasePassword(String param)
+       {
+        databasePassword=param;
+       
+       }
+
+      public void setDatabaseUrl(String param)
+       {
+        databaseUrl=param;
+       
+       }
+	
+	   public void setLastHarvest (Timestamp param)
+       {
+        	lastHarvest=param;
+       
+       }
+        public void setIndexDirectory (String param)
+       {
+        indexDirectory=param;
+       
+       }
+        public void setMetadataPrefix (String param)
+       {
+        metadataPrefix=param;
+       
+       } 
+
+      //Accessor method for servletUrl 
+      public String getServletUrl()
+      {
+		return servletUrl;
+      }
+
+      //Mutator method for servletUrl	
+      public void setServletUrl(String param)
+      {
+		servletUrl=param;
+      }
+
+	/*
+	String represenation of configuration manager
+	*/
+        public String toString()
+        {
+        
+        return "\nRepository: "+getRepositoryURL()+"\n"+
+               "Index Directory: "+getIndexDirectory()+"\n"+
+               "MetadataPrefix: "+getMetadataPrefix()+"\n"+
+ 	       "Date of last harvest : "+getLastHarvest().toString()+"\n";
+
+                
+        }
+
+	public void updateConfigurationFile()
+	{	
+		// create an instance of Date with the current date
+        	Date currentDate = new Date(); 
+	
+		// create an instance of Timestamp using the current date from currentDate
+       	        Timestamp currentTimeStamp = new Timestamp(currentDate.getTime()); 
+		
+		//updating the time of the last harvest to the current harvest
+		setLastHarvest(currentTimeStamp);
+		
+		String newConfigFile=
+		"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"+
+		"<configData>\n"+
+    		"	<configFile>\n"+
+               "		<repositoryURL>"+getRepositoryURL()+"</repositoryURL>\n"+
+        	"		<metadataPrefix>"+getMetadataPrefix()+"</metadataPrefix>\n"+
+	 	"		<indexDirectory>"+getIndexDirectory()+"</indexDirectory>\n"+
+	 	"		<lastHarvest>"+getLastHarvest()+"</lastHarvest>\n"+
+		"		<databaseUrl>"+getDatabaseUrl()+"</databaseUrl>\n"+
+		"		<databaseUsername>"+getDatabaseUsername()+"</databaseUsername>\n"+
+              "		<databasePassword>"+getDatabasePassword()+"</databasePassword>\n"+
+              "		<servletUrl>"+getServletUrl()+"</servletUrl>\n"+	
+    		"	</configFile>\n"+
+		"</configData>\n";
+
+		//stores a copy of the contents of the config file for use with the browsing interface
+		String userIntefaceConfig=newConfigFile;
+
+		    try {
+				//deleteIndexDirectory(new File("../config/confg.xml"));
+        			BufferedWriter configOutput = new BufferedWriter(new FileWriter("../config/config.xml"));
+        			configOutput.write(newConfigFile);
+        			configOutput.close();
+   		         } catch (IOException e) {
+				System.out.println("Error Condition.\n Error writing out to config file");		
+    			  }
+	}
+
+	
+	/*
+	This method is used to create a connection to the database
+	only once when the harvesting is initiated.
+	*/
+	public void createDatabaseConnection()
+	{
+	    try{
+	         				
+         	Class.forName ("com.mysql.jdbc.Driver");
+         	
+            	databaseConnection = DriverManager.getConnection (getDatabaseUrl(),getDatabaseUsername() , getDatabasePassword());
+	       //databaseConnection=DriverManager.getConnection ("jdbc:mysql://localhost:3306/dbp", "dbp", "dbp");
+
+ 	     }catch(SQLException sqle)
+	    {
+		sqle.printStackTrace();
+	    }catch(ClassNotFoundException cnf)
+	    {
+		cnf.printStackTrace();
+	    }	
+	
+       }
+        
+	/*
+	This method is used to return a connection to the database.
+	*/
+	public Connection getDatabaseConnection()
+	{
+           return databaseConnection ;
+       }        
+        
+
+
+
+
+
+
+
+
+
+
+}

@@ -1,0 +1,144 @@
+/**
+ *
+ * @author Tatenda M. Chipeperekwa
+ * @date 24/06/2009
+ * @description This is the servlet that handles the browse requests that
+ *		  are sent to it from the web interface.
+ */
+ 
+   import java.io.*;
+   import java.util.Iterator;
+   import java.util.ArrayList;
+   import java.util.List;
+   import javax.servlet.*;
+   import javax.servlet.http.*;
+
+    public class UserInterface extends HttpServlet {
+   
+      DatabaseBrowser records_requested;			//object used to run queries on the database
+      ResultFormat display_results;			//used to format results for display
+      ConfigurationManager applicationSettings;		//used to pass configuration parameters in the program	
+
+    /** 
+    * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+    * @param request servlet request
+    * @param response servlet response
+    */
+       protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+       throws ServletException, IOException {
+         
+	  response.setContentType("text/html;charset=UTF-8");
+         
+         PrintWriter out = response.getWriter();
+         
+         try {   
+            
+            //Determine the type of query on the repository
+            String request_type = request.getParameter("verb");
+
+	     //instantiating the ConfigurationManager by reading the configuration file
+	     //config.xml		
+	     applicationSettings = new ConfigurationManager();
+            applicationSettings.configureApplication(getServletContext()+getRealPath("/")+"WEB-INF/config/config.xml",false);
+	     applicationSettings.createDatabaseConnection();
+            
+            if(applicationSettings.getDatabaseConnection()==null)
+		out.println("no connection");					
+            
+            if(request_type.equals("browse"))//browsing the database
+            {  
+              String oai_id = request.getParameter("view");
+ 
+	       List<Record> browseResults = null;							//stores the results from the browse query
+              int limit=10;			 							//total results per page,defaul value = 10
+	       int offset=1;			 							//where the browising starts
+                
+               if(!request.getParameter("offset").equals("null")&&!request.getParameter("limit").equals("null")&&!request.getParameter("order").equals("null"))//request for next/previous set of records
+               {
+		    //initialising the query object for each new browse category
+                  records_requested = new DatabaseBrowser();
+                    
+		    //initialising the results object for each new browse category
+		    display_results = new ResultFormat();
+		    display_results.setServletUrl(applicationSettings.getServletUrl());
+	      
+                  limit=Integer.parseInt(request.getParameter("limit"));	//setting the limit
+                  offset=Integer.parseInt(request.getParameter("offset"));	//setting the offset
+
+   		    browseResults = records_requested.respondToBrowse(request.getParameter("category"),request.getParameter("order"),offset,limit,applicationSettings.getDatabaseConnection(),oai_id);
+		  
+               }
+               else{//its a request to view a new set of records
+
+		    //initialising the query object for each new browse category
+                  records_requested = new DatabaseBrowser();
+                  
+
+		    //initialising the results object for each new browse category
+		    display_results = new ResultFormat();
+                  
+		    //querying the database with the browse type i.e. by author or title etc    
+                  browseResults = records_requested.respondToBrowse(request.getParameter("category"),"null",offset,limit,applicationSettings.getDatabaseConnection(),oai_id);
+		  
+		  
+               }
+                
+                 //formatting the results
+                 
+		   if(oai_id.equals("null"))	
+		   {
+			display_results.create_document(request.getParameter("category"),browseResults,records_requested.getTotalRecords(),records_requested.getOffset(),limit,records_requested.getLastDisplayed(),request.getParameter("order"));
+			out.println(display_results.toString());		  //returning the web page created for the results
+                 }else							  
+		   {
+			//viewing a particular record specified by its identifier
+			for(int y=0;y<browseResults.size();y++)
+			{
+				out.println(browseResults.get(y).toString());		
+			}
+		   }	
+
+            }
+         	   
+	    }
+             catch(Exception e){
+            			//any other exception that has not been
+				//identified and caught in the supporting
+				//classes
+				out.println("Error processing browse request.");		
+				out.println( e.getMessage() );
+            }
+         finally {
+
+            out.close();
+         }
+      } 
+   
+    /** 
+    * Handles the HTTP <code>GET</code> method.
+    * @param request servlet request
+    * @param response servlet response
+    */
+       protected void doGet(HttpServletRequest request, HttpServletResponse response)
+       throws ServletException, IOException {
+         processRequest(request, response);
+      } 
+   
+    /** 
+    * Handles the HTTP <code>POST</code> method.
+    * @param request servlet request
+    * @param response servlet response
+    */
+       protected void doPost(HttpServletRequest request, HttpServletResponse response)
+       throws ServletException, IOException {
+         processRequest(request, response);
+      }
+   
+    /** 
+    * Returns a short description of the servlet.
+    */
+       public String getServletInfo() {
+         return "UserInterface Servlet: Handles all browse requests.";
+      }
+   
+   }

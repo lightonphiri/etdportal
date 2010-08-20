@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<AdminEmail>hussein@cs.uct.ac.za</AdminEmail>
+	<chanalName>NRF Dissertations database RSS Feed</chanalName>
+	<description>
+		<webSiteURL>http://etd.cs.uct.ac.za/</webSiteURL>
+    	<textDescription>The latest 5 records to be added to the NRF metadata Archive</textDescription>
+    </description>
+    <database>
+    	<databaseAddress>//127.0.0.1:3306/dba</databaseAddress>
+    	<username>dba</username>
+    	<password>dba</password>    	
+    </database>
+</configuration>

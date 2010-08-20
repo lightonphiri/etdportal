@@ -1,0 +1,33 @@
+<VirtualHost *>
+        ServerName etd.cs.uct.ac.za
+	ServerAdmin hussein@cs.uct.ac.za
+	
+	DocumentRoot /home/etd/
+	<Directory /home/etd/>
+		Options Indexes FollowSymLinks MultiViews
+		AllowOverride None
+		Order allow,deny
+		allow from all
+	</Directory>
+
+	ErrorLog /var/log/apache2/error.log
+
+	# Possible values include: debug, info, notice, warn, error, crit,
+	# alert, emerg.
+	LogLevel warn
+
+	CustomLog /var/log/apache2/access.log combined
+	ServerSignature On
+
+    <Proxy *>
+       Options Indexes
+       Order allow,deny
+       Allow from all
+    </Proxy>
+
+    RewriteEngine On
+    RewriteLog "/var/log/apache2/rewrite.log"
+#    RewriteLogLevel 5
+    RewriteRule ^(/.*) http://mufasa.cs.uct.ac.za:8180/$1 [P]
+
+</VirtualHost>

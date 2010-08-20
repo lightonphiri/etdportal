@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+
+<responseDate>2009-12-17T16:08:51Z</responseDate>
+<request verb="GetRecord" identifier="oai:VTETD:etd-11182009-103039" metadataPrefix="oai_marc">http://scholar.lib.vt.edu/theses/OAI2/</request>
+
+<GetRecord>
+<record>
+<header>
+<identifier>oai:VTETD:etd-11182009-103039</identifier>
+<datestamp>2009-12-01</datestamp>
+<setSpec>All</setSpec>
+
+</header>
+<metadata>
+<oai_marc:oai_marc xmlns="http://www.openarchives.org/OAI/1.1/oai_marc" xmlns:oai_marc="http://www.openarchives.org/OAI/1.1/oai_marc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/1.1/oai_marc http://www.openarchives.org/OAI/1.1/oai_marc.xsd" status="n" type="t" level="m" encLvl="u" catForm="u">
+   <fixfield id="008">"    s2009    vau|    sm    00| 0|eng d"</fixfield>
+   <varfield i1=" " id="035" i2=" ">
+      <subfield label="a">
+      (VT) etd-11182009-103039
+      </subfield>
+   </varfield>
+
+   <varfield i1="1" id="100" i2=" ">
+      <subfield label="a">
+      Totty, Heather Renae
+      </subfield>
+   </varfield>
+   <varfield i1="0" id="245" i2="0">
+      <subfield label="a">
+      EFFECT OF A FERMENTED YEAST PRODUCT ON THE GASTROINTESTINAL TRACT MICROBIAL DIVERSITY OF WEANED PIGS CHALLENGED WITH SALMONELLA ENTERICA TYPHIMURIUM DT104
+      </subfield>
+   </varfield>
+
+   <varfield i1=" " id="256" i2=" ">
+      <subfield label="a">
+      Computer data - 0 files(s)
+      </subfield>
+   </varfield>
+   <varfield i1=" " id="260" i2=" ">
+      <subfield label="a">
+      blacksburg
+      </subfield>
+      <subfield label="b">
+
+      University Libraries, VT
+      </subfield>
+      <subfield label="c">
+      2009
+      </subfield>
+   </varfield>
+   <varfield i1=" " id="502" i2=" ">
+      <subfield label="a">
+      Thesis (MS)--VT, 2009-12-01
+      </subfield>
+
+   </varfield>
+   <varfield i1=" " id="504" i2=" ">
+      <subfield label="a">
+      Includes bibliographical references.
+      </subfield>
+   </varfield>
+   <varfield i1="3" id="520" i2=" ">
+      <subfield label="a">
+       Gastrointestinal tract (GIT) microorganisms play important roles in animal health, including providing energy and vitamins, improving the host immune response and preventing pathogenic microorganisms from colonizing. Prebiotic feed supplementation offers an alternative to antimicrobial growth promoters by stimulating key populations of the GIT bacteria that can ferment these non-digestible compounds, producing various short chain fatty acids used by the animal. The objective of this study was to quantify the effects of a proprietary Saccharomyces cerevisiae fermentation product (XPC, Diamond V Mills, Inc., Cedar Rapids, IA) inclusion in nursery diets on the microbial diversity and growth performance of pigs before, during and after an oral challenge with Salmonella. Pigs (n= 40) were weaned at 21 d of age, blocked by body weight (BW) and assigned in a 2&#195;2 factorial arrangement consisting of diet (control or 0.2% XPC) and inoculation (broth or Salmonella). Diet had no effect on pig growth performance prior to inoculation; however, consumption of XPC altered the composition of the gastrointestinal microbial community resulting in increased growth performance prior to inoculation. After Salmonella infection, XPC altered the composition of the gastrointestinal microbial community resulting in increased (P &lt; 0.05) populations of Bacteroidetes and Lactobacillus. Infection with Salmonella and treatment of the piglets with ceftiofur-HCl resulted in alterations to the species richness and abundance of key members of the GIT community. The addition of XPC to the diets of weaning pigs results in greater compensatory gains after infection with Salmonella and an increase in beneficial bacteria within the GIT. 
+      </subfield>
+
+   </varfield>
+   <varfield i1=" " id="538" i2=" ">
+      <subfield label="a">
+      System requirements: PC, World Wide Web Browser and PDF reader
+      </subfield>
+   </varfield>
+   <varfield i1=" " id="538" i2=" ">
+      <subfield label="a">
+      Available electronically via Internet
+      </subfield>
+
+   </varfield>
+   <varfield i1=" " id="653" i2=" ">
+      <subfield label="a">
+      gastrointestinal microbial ecology
+      </subfield>
+   </varfield>
+   <varfield i1=" " id="653" i2=" ">
+      <subfield label="a">
+      yeast culture
+      </subfield>
+
+   </varfield>
+   <varfield i1=" " id="653" i2=" ">
+      <subfield label="a">
+      prebiotic
+      </subfield>
+   </varfield>
+   <varfield i1=" " id="653" i2=" ">
+      <subfield label="a">
+      Salmonella
+      </subfield>
+
+   </varfield>
+   <varfield i1=" " id="653" i2=" ">
+      <subfield label="a">
+      pig
+      </subfield>
+   </varfield>
+   <varfield i1="2" id="710" i2=" ">
+      <subfield label="a">
+      VT
+      </subfield>
+
+      <subfield label="b">
+      Food Science and Technology
+      </subfield>
+   </varfield>
+   <varfield i1="1" id="720" i2=" ">
+      <subfield label="a">
+      Monica A. Ponder, PhD.
+      </subfield>
+      <subfield label="e">
+      Committee Chair
+      </subfield>
+
+   </varfield>
+   <varfield i1="1" id="720" i2=" ">
+      <subfield label="a">
+      Robert C. Williams, PhD.
+      </subfield>
+      <subfield label="e">
+      Committee Member
+      </subfield>
+   </varfield>
+   <varfield i1="1" id="720" i2=" ">
+
+      <subfield label="a">
+      Jeffery Escobar, PhD.
+      </subfield>
+      <subfield label="e">
+      Committee Member
+      </subfield>
+   </varfield>
+   <varfield i1="4" id="856" i2="0">
+      <subfield label="z">
+      restricted
+      </subfield>
+
+      <subfield label="u">
+      http://scholar.lib.vt.edu/theses/available/etd-11182009-103039/
+      </subfield>
+   </varfield>
+</oai_marc:oai_marc>
+</metadata>
+</record>
+</GetRecord>
+</OAI-PMH>
+
+

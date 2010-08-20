@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+
+<web-app>   
+  <display-name>Metadata repository RSS Feed</display-name>
+  <description>Provides RSS access to metadata archive</description>
+
+  <servlet>
+    <servlet-name>Main</servlet-name>
+    <description>Provides RSS access to metadata archive</description>
+    <servlet-class>Main</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>Main</servlet-name>
+    <url-pattern>/</url-pattern>
+  </servlet-mapping>
+</web-app>
+

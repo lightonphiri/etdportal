@@ -1,0 +1,88 @@
+/**
+ *
+ * @author Tatenda M. Chipeperekwa
+ * @date 24/06/2009
+ * @description This is the servlet that handles the search requests that
+ *		  are sent to it from the web interface.
+ */
+
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+public class SearchInterface extends HttpServlet {
+   
+    SearchEngine search_query;	//SearchEngine object that will process the query
+    
+    /** 
+    * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+    * @param request servlet request
+    * @param response servlet response
+    */
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+    throws ServletException, IOException {
+	
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+       
+	 try {   
+            
+	     if(!request.getParameter("s_query").equals("null"))//searching
+            {
+		search_query = new SearchEngine(getServletContext().getRealPath("/")+"WEB-INF/config/config.xml");   
+		
+                String startat="0",maxresults="10";									     //default values for start index 
+																     //and maximum results per page
+                if(!request.getParameter("startat").equals(null)&&!request.getParameter("maxresults").equals(null))  //request for next/previous set of records
+                {   
+                    startat=request.getParameter("startat");
+                    maxresults=request.getParameter("maxresults");
+                    search_query.search_for(request.getParameter("s_query"),startat,maxresults);
+		      out.println(search_query.toString());
+                }else{//its a new search
+                
+        	   search_query.search_for(request.getParameter("s_query"),startat,maxresults);
+		   out.println(search_query.toString());
+                }
+      
+                
+            }else{//error handling
+		  search_query = new SearchEngine (getServletContext().getRealPath("/")+"WEB-INF/config/config.xml");
+		  out.println(search_query.toString());
+	    }
+	 
+        }catch(Exception e){
+        
+        }finally { 
+            out.close();
+        }
+    } 
+
+    /** 
+    * Handles the HTTP <code>GET</code> method.
+    * @param request servlet request
+    * @param response servlet response
+    */
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    throws ServletException, IOException {
+        processRequest(request, response);
+    } 
+
+    /** 
+    * Handles the HTTP <code>POST</code> method.
+    * @param request servlet request
+    * @param response servlet response
+    */
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    /** 
+    * Returns a short description of the servlet.
+    */
+    public String getServletInfo() {
+        return "SearchInterface: Servlet to handle all search queries.";
+    }
+  
+}

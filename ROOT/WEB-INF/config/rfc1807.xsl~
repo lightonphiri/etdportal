@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsl:stylesheet version="1.0" 
+ xmlns:dc="http://purl.org/dc/elements/1.1/" 
+ xmlns:oai="http://www.openarchives.org/OAI/2.0/"
+ xmlns:rfc1807="http://info.internet.isi.edu:80/in-notes/rfc/files/rfc1807.txt"
+ xmlns:etdms="http://www.ndltd.org/standards/metadata/etdms/1.0/" 
+ xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/"
+ xmlns="http://www.w3.org/1999/xhtml" 
+ xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+ exclude-result-prefixes="dc"
+>
+
+   <xsl:include "etdms.xsl"/>
+   <xsl:include "rfc1807.xsl"/>
+   <xsl:include "dc.xsl"/>
+
+   <xsl:output method="html" indent="yes"/>
+
+   <xsl:template match="records">
+      <xsl:choose>
+         <xsl:when test="oai:OAI-PMH/oai:GetRecord/oai:record/oai:metadata/etdms:thesis">
+            <xsl:apply-templates select="oai:OAI-PMH/oai:GetRecord/oai:record/oai:metadata/etdms:thesis"/>
+         </xsl:when>
+         <xsl:when test="oai:OAI-PMH/oai:GetRecord/oai:record/oai:metadata/rfc1807:rfc1807">
+            <xsl:apply-templates select="oai:OAI-PMH/oai:GetRecord/oai:record/oai:metadata/rfc1807:rfc1807"/>
+         </xsl:when>
+         <xsl:when test="oai:OAI-PMH/oai:GetRecord/oai:record/oai:metadata/oai_dc:dc">
+            <xsl:apply-templates select="oai:OAI-PMH/oai:GetRecord/oai:record/oai:metadata/oai_dc:dc"/>
+         </xsl:when>
+      </xsl:choose>
+   </xsl:template>
+
+<!--
+   <xsl:template match="etdms:thesis">
+      ETDMS
+   </xsl:template>
+
+   <xsl:template match="rfc1807:rfc1807">
+      RFC1807
+   </xsl:template>
+
+   <xsl:template match="oai_dc:dc">
+      DC
+   </xsl:template>
+   
+	<xsl:template match="/gfsgfdsgfds">
+		<html>
+			<head>
+				<title><xsl:value-of select="//dc:title"/></title>
+			</head>
+			<body>
+			  <table>
+			    <tr>
+			      <td>
+				<b>Title:</b>
+			      </td>
+			      <td>
+				<xsl:value-of select="//dc:title"/>
+			      </td>
+			    </tr>
+			    <tr>
+			      <td>
+				<b>Type:</b>
+			      </td>
+			      <td>
+				<xsl:value-of select="//dc:type"/>
+			      </td>
+			    </tr>
+			    <tr>
+			      <td>
+				<b>Format:</b>
+			      </td>
+			      <td>
+				<xsl:value-of select="//dc:format"/>
+			      </td>
+			    </tr>
+			    <tr>
+			      <td>
+				<b>Creator(s):</b>
+			      </td>
+			      <td>
+				      <xsl:for-each select="//dc:creator">
+					<xsl:value-of select="."/>
+				      </xsl:for-each>
+			      </td>
+			    </tr>
+			    <tr>
+			      <td>
+				<b>Subject(s):</b>
+			      </td>
+			      <td>
+				      <xsl:for-each select="//dc:subject">
+					<xsl:value-of select="."/>
+				      </xsl:for-each>
+			      </td>
+			    </tr>
+			     <tr>
+			      <td>
+				<b>Date:</b>
+			      </td>
+			      <td>
+				<xsl:value-of select="//dc:date"/>
+			      </td>
+			    </tr>
+			     <tr>
+			      <td>
+				<b>Description:</b>
+			      </td>
+			      <td>
+				<xsl:value-of select="//dc:description"/>
+			      </td>
+			    </tr>
+			  </table>
+			</body>
+		</html>
+	</xsl:template>
+-->
+</xsl:stylesheet>

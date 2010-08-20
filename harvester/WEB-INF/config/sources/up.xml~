@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>OAI Metadata Harvester Settings File </comment>
+<entry key="Name">up</entry>
+<entry key="isRunning">false</entry>
+<entry key="harvestStatus">Successfully harvested 3 records.</entry>
+<entry key="baseURL">http://upetd.up.ac.za/ETD-db/NDLTD-OAI2/oai.pl</entry>
+<entry key="metadataFormat">oai_dc</entry>
+<entry key="dateFrom">2010-02-10 18:56:04.837</entry>
+<entry key="harvestInterval">1</entry>
+</properties>
