@@ -1,0 +1,57 @@
+# Makefile for etdportal project
+# hussein suleman
+# 20 august 2010
+
+# variables
+
+JFLAGS = -classpath WEB-INF/lib/mysql-connector-java.jar:WEB-INF/lib/servlet-api.jar:.
+
+JAVAC = javac
+
+# rules
+
+%.class: %.java
+	$(JAVAC) $(JFLAGS) $@
+
+# targets
+
+TARGETS2 = WEB-INF/classes/OAIHarvest.class
+#          WEB-INF/classes/HarvesterServlet.class
+#
+
+TARGETS = WEB-INF/classes/OAIHarvest.class \
+          WEB-INF/classes/HarvesterServlet.class \
+          WEB-INF/classes/ConfigWriter.class \
+          WEB-INF/classes/DatabaseConnection.class \
+          WEB-INF/classes/HarvestConfiguration.class \
+          WEB-INF/classes/HarvesterThread.class \
+          WEB-INF/classes/HtmlPane.class \
+          WEB-INF/classes/HTMLWriter.class \
+          WEB-INF/classes/NavBar.class \
+          WEB-INF/classes/OAIConfigEditor.class \
+          WEB-INF/classes/OAIRecord.class \
+          WEB-INF/classes/OAIRequest.class \
+          WEB-INF/classes/OAIResponseHandler.class \
+          WEB-INF/classes/OAIScheduledHarvest.class \
+          WEB-INF/classes/RepoList.class \
+          WEB-INF/classes/RepositoryEditor.class \
+          WEB-INF/classes/Settings.class \
+          WEB-INF/classes/StatusPane.class
+          
+all: $(TARGETS2)
+
+
+#$(TARGETS): OAIHarvest.java HarvesterServlet.java
+	
+clean:
+	for comp in $(COMPONENTS); do \
+	   $(MAKE) -C $$comp; clean \
+	done
+	@echo Finis.
+	
+install:
+	for comp in $(COMPONENTS); do \
+	   $(MAKE) -C $$comp; install \
+	done
+	@echo Finis.
+

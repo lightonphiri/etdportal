@@ -1,0 +1,48 @@
+# Makefile for etdportal project
+# hussein suleman
+# 20 august 2010
+
+# variables
+
+JFLAGS = -classpath ../lib/mysql-connector-java.jar:../lib/servlet-api.jar:.
+
+JAVAC = javac
+
+# rules
+
+%.class: %.java
+	$(JAVAC) $(JFLAGS) $<
+
+# targets
+
+TARGETS = OAIHarvest.class \
+          HarvesterServlet.class \
+          ConfigWriter.class \
+          DatabaseConnection.class \
+          HarvestConfiguration.class \
+          HarvesterThread.class \
+          HtmlPane.class \
+          HTMLWriter.class \
+          NavBar.class \
+          OAIConfigEditor.class \
+          OAIRecord.class \
+          OAIRequest.class \
+          OAIResponseHandler.class \
+          OAIScheduledHarvest.class \
+          RepoList.class \
+          RepositoryEditor.class \
+          Settings.class \
+          StatusPane.class
+          
+all: $(TARGETS)
+
+	
+clean:
+	rm *.class
+	
+install:
+	for comp in $(COMPONENTS); do \
+	   $(MAKE) -C $$comp; install \
+	done
+	@echo Finis.
+
