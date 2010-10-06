@@ -4,20 +4,21 @@
 
 # variables
 
-JFLAGS = -classpath WEB-INF/lib/mysql-connector-java.jar:WEB-INF/lib/servlet-api.jar:.
+JFLAGS = -classpath WEB-INF/lib/mysql-connector-java.jar:WEB-INF/lib/servlet-api.jar:. \
+         -d WEB-INF/classes \
+         -sourcepath WEB-INF/classes
 
 JAVAC = javac
+
+TOMCAT = tomcat6
+WEBAPPS = /usr/share/$(TOMCAT)/webapps
 
 # rules
 
 %.class: %.java
-	$(JAVAC) $(JFLAGS) $@
+	$(JAVAC) $(JFLAGS) $<
 
 # targets
-
-TARGETS2 = WEB-INF/classes/OAIHarvest.class
-#          WEB-INF/classes/HarvesterServlet.class
-#
 
 TARGETS = WEB-INF/classes/OAIHarvest.class \
           WEB-INF/classes/HarvesterServlet.class \
@@ -38,20 +39,26 @@ TARGETS = WEB-INF/classes/OAIHarvest.class \
           WEB-INF/classes/Settings.class \
           WEB-INF/classes/StatusPane.class
           
-all: $(TARGETS2)
+all: $(TARGETS)
 
-
-#$(TARGETS): OAIHarvest.java HarvesterServlet.java
-	
 clean:
-	for comp in $(COMPONENTS); do \
-	   $(MAKE) -C $$comp; clean \
+	for comp in $(TARGETS); do \
+	   rm $$comp; \
 	done
 	@echo Finis.
 	
 install:
-	for comp in $(COMPONENTS); do \
-	   $(MAKE) -C $$comp; install \
+	install -o $(TOMCAT) -v -d $(WEBAPPS)/harvester/style
+	install -o $(TOMCAT) -v -d $(WEBAPPS)/harvester/WEB-INF/classes
+	install -o $(TOMCAT) -v -d $(WEBAPPS)/harvester/WEB-INF/config/sources
+	install -o $(TOMCAT) -v -d $(WEBAPPS)/harvester/WEB-INF/lib
+	install -o $(TOMCAT) -v -m 644 style/style.css $(WEBAPPS)/harvester/style/
+	install -o $(TOMCAT) -v -m 644 WEB-INF/config/config.xml $(WEBAPPS)/harvester/WEB-INF/config/
+	install -o $(TOMCAT) -v -m 644 WEB-INF/config/install_db.sql $(WEBAPPS)/harvester/WEB-INF/config/
+	install -o $(TOMCAT) -v -m 644 WEB-INF/lib/mysql-connector-java.jar $(WEBAPPS)/harvester/WEB-INF/lib/
+	install -o $(TOMCAT) -v -m 644 WEB-INF/lib/servlet-api.jar $(WEBAPPS)/harvester/WEB-INF/lib/
+	for comp in $(TARGETS); do \
+	   install -o $(TOMCAT) -v -m 644 $$comp $(WEBAPPS)/harvester/classes/; \
 	done
 	@echo Finis.
 
