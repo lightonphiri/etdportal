@@ -13,7 +13,7 @@ TOMCAT = tomcat6
 
 # targets
 
-COMPONENTS = harvester ROOT
+COMPONENTS = harvester ROOT RSS OAI-PMH summary
 	
 all:
 	for comp in $(COMPONENTS); do \
