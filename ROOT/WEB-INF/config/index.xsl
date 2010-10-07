@@ -10,10 +10,10 @@
  xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
  exclude-result-prefixes=""
 >
-   <xsl:include href="webapps/ROOT/WEB-INF/config/marc_index.xsl"/>
-   <xsl:include href="webapps/ROOT/WEB-INF/config/etdms_index.xsl"/>
-   <xsl:include href="webapps/ROOT/WEB-INF/config/rfc1807_index.xsl"/>
-   <xsl:include href="webapps/ROOT/WEB-INF/config/dc_index.xsl"/>
+   <xsl:include href="../config/marc_index.xsl"/>
+   <xsl:include href="../config/etdms_index.xsl"/>
+   <xsl:include href="../config/rfc1807_index.xsl"/>
+   <xsl:include href="../config/dc_index.xsl"/>
 
    <xsl:output method="html" indent="yes"/>
 

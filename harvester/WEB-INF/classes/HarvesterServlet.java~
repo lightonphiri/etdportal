@@ -55,7 +55,7 @@ public class HarvesterServlet extends HttpServlet
             {
                 StringBuffer page = new StringBuffer();
                 //header
-                page.append("   <div id=\"header\"><h1>Harvester Control Panel Home</h1></div>\n");
+                page.append("   <div id=\"header\"><h1>Harvester Control Panel Homeee</h1></div>\n");
                 //nav bar
                 NavBar nav = new NavBar();
                 page.append(nav.getNav());
@@ -217,7 +217,7 @@ public class HarvesterServlet extends HttpServlet
                     //Start the harvest
                     String[] args = new String [1];
                     args[0] = "sources/"+fileName;
-                    Harvester.HarvesterThread harvest = new Harvester.HarvesterThread(args);
+                    HarvesterThread harvest = new HarvesterThread(args);
                     harvest.start();                    
 
                     //show them the status

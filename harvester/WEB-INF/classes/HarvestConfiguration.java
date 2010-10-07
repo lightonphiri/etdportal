@@ -21,7 +21,7 @@ import java.sql.Timestamp;
 public class HarvestConfiguration{
 
   /** The name of the harvester settings file (different from the repository ones) */
-  public final static String settingsFile = "/var/lib/tomcat5.5/webapps/harvester/WEB-INF/config/config.xml";
+  public final static String settingsFile = "/var/lib/tomcat6/webapps/harvester/WEB-INF/config/config.xml";
   //public final static String settingsFile = "configuration.xml";
 
   /* Instance variables */

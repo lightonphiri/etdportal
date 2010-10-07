@@ -20,7 +20,7 @@ public class OAIScheduledHarvest
      */
     public OAIScheduledHarvest()
     {
-        File sources = new File("/var/lib/tomcat5.5/webapps/harvester/WEB-INF/config/sources"); // file object for the sources directory
+        File sources = new File("/var/lib/tomcat6/webapps/harvester/WEB-INF/config/sources"); // file object for the sources directory
 
         String[] files = sources.list(); // get a list of all the children of directory file
 
@@ -30,7 +30,7 @@ public class OAIScheduledHarvest
             { // for every item in files
                 if(files[i].endsWith(".xml"))
                 {
-                    doHarvest("/var/lib/tomcat5.5/webapps/harvester/WEB-INF/config/sources/" + files[i]); // do the harvest specified by the file
+                    doHarvest("/var/lib/tomcat6/webapps/harvester/WEB-INF/config/sources/" + files[i]); // do the harvest specified by the file
                 }
             }
         }

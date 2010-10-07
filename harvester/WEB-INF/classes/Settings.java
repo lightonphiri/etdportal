@@ -8,7 +8,7 @@ public class Settings
 {
     /** The directory that the repository xml files are stored. */
     public static final String sourceDir = //"C:/Users/Lawrence/Documents/Hussein Work/OAI WORK/OAIHarvester/sources/";
-    "/var/lib/tomcat5.5/webapps/harvester/WEB-INF/config/sources/";
+    "/var/lib/tomcat6/webapps/harvester/WEB-INF/config/sources/";
     
     /**
      * Default constructor - does nothing special.
