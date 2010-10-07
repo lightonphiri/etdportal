@@ -16,18 +16,31 @@ public class DatabaseConnection
     /* An array of the format specifications this database supports. We search here
      * for schema and namespace information if its needed in a request*/
     private MetadataFormat [] formatSpecList;
+
+    private String url, username, password;
     
     /*Constructor class. Establishes a connection to the sql server and receives the formatList*/
     public DatabaseConnection(String address, String username, String password, MetadataFormat [] formatList) throws ClassNotFoundException, SQLException
     {
         formatSpecList = formatList;
         Class.forName("com.mysql.jdbc.Driver");
-        String url = "jdbc:mysql:"+address;
+        url = "jdbc:mysql:"+address;
+        this.username = username;
+        this.password = password;
         con = DriverManager.getConnection (url, username, password);              
+    }
+
+    /*
+     * A connect method to reconnect to the db when a new request is made
+     */
+    public void connect() throws SQLException
+    {
+        con = DriverManager.getConnection (url, username, password);  
     }
     
     public StringBuffer getRecord(String ID, String metaType) throws SQLException
     {
+        connect();
         //create statement and query the database
         Statement stm = con.createStatement();
         ResultSet rs = stm.executeQuery("SELECT * FROM Archive WHERE ID = '"+ID+"';");
@@ -111,6 +124,7 @@ public class DatabaseConnection
     //returns all the suppoted metadata formats on this server
     public StringBuffer getAllMetadataFormats() throws SQLException
     {
+        connect();
         //create statement and query the database
         Statement stm = con.createStatement();
         ResultSet rs = stm.executeQuery("SELECT DISTINCT MetaType FROM Archive;");
@@ -150,7 +164,8 @@ public class DatabaseConnection
     
     //returns the supported metadata formats for a particular ID
     public StringBuffer getMetadataFormats(String ID) throws SQLException
-    {   
+    {
+        connect();
         //create statement and execute sql query            
         Statement stm = con.createStatement();
         ResultSet rs = stm.executeQuery("SELECT MetaType FROM Archive WHERE ID='"+ID+"';");
@@ -204,19 +219,31 @@ public class DatabaseConnection
     //request
     public StringBuffer listRecords(String ResumptionToken) throws SQLException
     {
+        connect();
         //example of the token below
         //LR!2002-06-01T23:20:00Z!2004-08-03T21:20:00Z!oai_dc!100
+        //or
+        //LRS!2002-06-01T23:20:00Z!2004-08-03T21:20:00Z!UniversityOfCapeTown!oai_dc!100
         //format is:
         //type!fromDate!untilDate!metadataType!cursor
+        //or
+        //type!fromDate!untilDate!set!metadataType!cursor
         //delimiter is !     
         
         //Start by creating a scanner on the token and setting its delimeter to !
         Scanner resump = new Scanner(ResumptionToken);
         resump.useDelimiter("!");
         
-        //check to see what type of request it is LR for ListRecords, LI for ListIdentifiers
+        //check to see what type of request it is 
+        //LR for ListRecords
+        //LI for ListIdentifiers
+        //LRS for ListRecords with set support
+        //LIS for ListIdentifiers with set support
         boolean headersOnly;
-        if(resump.next().equals("LR"))
+        boolean setsEnabled;
+        String type = resump.next();
+        //Check if its identifiers or records
+        if(type.equals("LR") || type.equals("LRS"))
         {
             headersOnly = false;
         }
@@ -224,27 +251,63 @@ public class DatabaseConnection
         {
             headersOnly = true;
         }
+        //check if we are using sets or not
+        if(type.equals("LRS") || type.equals("LIS"))
+        {
+            setsEnabled = true;
+        }
+        else
+        {
+            setsEnabled = false;
+        }
         
         //determine to and from dates
         String from = resump.next();
         String until = resump.next();
-        
+
+        //if we are using sets, get which set we are looking for
+        String sets = "";
+        if(setsEnabled)
+        {
+             sets = resump.next();
+        }
+
         //get metadata format
         String metadataFormat = resump.next();
         
         //get current cursor position
-        int cursor = resump.nextInt();        
-        return listRecords(from, until, metadataFormat, headersOnly, cursor);
-    }
+        int cursor = resump.nextInt();
+                
+        return listRecords(from, until, metadataFormat, headersOnly, sets, cursor);
+        
+    }   
     
     
-    //returns the response data for ListRecords and ListIdentifiers requests
-    //if headersOnly is true, then it will be ListIdentifiers response data (only print headers)
-    //and if false it will print the entire record for all matching entries.
-    public StringBuffer listRecords(String from, String until, String metaType, boolean headersOnly, int cursor) throws SQLException
+    /**
+     * Returns the response data for ListRecords and ListIdentifiers requests.
+     * If headersOnly is true, then it will be ListIdentifiers response data (only print headers)
+     * and if false it will print the entire record for all matching entries.
+     * @param from The date from which we will search
+     * @param until The date untill which we will search
+     * @param metaType What metadata type we are searching for
+     * @param headersOnly Whether we want just the headers, or the entire records
+     * @param set The set to search within (empty string for no sets)
+     * @param cursor The position within the results to continue this search from.
+     * @return A stringbuffer with the correctly formatted results.
+     * @throws SQLException If the method fails to correctly access the database
+     */
+    public StringBuffer listRecords(String from, String until, String metaType, boolean headersOnly, String set , int cursor) throws SQLException
     {
+        connect();
         //variable tracking whether a resumption token is needed
         boolean resume = false;
+        //convinience bool to check if sets are enabled
+        boolean sets = true;
+
+        if(set.equals(""))
+        {
+            sets = false;
+        }
         
         //if our current cursor position is non zero, obviously we are resuming
         if(cursor != 0)
@@ -256,7 +319,15 @@ public class DatabaseConnection
         Statement stm = con.createStatement();
         
         //lets get the total number of records we are going to need
-        ResultSet rs = stm.executeQuery("SELECT COUNT(*) FROM Archive WHERE MetaType = '"+metaType+"';");
+        ResultSet rs;
+        if(sets)
+        {
+            rs= stm.executeQuery("SELECT COUNT(*) FROM Archive WHERE MetaType = '"+metaType+"' " + "AND SetSpec = '"+set+"' AND Date BETWEEN '"+from+"' AND '"+until+"';");
+        }
+        else
+        {
+            rs= stm.executeQuery("SELECT COUNT(*) FROM Archive WHERE MetaType = '"+metaType+"' AND Date BETWEEN '"+from+"' AND '"+until+"';");
+        }
         rs.next();
         int totalRecords = rs.getInt("COUNT(*)");
         
@@ -293,10 +364,18 @@ public class DatabaseConnection
             }
         }
         if(formatAccepted)
-            {
+        {
             //now make the query for records that match the specified MetaType
-            rs = stm.executeQuery("SELECT * FROM Archive WHERE MetaType = '"+metaType+"' " +
-                    "AND Date BETWEEN '"+from+"' AND '"+until+"' ORDER BY Date LIMIT 100 OFFSET "+cursor+";");
+            if(sets)
+            {
+                rs = stm.executeQuery("SELECT * FROM Archive WHERE MetaType = '"+metaType+"' " +
+                        "AND SetSpec = '"+set+"' AND Date BETWEEN '"+from+"' AND '"+until+"' ORDER BY Date LIMIT 100 OFFSET "+cursor+";");
+            }
+            else
+            {
+                rs = stm.executeQuery("SELECT * FROM Archive WHERE MetaType = '"+metaType+"' " +
+                        "AND Date BETWEEN '"+from+"' AND '"+until+"' ORDER BY Date LIMIT 100 OFFSET "+cursor+";");
+            }
             
             //add correct tag information depending on headersOnly
             if(headersOnly)
@@ -332,6 +411,11 @@ public class DatabaseConnection
                     sqlResponse.append("<datestamp>");
                     sqlResponse.append(UTCDateFormatter.format(rs.getTimestamp("Date")));
                     sqlResponse.append("</datestamp>\n");
+                    //sets
+                    sqlResponse.append("<setSpec>\n");
+                    sqlResponse.append(rs.getString("SetSpec"));
+                    sqlResponse.append("</setSpec>\n");
+                    
                     sqlResponse.append("</header>\n");
                 }else
                 {
@@ -340,6 +424,11 @@ public class DatabaseConnection
                     sqlResponse.append("<datestamp>");
                     sqlResponse.append(UTCDateFormatter.format(rs.getTimestamp("Date")));
                     sqlResponse.append("</datestamp>\n");
+                    //sets                      
+                    sqlResponse.append("<setSpec>\n");
+                    sqlResponse.append(rs.getString("SetSpec"));
+                    sqlResponse.append("</setSpec>\n");
+                    
                     sqlResponse.append("</header>\n");
                     if(!headersOnly)
                     {                    
@@ -376,15 +465,26 @@ public class DatabaseConnection
                     sqlResponse.append(">");
                     if(headersOnly)
                     {
-                        sqlResponse.append("LI!");
+                        if(sets)
+                        {
+                            sqlResponse.append("LIS!");
+                        }
                     }else
                     {
-                        sqlResponse.append("LR!");
+                        if(sets)
+                        {
+                            sqlResponse.append("LRS!");
+                        }
                     }
                     sqlResponse.append(from);
                     sqlResponse.append("!");
                     sqlResponse.append(until);
                     sqlResponse.append("!");
+                    if(sets)
+                    {
+                        sqlResponse.append(set);
+                        sqlResponse.append("!");
+                    }
                     sqlResponse.append(metaType);
                     sqlResponse.append("!");
                     sqlResponse.append(cursor+100);
@@ -420,9 +520,10 @@ public class DatabaseConnection
         return sqlResponse;
     }
     
-    //returns the earliet possible datestamp - we have an index on date
+    //returns the earliet possible datestamp - we have an index on date for fast access
     public StringBuffer getEarliestDateStamp() throws SQLException
-    {        
+    {
+        connect();
         StringBuffer sqlResponse = new StringBuffer();
         //create statement and execute sql query
         Statement stm = con.createStatement();
@@ -440,6 +541,30 @@ public class DatabaseConnection
         //format the date and add it to our resp onse
         sqlResponse.append((UTCDateFormatter.format(rs.getTimestamp("Date"))));
         rs.close();
+        return sqlResponse;
+    }
+
+    public StringBuffer listSets() throws SQLException
+    {
+        connect();
+        StringBuffer sqlResponse = new StringBuffer();
+        //Create statement so we can execute a query
+        Statement stm = con.createStatement();
+        //Exectute our query and get the result from the database.
+        ResultSet rs = stm.executeQuery("SELECT DISTINCT SetSpec FROM Archive;");
+
+        sqlResponse.append("<ListSets>\n");
+        //Iterate through all the results, adding them to the response
+        while(rs.next())
+        {
+            sqlResponse.append("<set>\n");
+            sqlResponse.append("<setSpec>"+rs.getString("SetSpec")+"</setSpec>\n");
+            sqlResponse.append("<setName>"+rs.getString("SetSpec")+"</setName>\n");
+            sqlResponse.append("</set>\n");
+        }
+
+        sqlResponse.append("</ListSets>\n");
+
         return sqlResponse;
     }
 }

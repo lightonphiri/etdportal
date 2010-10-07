@@ -1,13 +1,7 @@
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
-import org.xml.sax.SAXException;
 
 
 
@@ -159,6 +153,11 @@ public class OAIRecord {
     public boolean selfValidate(SchemaFactory factory)
     {
         boolean result = true;
+
+        //First remove any ' and " that might break the sql storage statement        
+        xml.replaceAll("[\"\']", "\\\"");
+
+        /*
         try
         {   
             //Compiling the schema.
@@ -195,7 +194,7 @@ public class OAIRecord {
         catch(Exception e)
         {          
           result = false;
-        }
+        }*/
 				
 		//Change this to ACTUALY validate. Should work, but untested, hence the return true.
         //return result;

@@ -92,7 +92,7 @@ public class ConfigWriter
             harvestSettings.setProperty("harvestStatus", "Update forced");
             //save
             
-            FileOutputStream out = new FileOutputStream(set.getSourceDir()+fileName); // create the file output stream
+            FileOutputStream out = new FileOutputStream(set.sourceDir+fileName); // create the file output stream
             harvestSettings.storeToXML(out, "Updated by Harvester Control Panel");
             out.close();
         }

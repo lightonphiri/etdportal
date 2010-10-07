@@ -73,7 +73,7 @@ public class DatabaseConnection {
                         {
                             about = "Record wasnt in a set when it was harvested";
                         }
-			String query = "REPLACE INTO Archive VALUES('" +aRecord.getID() +
+			String query = "INSERT INTO Archive VALUES('" +aRecord.getID() +
                                 "', CURRENT_TIMESTAMP, '" + aRecord.getType() + "','" + aRecord.getSource()+
                                 "','" + aRecord.getXml() + "'," +aRecord.isDeleted() +",'"+about+
                                 "','"+configuration.getName()+"')";

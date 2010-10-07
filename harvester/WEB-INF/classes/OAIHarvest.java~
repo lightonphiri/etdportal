@@ -28,7 +28,7 @@ public class OAIHarvest
             for(int i = 0; i < args.length;i++)
             {
                 System.out.println("Harvesting "+args[i]);
-                OAIScheduledHarvest.doHarvest(new Settings ().getSourceDir () + args[i] + ".xml");
+                OAIScheduledHarvest.doHarvest(args[i]);
             }
         }
     }

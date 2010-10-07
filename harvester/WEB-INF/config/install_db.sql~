@@ -9,7 +9,6 @@ CREATE TABLE `Archive` (
   `MetaData` blob,
   `Deleted` tinyint(1) NOT NULL default '0',
   `About` blob NOT NULL,
-  `SetSpec` VARCHAR(64) NOT NULL DEFAULT 'None',
   PRIMARY KEY  (`ID`,`MetaType`),
   KEY `IDX_DATE` (`Date`),
   KEY `IDX_METATYPE` (`MetaType`)

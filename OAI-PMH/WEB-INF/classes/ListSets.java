@@ -1,6 +1,7 @@
 
 
 
+import java.sql.SQLException;
 import javax.servlet.http.HttpServletRequest;
 
 
@@ -41,7 +42,14 @@ public class ListSets extends Response
             outputResponse.append(" <request verb=\"ListSets\">\n\t");
             outputResponse.append(baseURL);
             outputResponse.append("</request>\n");
-            outputResponse.append(" <error code=\"noSetHierarchy\">This repository does not support sets</error>\n");
+            try
+            {               
+                outputResponse.append(settings.dbCon.listSets());                
+            }
+            catch(SQLException e)
+            {
+                outputResponse.append(" <error>A Sql exception occured while trying to access the database! Please contact an admin for assistance.</error>\n");
+            }
         }//bad arguments
         else
         {

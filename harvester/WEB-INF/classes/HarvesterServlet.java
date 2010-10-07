@@ -321,7 +321,7 @@ public class HarvesterServlet extends HttpServlet
             //this can be used to get an href to the stylesheet if urls to stylesheets arent working properly
             else if(location.equals("styleSheet"))
             {
-                File styleSheet = new File(Settings.sourceDir+ "StyleSheet.css");
+                File styleSheet = new File(new Settings ().getSourceDir()+ "StyleSheet.css");
                 if(styleSheet.exists())
                 {
                     Scanner reader = new Scanner(styleSheet);

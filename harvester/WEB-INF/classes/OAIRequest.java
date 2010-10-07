@@ -38,7 +38,7 @@ public class OAIRequest
     }
 
     /**
-     * Returns the http request that is too be sent to the server.
+     * Returns the http request that is to be sent to the server.
      * <p>
      * If there is a resumption token, it will use that to create the request.
      * Otherwise, it will generate a fresh request if the resumption token
@@ -56,6 +56,10 @@ public class OAIRequest
             { // if there is a from date
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                 request += "&from=" + sdf.format(Timestamp.valueOf(configuration.getDateFrom()));
+            }
+            if(configuration.hasSetSpec())
+            {
+                request += "&set=" + configuration.getSetSpec();
             }
             request += "&metadataPrefix=" + configuration.getMetadataFormat();	// set the metadata prefix
         }
@@ -75,41 +79,32 @@ public class OAIRequest
     private void doHarvest()
     {
         //update harvest status
+        try
+        {
+            String rtoken = ""; // at first there is no resumption token
+            do {
+                String request = generateRequest(rtoken);
+                System.out.println(request);
+                BufferedInputStream response = sendRequest(request);
 
-        String rtoken = ""; // at first there is no resumption token
-        do {
-            String request = generateRequest(rtoken); 
-            BufferedInputStream response = sendRequest(request);
-            System.out.println(request);
-            //DEBUG
-            /*
-            try
-                {
-                DataInputStream reader = new DataInputStream(response);
-                while(reader.available() != 0)
-                {
-                    System.out.println(reader.readLine());
-                }
-            }catch(IOException e)
-            {
-            
-            }
-            */
-            //End Debug
-            System.out.println(request);
+                updateHarvestStatus();
+                OAIResponseHandler handler = new OAIResponseHandler(response, configuration); // create a response handler to parse and store the response
+                System.out.println("Storing the responses");
+                handler.store(); // store the entries in the response in the database
+                //update harvest status
+
+
+                System.out.println("Getting the resumption token");
+                rtoken = handler.getResumptionToken(); // get the resumption token from the response
+            } while (!rtoken.equals("")); // if there is no resumption token, end the harvest
+            //Harvest completed, so we know the list size
+            configuration.completeListSize = configuration.cursor;
             updateHarvestStatus();
-            OAIResponseHandler handler = new OAIResponseHandler(response, configuration); // create a response handler to parse and store the response
-            System.out.println("Storing the responses");
-            handler.store(); // store the entries in the response in the database
-            //update harvest status
-
-
-            System.out.println("Getting the resumption token");
-            rtoken = handler.getResumptionToken(); // get the resumption token from the response
-        } while (!rtoken.equals("")); // if there is no resumption token, end the harvest
-        //Harvest completed, so we know the list size
-        configuration.completeListSize = configuration.cursor;
-        updateHarvestStatus();
+        }
+        catch(Exception e)
+        {
+            configuration.setHarvestStatus(e.getMessage());
+        }
 
     }
 
@@ -154,7 +149,7 @@ public class OAIRequest
             BufferedInputStream response = new BufferedInputStream(connection.getInputStream()); // create a buffered stream to read from
             /* this is so we can use the same stream twice, once to validate, and once to retrieve the data */
 
-            response.mark(2147483647); // mark, with the maximum amount that can be read from stream
+            response.mark(2147483647); // sets the max amount of readable bytes, with the maximum amount that can be read from a stream
 
             return response;
 

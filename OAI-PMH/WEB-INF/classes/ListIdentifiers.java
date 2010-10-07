@@ -77,22 +77,9 @@ public class ListIdentifiers extends Response
             {
                 //initialize default 'until' date - a few hundred years in the future!                
                 until = "2500-00-00T00:00:00Z";
-            }
-            
-            //support of sets is currently not available.
-            if(set != null && set.length() != 0)
-            {
-                outputResponse.append("set=\"");
-                outputResponse.append(set);
-                outputResponse.append("\" \n\t");
-                outputResponse.append("metadataPrefix=\"");
-                outputResponse.append(metadataPrefix);
-                outputResponse.append("\">\n\t");
-                outputResponse.append(baseURL);
-                outputResponse.append(" </request>\n");
-                outputResponse.append(" <error code=\"noSetHierarchy\"/>\n");
+            }                        
                 
-            }else if(!badDates)
+            if(!badDates)
             {//actually do the search here. Everything previous to here was just testing to see if args are ok
                 //and writting general request information to the response
                 outputResponse.append("metadataPrefix=\"");
@@ -102,8 +89,15 @@ public class ListIdentifiers extends Response
                 outputResponse.append(" </request>\n");
                 try
                 {
-                    //use DatabaseConnection in the floating Config object to get
-                    outputResponse.append(settings.dbCon.listRecords(from, until, metadataPrefix, true, 0));
+                    if(set != null && set.length() != 0) //if we have a set we need to search in
+                    {
+                         outputResponse.append(settings.dbCon.listRecords(from, until, metadataPrefix, true, set, 0));
+                    }
+                    else
+                    { //otherwise we have no sets to search in
+                        //use DatabaseConnection in the floating Config object to get
+                        outputResponse.append(settings.dbCon.listRecords(from, until, metadataPrefix, true, "", 0));
+                    }
                 }
                 catch(SQLException e)
                 {

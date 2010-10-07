@@ -72,21 +72,8 @@ public class ListRecords extends Response
             {
                 //initialize default 'until' date - a few hundred years in the future!                
                 until = "2500-00-00T00:00:00Z";
-            }
-            //support of sets is currently not available.
-            if(set != null && set.length() != 0)
-            {
-                outputResponse.append("set=\"");
-                outputResponse.append(set);
-                outputResponse.append("\" \n\t");
-                outputResponse.append("metadataPrefix=\"");
-                outputResponse.append(metadataPrefix);
-                outputResponse.append("\">\n\t");
-                outputResponse.append(baseURL);
-                outputResponse.append(" </request>\n");
-                outputResponse.append(" <error code=\"noSetHierarchy\"/>\n");
-                
-            }else if(!badDates)
+            }   
+            if(!badDates)
             {//actually do the search etc here. Everything up till here was just testing to see if args are ok
                 outputResponse.append("metadataPrefix=\"");
                 outputResponse.append(metadataPrefix);
@@ -96,7 +83,14 @@ public class ListRecords extends Response
                 try
                 {
                     //use floating config objects database connection
-                    outputResponse.append(settings.dbCon.listRecords(from, until, metadataPrefix, false, 0));
+                    if(set != null && set.length() != 0)
+                    {
+                        outputResponse.append(settings.dbCon.listRecords(from, until, metadataPrefix, false, set, 0));
+                    }
+                    else
+                    {
+                        outputResponse.append(settings.dbCon.listRecords(from, until, metadataPrefix, false, "", 0));
+                    }
                 }
                 catch(SQLException e)
                 {

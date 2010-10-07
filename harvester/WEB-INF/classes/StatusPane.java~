@@ -36,7 +36,7 @@ public class StatusPane extends HtmlPane
         output.append("     <div id=\"main\">\n");
 
         //search sources directory for repos to list.
-        File sources = new File(new Settings ().getSourceDir ());
+        File sources = new File(Settings.sourceDir);
         String[] files = sources.list();
         output.append("         <h2>Repository Statuses</h2>\n");
         
@@ -82,7 +82,7 @@ public class StatusPane extends HtmlPane
          StringBuffer statusOutput = new StringBuffer();
 
          try {          
-             harvestSettingsFileStream = new FileInputStream(new Settings ().getSourceDir ()+fileName);
+             harvestSettingsFileStream = new FileInputStream(Settings.sourceDir+fileName);
          } catch (Exception e){ // if there is an error loading the settingsFile, exit and print a message
             System.out.println("Could not load database configuration from " + fileName + "."); // error message
             System.out.println("Please make sure that the file exists and you are allowed access to it.");

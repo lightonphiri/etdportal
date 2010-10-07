@@ -4,7 +4,7 @@
 <comment>OAI Metadata Harvester Settings File </comment>
 <entry key="Name">University of the Western Cape</entry>
 <entry key="isRunning">false</entry>
-<entry key="harvestStatus">Failed. Unexpected Error Occured. See console output for details</entry>
+<entry key="harvestStatus">Successfully harvested 0 records.</entry>
 <entry key="baseURL">http://etd.uwc.ac.za/lib/oai/oai2.php</entry>
 <entry key="metadataFormat">oai_dc</entry>
 <entry key="dateFrom">2010-03-04 11:10:40.913</entry>

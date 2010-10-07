@@ -82,7 +82,7 @@ public class RepositoryEditor extends HtmlPane
         FileInputStream harvestSettingsFileStream = null;
 
         try {           
-            harvestSettingsFileStream = new FileInputStream(new Settings ().getSourceDir ()+fileName);
+            harvestSettingsFileStream = new FileInputStream(Settings.sourceDir+fileName);
         } catch (Exception e){ // if there is an error loading the settingsFile, exit and print a message
             System.out.println("Could not load database configuration from " + fileName + "."); // error message
             System.out.println("Please make sure that the file exists and you are allowed access to it.");
@@ -154,7 +154,7 @@ public class RepositoryEditor extends HtmlPane
     {
         output.append("     <div id=\"main\">\n");
         try{
-            File sources = new File(new Settings ().getSourceDir ()+fileName);
+            File sources = new File(Settings.sourceDir+fileName);
             sources.delete();
 
             output.append("         <h2>Repository Deleted Successfully</h2>\n");

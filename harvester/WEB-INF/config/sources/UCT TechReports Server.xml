@@ -4,9 +4,9 @@
 <comment>OAI Metadata Harvester Settings File </comment>
 <entry key="Name">UCT TechReports Server</entry>
 <entry key="isRunning">false</entry>
-<entry key="harvestStatus">Successfully harvested 0 records.</entry>
+<entry key="harvestStatus">Failed. Unexpected Error Occured. See console output for details</entry>
 <entry key="baseURL">http://pubs.cs.uct.ac.za/perl/oai2</entry>
 <entry key="metadataFormat">oai_dc</entry>
-<entry key="dateFrom">2010-08-19 20:07:36.394</entry>
+<entry key="dateFrom">2010-03-04 11:10:40.323</entry>
 <entry key="harvestInterval">3000</entry>
 </properties>

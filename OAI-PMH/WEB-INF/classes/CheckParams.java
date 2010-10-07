@@ -143,7 +143,7 @@ public class CheckParams
         metaData = metaData +">"+baseURL+"</request>\n";
         return metaData;
     }
-    //fuck knows how to do this
+    //who knows how to do this
     public boolean checkDateConsitancy(String date1, String date2)
     {        
         //first check that dates are valid.
@@ -217,105 +217,176 @@ public class CheckParams
     {
         /* format for a resumption token must match
          * requestType!fromDate!untilDate!metadataPrefix!cursor
+         * or
+         * requestType!fromDate!untilDate!set!metadataPrefix!cursor
          * So an example record would be
          * LR!2002-06-01T23:20:00Z!2004-08-03T21:20:00Z!oai_dc!100
+         * OR
+         * LRS!2002-06-01T23:20:00Z!2004-08-03T21:20:00Z!oai_dc!100
          */
         
          //first check if the request type is correct
         if(!(RT.substring(0, 2).equals("LR")) & !(RT.substring(0, 2).equals("LI")))
         {            
             return false;
-        }        
+        }
         else
-        {//now check the ! delimeter
-            if(RT.charAt(2) != '!')
-            {                
-                return false;
-            }else
-            {//now check from date - 20 chars long
-                if(!checkDate(RT.substring(3, 23)))
-                {                    
-                    return false;                    
-                }
-                else
-                {//check next ! delimeter
-                    if(RT.charAt(23) != '!')
-                    {                        
+        {
+            //If the resumption token does not include sets
+            if(RT.charAt(2) == '!')
+            {
+                //now check the ! delimeter
+                if(RT.charAt(2) != '!')
+                {
+                    return false;
+                }else
+                {//now check from date - 20 chars long
+                    if(!checkDate(RT.substring(3, 23)))
+                    {
                         return false;
                     }
-                    else//check next data - another 20 chars
-                    {
-                        if(!checkDate(RT.substring(24, 44)))
-                        {                            
+                    else
+                    {//check next ! delimeter
+                        if(RT.charAt(23) != '!')
+                        {
                             return false;
                         }
-                        else//check next ! delimiter
+                        else//check next data - another 20 chars
                         {
-                            if(RT.charAt(44) != '!')
-                            {                                
+                            if(!checkDate(RT.substring(24, 44)))
+                            {
                                 return false;
                             }
-                            else//check metadata prefix
+                            else//check next ! delimiter
                             {
-                                try
-                                {
-                                    int i = 45;
-                                    String prefix = "";
-
-                                    //read in the prefix
-                                    while(RT.charAt(i)!= '!')
-                                    {
-                                        prefix = prefix + RT.charAt(i);
-                                        i++;
-
-                                        //incase this is broken resumption token and 
-                                        //there IS no next '!' delimiter then a 
-                                        //StringIndexOutOfBoundsException will be thrown
-                                        //sooner or later.
-                                       
-                                    }
-                                    //now we should have the metadata prefix stored,
-                                    //so lets compare it to the supported formats on 
-                                    //the server. If it matchs, then its legal.
-                                    boolean supported = false;
-
-                                    for(int j = 0; j < settings.formatList.length;j++)
-                                    {
-                                        if(prefix.equals(settings.formatList[j].getPrefix()))
-                                        {
-                                            supported = true;
-                                            break;
-                                        }
-                                    }
-                                    if(!supported)
-                                    {                                        
-                                        return false;
-                                    }
-                                    else
-                                    {//we have already checked last ! delimeter,
-                                        //so now we only need to check cursor
-                                        String cursor = RT.substring(i+1);
-                                        for(int k = 0; k < cursor.length();k++)
-                                        {
-                                            if(!Character.isDigit(cursor.charAt(k)))
-                                            {                                               
-                                                return false;
-                                            }
-                                        }
-                                    }//this is often thrown if a broken resumption token
-                                //with no ! after its metadataPrefix is received
-                                }catch(StringIndexOutOfBoundsException e)
+                                if(RT.charAt(44) != '!')
                                 {
                                     return false;
-                                    
+                                }
+                                else//check metadata prefix
+                                {
+                                    try
+                                    {
+                                        int i = 45;
+                                        String prefix = "";
+
+                                        //read in the prefix
+                                        while(RT.charAt(i)!= '!')
+                                        {
+                                            prefix = prefix + RT.charAt(i);
+                                            i++;
+
+                                            //incase this is broken resumption token and
+                                            //there IS no next '!' delimiter then a
+                                            //StringIndexOutOfBoundsException will be thrown
+                                            //sooner or later.
+
+                                        }
+                                        //now we should have the metadata prefix stored,
+                                        //so lets compare it to the supported formats on
+                                        //the server. If it matchs, then its legal.
+                                        boolean supported = false;
+
+                                        for(int j = 0; j < settings.formatList.length;j++)
+                                        {
+                                            if(prefix.equals(settings.formatList[j].getPrefix()))
+                                            {
+                                                supported = true;
+                                                break;
+                                            }
+                                        }
+                                        if(!supported)
+                                        {
+                                            return false;
+                                        }
+                                        else
+                                        {//we have already checked last ! delimeter,
+                                            //so now we only need to check cursor
+                                            String cursor = RT.substring(i+1);
+                                            for(int k = 0; k < cursor.length();k++)
+                                            {
+                                                if(!Character.isDigit(cursor.charAt(k)))
+                                                {
+                                                    return false;
+                                                }
+                                            }
+                                        }//this is often thrown if a broken resumption token
+                                    //with no ! after its metadataPrefix is received
+                                    }catch(StringIndexOutOfBoundsException e)
+                                    {
+                                        return false;
+
+                                    }
                                 }
                             }
                         }
-                    }                    
-                }                
+                    }
+                }
             }
+            //sets request
+            else if(RT.charAt(2) == 's')
+            {
+                if(RT.charAt(3) != '!')
+                {
+                    return false;
+                }
+                else{//now check from date - 20 chars long
+                    if(!checkDate(RT.substring(4, 24)))
+                    {
+                        return false;
+                    }
+                    else
+                    {//check next ! delimeter
+                        if(RT.charAt(24) != '!')
+                        {
+                            return false;
+                        }
+                        else//check next data - another 20 chars
+                        {
+                            if(!checkDate(RT.substring(25, 45)))
+                            {
+                                return false;
+                            }
+                            else//check next ! delimiter
+                            {
+                                if(RT.charAt(45) != '!')
+                                {
+                                    return false;
+                                }
+                                //NOW ITS SETS - unpredictable lenght, look for next ! then check
+                                else//check metadata prefix
+                                {
+                                    try
+                                    {
+                                        int i = 46;
+                                        String prefix = "";
+
+                                        //read in the prefix
+                                        while(RT.charAt(i)!= '!')
+                                        {
+                                            prefix = prefix + RT.charAt(i);
+                                            i++;
+
+                                            //incase this is broken resumption token and
+                                            //there IS no next '!' delimiter then a
+                                            //StringIndexOutOfBoundsException will be thrown
+                                            //sooner or later.
+
+                                        }                                        
+                                    
+                                    }catch(StringIndexOutOfBoundsException e)
+                                    {
+                                        return false;
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }            
+            return true;
         }
-        return true;
     }
    
 }

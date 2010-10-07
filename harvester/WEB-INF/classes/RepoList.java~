@@ -47,7 +47,7 @@ public class RepoList extends HtmlPane
     public StringBuffer getRepositories()
     {
         StringBuffer repos = new StringBuffer();
-        File sources = new File(new Settings ().getSourceDir ());
+        File sources = new File(Settings.sourceDir);
         //uncomment this to determine the path the sources should inhabit.
         //System.out.println(sources.getAbsolutePath());
         String[] files = sources.list();

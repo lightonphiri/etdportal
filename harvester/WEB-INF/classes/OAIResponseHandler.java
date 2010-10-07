@@ -1,16 +1,10 @@
 /* import declarations */
 import java.io.InputStream;
 import java.util.ArrayList;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.xml.validation.SchemaFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSSerializer;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  * Class to parse and store the response to an OAI Request
@@ -20,8 +14,8 @@ import org.w3c.dom.NodeList;
  */
 public class OAIResponseHandler
 {
-    /** the xml document (DOM3)*/
-    Document document;
+    /** The response from the server */
+    StringBuffer response;
     /** the harvester configuration object */
     HarvestConfiguration configuration;
 
@@ -32,32 +26,23 @@ public class OAIResponseHandler
      * @param config the harvester configuration object containing the settigns
      * pertinent to this harvest.
      */
-    public OAIResponseHandler(InputStream is, HarvestConfiguration config)
+    public OAIResponseHandler(InputStream is, HarvestConfiguration config) throws Exception
     {
-        DocumentBuilder dbuilder = null;
+        Scanner in = new Scanner(is);
+        response = new StringBuffer("");
         configuration = config;
-        try { // try create an instance of document builder
-                dbuilder = (DocumentBuilderFactory.newInstance()).newDocumentBuilder(); // make a document builder
-
-                document = dbuilder.parse(is); // the document builder parses the input stream
-
-                //Node n = (Node) document.getDocumentElement();
-                //System.out.println(nodeToString(n));
-
-        } catch (Exception e)
+        while(in.hasNext())
         {
-                System.out.println("Unexpected error parsing XML file");
-                document = null;
-        }
+            response.append(in.nextLine() + "\n");
+        }       
     }
 
     /**
-     * Uses the document instance created in the constructor to seperate out each
-     * record from the xml received from the repository server, and store it in
-     * the database. uses the <code>getRecords</code> method to retrieve the
+     * Uses regex to seperate out records and then store them in the database.
+     * Uses the <code>getRecords</code> method to retrieve the
      * seperated out records.
      */
-    public void store()
+    public void store() throws Exception
     { // store the response in the database
 
         ArrayList<OAIRecord> results = getRecords(); // get a list of the records in the document
@@ -65,9 +50,7 @@ public class OAIResponseHandler
         //connect to the database and exit with an error code if it could not connect to the database.
         if(!dbc.Connect())
         {
-            configuration.setRunning(false);
-            configuration.setHarvestStatus("Error: Failed to store records in local SQL database!");
-            System.exit(1);
+            throw new Exception("Error: Failed to store records in local SQL database!");
         }
         //If available, get the complete size of the repo.
         setCompleteListSize();
@@ -79,12 +62,10 @@ public class OAIResponseHandler
         {
             for (int i = 0; i < results.size(); i++)
             {
-                OAIRecord rec = results.get(i);
-                rec.setSource(configuration.getBaseURL()); // update the record
-                rec.setType(configuration.getMetadataFormat()); // update the record
+                OAIRecord rec = results.get(i);               
                 if(rec.selfValidate(factory))
                 {
-                    dbc.insert(rec);
+                    dbc.addToBatch(rec);
                     configuration.cursor++;
                 }
                 else
@@ -92,6 +73,8 @@ public class OAIResponseHandler
                     System.err.println("Record with ID: ("+rec.getID()+") failed validation and was not added...");
                 }
             }
+            //execute the batch run to add the records to the database
+            dbc.executeBatch();
         }
     }
 
@@ -100,30 +83,58 @@ public class OAIResponseHandler
      * and then returns them as an <code>ArrayList</code>.
      * @return an array list of {@link Harvester.OAIRecord}s.
      */
-    public ArrayList<OAIRecord> getRecords()
+    public ArrayList<OAIRecord> getRecords() throws Exception
     {
         ArrayList<OAIRecord> result = new ArrayList<OAIRecord>();
 
-        Element element = document.getDocumentElement(); // get the document element
+        Pattern p = Pattern.compile("<record>.*?</record>", Pattern.CANON_EQ | Pattern.DOTALL);
+        Matcher recordMatch = p.matcher(response);
 
-        NodeList nl = element.getElementsByTagName("record"); // get a nodelist with all record tags
+        //Iterate through records
+        while(recordMatch.find())
+        {            
+            String record = response.substring(recordMatch.start(), recordMatch.end());
 
-        if(nl != null && nl.getLength() > 0)
-        { // if there are records in the nodelist
-            for(int i = 0 ; i < nl.getLength();i++)  // interate through the nodelist
+            //Find identifier
+            Pattern identPattern = Pattern.compile("<identifier>[^>]*</identifier>", Pattern.CANON_EQ | Pattern.DOTALL);
+            Matcher identMatch = identPattern.matcher(record);
+            if(identMatch.find())
             {
-                //get the record element
-                Element rec = (Element)nl.item(i); // get the item
-
-                String identifier = getTextValue(rec,"identifier"); // get the identifier
-                NodeList metadataNode = rec.getElementsByTagName("metadata"); // get the metadata
-                Element metaDataElement = (Element) metadataNode.item(0); // get the element
-                result.add(elementToRecord(metaDataElement, identifier)); // add it to the result ArrayList
-
+                String identifier = extractTagValue(record.substring(identMatch.start(), identMatch.end()));                
+                result.add(toRecord(record, identifier));
             }
+            else
+            {
+                System.err.println("Malformed Record encountered - No Identifier! Ignoring and continuing");
+            }            
         }
+
+        Pattern nonXml = Pattern.compile("<\\?xml .*?>");
+        Matcher nonXmlMatch = nonXml.matcher(response);
+        if(!nonXmlMatch.find())
+        {
+            System.err.println("A non-xml reply was received from the target host:");
+            System.err.println(response);
+            throw new Exception("Non-XML response from target host.");
+        }
+
+        //Match error case as well
         return result;
     }
+
+    /**
+     * Takes a tag like <resmptionToken>blahblah</resumptionToken>
+     * and returns the blahblah part between tags.
+     * @param tag the tag we remove the data from
+     */
+    public String extractTagValue(String tag)
+    {
+        Pattern p = Pattern.compile(">.*<", Pattern.CANON_EQ | Pattern.DOTALL);
+        Matcher m = p.matcher(tag);
+        m.find();
+        return tag.substring(m.start()+1, m.end()-1);
+    }
+    
 
     /**
      * Attempts to set the complete list size in the harvest configuration file,
@@ -133,25 +144,33 @@ public class OAIResponseHandler
      */
     public void setCompleteListSize()
     {
-        Element element = document.getDocumentElement(); // get the document element
-        NodeList nl = element.getElementsByTagName("resumptionToken");
-        Element resToken = (Element)nl.item(0);
-        try
+        //<resumptionToken completeListSize='819' cursor='0'>1950426</resumptionToken> 
+        Pattern p = Pattern.compile("<resumptionToken.*?>[^>]*</resumptionToken>", Pattern.CANON_EQ | Pattern.DOTALL);
+        Matcher m = p.matcher(response);
+        if(m.find()) // If there is a resumptionToken
         {
-            String listSize = resToken.getAttribute("completeListSize");
-            if(!listSize.equals(""))
-            {
-                configuration.completeListSize = Long.parseLong(listSize);
-                System.out.println("Total list size is "+ listSize);
+            String match = response.substring(m.start(), m.end());            
+            Pattern list = Pattern.compile("completeListSize='[0-9]+'", Pattern.CANON_EQ);
+            Matcher listMatch = list.matcher(match);
+            if(listMatch.find()) //If there is a completeListSize
+            {                
+                String listSizeString = match.substring(listMatch.start(), listMatch.end());                
+                Pattern digit = Pattern.compile("[0-9]+", Pattern.CANON_EQ);
+                Matcher digitMatch = digit.matcher(listSizeString);
+                digitMatch.find(); 
+                
+                int listSize = Integer.parseInt(listSizeString.substring(digitMatch.start(), digitMatch.end()));
+                configuration.completeListSize = listSize;
             }
             else
-            {// I.E. we dont know.
+            {
                 configuration.completeListSize = -1;
             }
-        }catch(NullPointerException e)
-        {//if there is no resumptionToken element, we dont know the size either.
-            configuration.completeListSize = -1;
         }
+        else
+        {
+            configuration.completeListSize = -1;
+        }        
     }
 
     /**
@@ -161,79 +180,70 @@ public class OAIResponseHandler
      */
     public String getResumptionToken()
     { // get the resumption token from the repsonse
-        return getTextValue(document.getDocumentElement(),"resumptionToken"); // get the resumption token
-    }
+        Pattern p = Pattern.compile("<resumptionToken.*?>[^>]*</resumptionToken>", Pattern.CANON_EQ | Pattern.DOTALL);
+        Matcher m = p.matcher(response);
 
-   /**
-    * Takes an element and that tag that relates to it and attempts
-    * to turn it into a string.
-    * @param ele the element that we want to convert to text.
-    * @param tagName the tag name of the element in question
-    * @return the string value of an element
-    */
-    private String getTextValue(Element ele, String tagName)
-    {
-        String textVal = "";
-        if (ele == null)// if the element is null, return an empty string
+        if(m.find())
         {
-            return "deleted";
+            String longResump = response.substring(m.start(), m.end());            
+            return extractTagValue(longResump);
         }
-
-        NodeList nl = ele.getElementsByTagName(tagName); // get a nodelist with all the elements with the tagname
-
-        if(nl != null && nl.getLength() > 0)
+        else
         {
-            Element el = (Element)nl.item(0);
-            if (el.getFirstChild() != null)
-            textVal = el.getFirstChild().getNodeValue(); // get the text value
-        }
-        return textVal;
-    }
+            return "";
+        }        
+    }   
 
     /**
-     * Takes an element containing a record, along with the records
+     * Takes an string containing a record, along with the records
      * id string, and returns the record stored in an {@link Harvester.OAIRecord}
      * object.
-     * @param el the document element that contains the record
+     * @param record the string record we are to turn into a record object
      * @param id the identification number of the record
      * @return the record stored in a <code>OAIRecord</code> object
      */
-    public  OAIRecord elementToRecord(Element el, String id)
+    public OAIRecord toRecord(String record, String id)
     {
         String identifier = id; // get the identifier
-        String source = ""; // this will be set by the Get class as it isnt contained in the element passed to this function
-        String metadataType = "";// this will also be of the type harvested by Get, so it will be set in get
+        String source = configuration.getBaseURL();
 
-        String status = getTextValue(el,"status");
+        /*TO BE FIXED AT A LATER DATE
+         * Even though we have specifically requested a certain type of record from
+         * the server repository, we shouldnt assume they got it right and gave us
+         * only the requested type of records. We should read the metadate type
+         * from the record xml itself and then use that.
+         */
+        String metadataType = configuration.getMetadataFormat();
+
+        Pattern p = Pattern.compile("<header status=\"deleted\">");
+        Matcher m = p.matcher(record);
+        
         boolean deleted;
-        //System.out.println(status);
-        if ((status != null) && (status.equals("deleted"))) // check whether the status is set to deleted
-                deleted = true;
-        else deleted = false;
+        if(m.find())
+        {
+            deleted = true;
+        }
+        else
+        {
+            deleted = false;
+        }        
 
         // get the string representation of a node
         String xml = "";
         if (!deleted)  // get the metadata (xml) if the node is not deleted
         {
-            xml = nodeToString((Node) el);
+            Pattern metadataPattern = Pattern.compile("<metadata>.*?</metadata>", Pattern.CANON_EQ | Pattern.DOTALL);
+            Matcher metadataMatcher = metadataPattern.matcher(record);
+            if(metadataMatcher.find())
+            {
+                xml = record.substring(metadataMatcher.start(), metadataMatcher.end());
+            }
+            else
+            {
+                System.err.println("Malformed Record encountered - No metadata! Ignoring and continuing");
+            }            
         }
         OAIRecord result = new OAIRecord(identifier,source,metadataType,xml, deleted); // create a OAI record instance
         return result;
-    }
-
-    /**
-     * Converts a document node into a string.
-     * @param node the node to be converted
-     * @return a string representation of the original node.
-     */
-    public static String nodeToString(Node node)
-    {
-        Document doc = node.getOwnerDocument();
-        DOMImplementation impl = doc.getImplementation();
-        DOMImplementationLS factory = (DOMImplementationLS) impl.getFeature("LS", "3.0");
-        LSSerializer serializer = factory.createLSSerializer();
-        String result = serializer.writeToString(node);
-        if (result.indexOf(">") >= 0 ) result = result.substring(result.indexOf(">")+1, result.length()); // strips the output of the first line, which should not be appearing
-        return result;
-    }
+    }    
 }

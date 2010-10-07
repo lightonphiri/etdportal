@@ -44,6 +44,7 @@ public class GetRecord extends Response
             try
             {                
                 //use the config objects connection to the database to retrieve our record
+                settings.dbCon.connect();
                 outputResponse.append(settings.dbCon.getRecord(identifier, metadataPrefix));
             }
             catch(Exception e)

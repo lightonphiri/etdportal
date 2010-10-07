@@ -21,10 +21,14 @@ import java.sql.Timestamp;
 public class HarvestConfiguration{
 
   /** The name of the harvester settings file (different from the repository ones) */
-  public final static String settingsFile = "/var/lib/tomcat6/webapps/harvester/WEB-INF/config/config.xml";
+  //public final static String settingsFile = "/var/lib/tomcat5.5/webapps/harvester/WEB-INF/config/config.xml";
+    //DEBUG
+  //public final static String settingsFile = "C:/Users/Lawrence/Documents/OAI WORK/July3Revisions/webapps/harvester/WEB-INF/config/config.xml";
   //public final static String settingsFile = "configuration.xml";
 
   /* Instance variables */
+  /** location of settings for class */
+  private String settingsFile;
   /** the name of the configuration file that is being used*/
   private String harvestFileName;
   /**  status of the harvest this configuration represents*/
@@ -43,6 +47,8 @@ public class HarvestConfiguration{
   private String databaseUser;
   /** the plaintext password for the database */
   private String databasePassword;
+  /** the set to harvest (this will be an empty string if no set is to be specified) */
+  private String harvestSetSpec;
   /** the time between harvests (milliseconds)*/
   private long harvestInterval;
   /** whether the harvest is currently running */
@@ -50,7 +56,10 @@ public class HarvestConfiguration{
   /** The current position in the harvest */
   public long cursor;
   /** The total size of the harvest (if not supported by the target repository this will be -1)*/
-  public long completeListSize; 
+  public long completeListSize;
+  /** A boolean to check if this config file has correctly started up.
+   * True if all is good and you may use it. False if there is some erro and you should abort*/
+  public boolean isLoaded;
 
   /**
    * Constructor to set up the instance variables and load up the harverst and database
@@ -59,15 +68,16 @@ public class HarvestConfiguration{
    */
   public HarvestConfiguration(String target){ // create an instance of this object that will store the configuration of the harvest specified in target
 
+        isLoaded = true;
 	harvestFileName = target; // set the filename instance variable
         cursor = 0;
         completeListSize = -1;
 
+        // find relative position of settings file
+        settingsFile = new Settings ().getConfigDir () + "config.xml";
+
 	loadHarvestProperties(); // load the harvest properties
 	loadDatabaseProperties(); // load the database properties
-	     
-     
-       	
   }
 
   /**
@@ -85,6 +95,7 @@ public class HarvestConfiguration{
 	System.out.println("Could not load " + harvestFileName + "."); // error message
 	System.out.println("Please make sure that the file exists and you are allowed access to it.");
 	// we should now cancel this specific harvest
+        isLoaded = false;
      }
 
      try {
@@ -98,12 +109,14 @@ public class HarvestConfiguration{
 	harvestStatus = harvestSettings.getProperty("harvestStatus");
 	harvestInterval = Long.decode( harvestSettings.getProperty("harvestInterval") );
 	isRunning = (new Boolean( harvestSettings.getProperty("isRunning") ) ).booleanValue(); // get the boolean value of the string
+        harvestSetSpec = harvestSettings.getProperty("SetSpec");
 	 
 	harvestSettingsFileStream.close(); // close the file stream
      } catch (Exception e){ // if there is an error
 	System.out.println("Could not load harvest configuration from " + harvestFileName + "."); //error message
 	System.out.println("Please make sure that the file is correctly formatted.");
 	// we should now cancel this specific harvest
+        isLoaded = false;
      }
 
 	
@@ -123,7 +136,7 @@ public class HarvestConfiguration{
      } catch (Exception e){ // if there is an error loading the settingsFile, exit and print a message
 	System.out.println("Could not load database configuration from " + settingsFile + "."); // error message
 	System.out.println("Please make sure that the file exists and you are allowed access to it.");
-	System.exit(1); // quit with error code 1
+	isLoaded = false;
      }
 
      try {
@@ -138,7 +151,7 @@ public class HarvestConfiguration{
      } catch (Exception e){ // if there is an error
 	System.out.println("Could not load database configuration from " + settingsFile + "."); //error message
 	System.out.println("Please make sure that the file is correctly formatted.");
-	System.exit(1); // quit with error code 1
+	isLoaded = false;
      }
 
 
@@ -202,6 +215,31 @@ public class HarvestConfiguration{
 	isRunning = newValue; // update the value
 	saveHarvestConfiguration();
   }
+  /**
+   * Returns whether or not the harvest file has specified a set to harvest
+   * @return true if there is a set spec
+   */
+  public boolean hasSetSpec()
+  {
+      if(harvestSetSpec == null || harvestSetSpec.equals("") == true)
+      {
+          return false;
+      }
+      else
+      {
+          return true;
+      }
+  }
+
+  /**
+   * Gets the set spec to harvest
+   * @return the set spec
+   */
+  public String getSetSpec()
+  {
+      return harvestSetSpec;
+  }
+  
 
   /**
    * Accessor method to get the url of the repository to be harvested.
@@ -274,6 +312,15 @@ public class HarvestConfiguration{
    */
   public long getHarvestInterval(){
 	return harvestInterval;
+  }
+
+  /**
+   * Gets the name of the harvest (used as set name).
+   * @return the name of the harvest.
+   */
+  public String getName()
+  {
+      return harvestName;
   }
   
 }
