@@ -10,10 +10,10 @@
  xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
  exclude-result-prefixes=""
 >
-   <xsl:include href="/var/lib/tomcat5.5/webapps/ROOT/WEB-INF/config/marc_snippet.xsl"/>
-   <xsl:include href="/var/lib/tomcat5.5/webapps/ROOT/WEB-INF/config/etdms_snippet.xsl"/>
-   <xsl:include href="/var/lib/tomcat5.5/webapps/ROOT/WEB-INF/config/rfc1807_snippet.xsl"/>
-   <xsl:include href="/var/lib/tomcat5.5/webapps/ROOT/WEB-INF/config/dc_snippet.xsl"/>
+   <xsl:include href="webapps/ROOT/WEB-INF/config/marc_snippet.xsl"/>
+   <xsl:include href="webapps/ROOT/WEB-INF/config/etdms_snippet.xsl"/>
+   <xsl:include href="webapps/ROOT/WEB-INF/config/rfc1807_snippet.xsl"/>
+   <xsl:include href="webapps/ROOT/WEB-INF/config/dc_snippet.xsl"/>
 
    <xsl:output method="html" indent="yes"/>
 

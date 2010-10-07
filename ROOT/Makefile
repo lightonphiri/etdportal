@@ -73,6 +73,7 @@ install:
 	install -o $(TOMCAT) -v -m 644 WEB-INF/lib/mysql-connector-java.jar $(WEBAPPS)/$(APPNAME)/WEB-INF/lib/
 	install -o $(TOMCAT) -v -m 644 WEB-INF/lib/lucene-analyzers.jar $(WEBAPPS)/$(APPNAME)/WEB-INF/lib/
 	install -o $(TOMCAT) -v -m 644 WEB-INF/lib/lucene-core.jar $(WEBAPPS)/$(APPNAME)/WEB-INF/lib/
+	install -o $(TOMCAT) -v -m 644 WEB-INF/lib/xalan.jar $(WEBAPPS)/$(APPNAME)/WEB-INF/lib/
 
 	install -o $(TOMCAT) -v -d $(WEBAPPS)/$(APPNAME)/WEB-INF/classes
 	for comp in $(TARGETS); do \
