@@ -28,6 +28,8 @@
 
 <xsl:template match="oai_marc:varfield[@id='520']"><!--Abstract-->
     <index:description><xsl:value-of select="oai_marc:subfield[@label='a']"/></index:description>
-</xsl:template> 
+</xsl:template>
 
 </xsl:stylesheet>
+
+

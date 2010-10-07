@@ -1,6 +1,6 @@
 /*
 *@author TATENDA M. CHIPEPEREKWA
-*@date 29/04/2009
+*@date 2010-07-25
 *The ResumptionToken Class forms an object that represents the
 *resumptionToken returned by the repository in a list request.
 *
@@ -9,10 +9,10 @@
 
     public class ResumptionToken
    {
-      private String token;			//the resumption token itself
+      private String token;				//the resumption token itself
       private String expirationDate;	//indicates when the resumption token ceases to be valid
-      private int completeListSize;	//the cardinality of the complete list
-      private int cursor;			//a count of the number of elements of the complete list thus far returned.
+      private int completeListSize;		//the cardinality of the complete list
+      private int cursor;					//a count of the number of elements of the complete list thus far returned.
    
        public ResumptionToken()
       {

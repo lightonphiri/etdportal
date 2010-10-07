@@ -71,7 +71,7 @@ public class ListRecords extends Response
             }else
             {
                 //initialize default 'until' date - a few hundred years in the future!                
-                until = "2500-00-00T00:00:00Z";
+                until = "2500-01-01T00:00:00Z";
             }   
             if(!badDates)
             {//actually do the search etc here. Everything up till here was just testing to see if args are ok

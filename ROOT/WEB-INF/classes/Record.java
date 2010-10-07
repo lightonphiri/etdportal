@@ -15,74 +15,80 @@
    import org.w3c.dom.Document;
     public class Record
    {
-		private String repository_identifier;		//Documents repository identifier
-		private String identifier;			//Documents metadata identifier
-      		private List<String> titles;			//Document Title(s)
-     		private List<String> creators;			//Document Creator(s)
-      		private String record_date;
-	        private String description;			//of the record
-		private List<String> subjects;			//Subjects discussed
-		private Boolean status;				//Stores the deleted attribute of a record
-		private String type;				//the document type
-		private String format;				//the file format
-		private String xmlFormat;
-		private List<String> metadataFormats;		//list of the records metadata formats in a repository	
-		private List<Document> metadataRecords;		//stores a list of the record in its different metadataFormats in DOM form
-		private String portalXML;			//stores the string representation of all the metadata formats of the record
-		private String recordTitle;
-		private Document record_header;			//stores the header for the document returned in the ListIdentifiers request
-		public Boolean error;
-  
-/**
-*Default constructor.
-*/
+      private String repository_identifier;		//Documents repository identifier
+      private String affiliation;					//The institution from which the record was harvested
+      private String identifier;						//Documents metadata identifier
+      private List<String> titles;					//Document Title(s)
+      private List<String> creators;				//Document Creator(s)
+      private String record_date;
+      private String description;				
+      private List<String> subjects;				//Subjects discussed
+      private Boolean status;							//Stores the deleted attribute of a record
+      private String type;								//the document type
+      private String format;							//the file format
+      private String xmlFormat;
+      private List<String> metadataFormats;			//list of the records metadata formats in a repository	
+      private List<Document> metadataRecords;		//stores a list of the record in its different metadataFormats in DOM form
+      private String portalXML;							//stores the string representation of all the metadata formats of the record
+      private String recordTitle;
+      private Document record_header;					//stores the header for the document returned in the ListIdentifiers request
+      public Boolean error;
+   
+   /**
+   *Default constructor.
+   */
        public Record()
       {
-		repository_identifier="";  		//Documents repository identifier
-		identifier="";				//Document Title
-      		titles=new ArrayList<String>();		//Document Title(s)
-     		creators=new ArrayList<String>();		//Document Creator(s)
-      		record_date="1900-01-01";
-	        description="";				//of the record
-		subjects=new ArrayList<String>();		//Subjects discussed
-		type="";					//the document type
-		format="";					//the file format
-                status=false;					//deleted
-		xmlFormat="";
-		metadataFormats=new ArrayList<String>();		//list of the records metadata formats in a repository	
-		metadataRecords=new ArrayList<Document>();
-		portalXML="";
-		recordTitle="";
+         repository_identifier="";  		
+			identifier="";				
+			titles=new ArrayList<String>();		
+         creators=new ArrayList<String>();	
+         record_date="1900-01-01";
+         description="";				
+         subjects=new ArrayList<String>();		
+         type="";					
+         format="";					
+         status=false;				
+         xmlFormat="";
+         metadataFormats=new ArrayList<String>();			
+         metadataRecords=new ArrayList<Document>();
+         portalXML="";
+         recordTitle="";
+         affiliation="Not Set";
       }
    	 
       //Mutator methods
-
-      public void setRecordHeader(Document m_header)
+   
+       public void setRecordHeader(Document m_header)
       {
-        record_header=m_header;
+         record_header=m_header;
       }
-      public void setPortalXML(String m_portalXML)
+       public void setAffiliation(String m_affiliation)
       {
-        portalXML=m_portalXML;
+         affiliation=m_affiliation;
       }
-      public void setIdentifier(String m_identifier)
+       public void setPortalXML(String m_portalXML)
       {
-        identifier=m_identifier;
+         portalXML=m_portalXML;
       }
-      public void setRepositoryIdentifier(String m_identifier)
+       public void setIdentifier(String m_identifier)
       {
-        repository_identifier=m_identifier;
+         identifier=m_identifier;
       }
-
-      public void setXmlFormat(String param)
+       public void setRepositoryIdentifier(String m_identifier)
       {
-        xmlFormat=param;
+         repository_identifier=m_identifier;
       }
-      public void setMetadataFormats(List<String> m_formats)
+   
+       public void setXmlFormat(String param)
+      {
+         xmlFormat=param;
+      }
+       public void setMetadataFormats(List<String> m_formats)
       {
          metadataFormats=m_formats;
       }	 
-      public void setMetadataRecords(List<Document> m_records)
+       public void setMetadataRecords(List<Document> m_records)
       {
          metadataRecords=m_records;
       }	 
@@ -90,16 +96,16 @@
       {
          titles=m_title;
       }
-	public void setRecordTitle(String m_record)
+       public void setRecordTitle(String m_record)
       {
          recordTitle=m_record;
       }
-	public void setType(String m_type)
+       public void setType(String m_type)
       {
          type=m_type;
       }	
-
-	public void setFormat(String m_format)
+   
+       public void setFormat(String m_format)
       {
          format=m_format;
       }	
@@ -121,55 +127,59 @@
          description=m_description;
       }
    
-      public void setSubjects(List<String> m_subjects)
+       public void setSubjects(List<String> m_subjects)
       {		 
          subjects=m_subjects;
       }
-		
-		
-	public void setStatus(Boolean m_status)
+   	
+   	
+       public void setStatus(Boolean m_status)
       {		 
-		   status=m_status;
+         status=m_status;
       }
-
-	//Accessor methods
-      public Document getRecordHeader()
+   
+   //Accessor methods
+       public Document getRecordHeader()
       {
-        return record_header;
+         return record_header;
       }
-	public String getType()
+       public String getType()
       {
          return type;
       }
-
-      public String getXmlFormat()
+   
+       public String getXmlFormat()
       {
-        return xmlFormat;
+         return xmlFormat;
       }	
-
-	public String getFormat()
+   
+       public String getFormat()
       {
          return format;
       }
+       public String getAffiliation()
+      {
+         return affiliation;
+      }
    
-      public String getIdentifier()
+       public String getIdentifier()
       {		 
-          return identifier;
+         return identifier;
       }
-      public String getPortalXML()
+       public String getPortalXML()
       {		 
-          return portalXML;
+         return portalXML;
       } 
-      public String getRepositoryIdentifier()
+       public String getRepositoryIdentifier()
       {		 
-          return repository_identifier;
+         return repository_identifier;
       }
-	
+   
        public List<String> getTitle()
       {
          return titles;
       }
-      public String getRecordTitle()
+       public String getRecordTitle()
       {
          return recordTitle;
       }
@@ -177,13 +187,13 @@
       {
          return metadataFormats;
       }
-      public List<Document> getMetadataRecords()
+       public List<Document> getMetadataRecords()
       {
          return metadataRecords;
       }
        public List<String> getCreators()
       {		 
-          return creators;
+         return creators;
       }
    	 
    	 
@@ -195,89 +205,90 @@
    	 
        public String getDescription()
       {		 
-	return description;
+         return description;
       }
    
-      public List<String> getSubjects()
+       public List<String> getSubjects()
       {		 
-	return subjects;
+         return subjects;
       }
    
-			
-	 public Boolean getStatus()
+   		
+       public Boolean getStatus()
       {		 
-			return status;
+         return status;
       }
-
-/**
-*Checks if a record is valid i.e. it has a certain number of fields
-*including the title field.
-*@return <code>true</code> if all fields are available,otherwise <code>false</code>
-*/
-	public Boolean checkValidRecord()
-	{
-
-		if(getTitle().equals("")||getCreators().equals("")||getSubjects().equals(""))
-		{
-			return false;
-		}else
-		{
-			return true;
-		}
-
-	}
-		
-		public String toString()
-		{
-		
-		String fullRecord="";
-		
-			
-		//fullRecord+=  //"Identifier: "+ getIdentifier() + "\n"+
-		fullRecord+="<b>Title:</b>&nbsp;&nbsp; \n";
-
-		if(getTitle()!=null)//if there are any creators
-		{
-			for(int x = 0;x<getTitle().size();x++)
-			{
-				fullRecord+="<big>"+getTitle().get(x)+"</big></br>\n";
-	
-			}
-		}
-
-              fullRecord+="<b>Type:</b>&nbsp;&nbsp;" +getType()+"</br>\n"+
-			    "<b>Format:</b>&nbsp;&nbsp; "+getFormat()+"</br>\n"+
-			    "<b>Creators:</b>&nbsp;&nbsp; \n";	
-
-		if(getCreators()!=null)//if there are any creators
-		{
-			for(int x = 0;x<getCreators().size();x++)
-			{	
-				if(x>0)
-				    fullRecord+=";";
-				fullRecord+=getCreators().get(x)+"\n";	
-			}
-		}
-
-		fullRecord+="</br><b>Subjects:</b>&nbsp;&nbsp;\n";
-
-		if(getSubjects()!=null)//if there are any subjects
-		{
-			for(int x = 0;x<getSubjects().size();x++)
-			{
-				if(x>0)
-				    fullRecord+=";";
-				fullRecord+=getSubjects().get(x)+"\n";	
-			}
-		}
-
-		fullRecord+= "</br><b>Date:</b>&nbsp;&nbsp; " + getDate()+"</br>\n"+
-			     "<b>Description:</b>&nbsp;&nbsp; "+getDescription()+"\n";
-    				  		  
-		return  fullRecord;  
-				  
-				
-    	
-		}   
+   
+   /**
+   *Checks if a record is valid i.e. it has a certain number of fields
+   *including the title field.
+   *@return <code>true</code> if all fields are available,otherwise <code>false</code>
+   */
+       public Boolean checkValidRecord()
+      {
+      
+         if(getTitle().equals("")||getCreators().equals("")||getSubjects().equals(""))
+         {
+            return false;
+         }
+         else
+         {
+            return true;
+         }
+      
+      }
+   	
+       public String toString()
+      {
+      
+         String fullRecord="";
+      
+      	
+      //fullRecord+=  //"Identifier: "+ getIdentifier() + "\n"+
+         fullRecord+="<b>Title:</b>&nbsp;&nbsp; \n";
+      
+         if(getTitle()!=null)//if there are any creators
+         {
+            for(int x = 0;x<getTitle().size();x++)
+            {
+               fullRecord+="<big>"+getTitle().get(x)+"</big></br>\n";
+            
+            }
+         }
+      
+         fullRecord+="<b>Type:</b>&nbsp;&nbsp;" +getType()+"</br>\n"+
+             "<b>Format:</b>&nbsp;&nbsp; "+getFormat()+"</br>\n"+
+             "<b>Creators:</b>&nbsp;&nbsp; \n";	
+      
+         if(getCreators()!=null)//if there are any creators
+         {
+            for(int x = 0;x<getCreators().size();x++)
+            {	
+               if(x>0)
+                  fullRecord+=";";
+               fullRecord+=getCreators().get(x)+"\n";	
+            }
+         }
+      
+         fullRecord+="</br><b>Subjects:</b>&nbsp;&nbsp;\n";
+      
+         if(getSubjects()!=null)//if there are any subjects
+         {
+            for(int x = 0;x<getSubjects().size();x++)
+            {
+               if(x>0)
+                  fullRecord+=";";
+               fullRecord+=getSubjects().get(x)+"\n";	
+            }
+         }
+      
+         fullRecord+= "</br><b>Date:</b>&nbsp;&nbsp; " + getDate()+"</br>\n"+
+              "<b>Description:</b>&nbsp;&nbsp; "+getDescription()+"\n";
+      			  		  
+         return  fullRecord;  
+      		  
+      		
+      
+      }   
    
    }

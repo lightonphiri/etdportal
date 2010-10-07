@@ -41,7 +41,7 @@ CONFIGFILES = viewsnippets.xsl config.xml dc_index.xsl dc_snippet.xsl \
           dc.xsl etdms_index.xsl etdms_snippet.xsl etdms.xsl \
           index.xsl install_db.sql marc_index.xsl marc_snippet.xsl \
           marc.xsl rfc1807_index.xsl rfc1807_snippet.xsl rfc1807.xsl \
-          viewfull.xsl viewsnippets.xsl
+          viewfull.xsl viewsnippets.xsl stopwords.xml
 
 all: $(TARGETS)
 

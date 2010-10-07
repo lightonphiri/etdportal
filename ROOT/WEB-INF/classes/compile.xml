@@ -1,0 +1,26 @@
+<project name="portal" default="deploy" basedir=".">
+  <path id="class.path">
+    <fileset dir="/usr/share/java/">
+      <include name="lucene-core-2.2.0.jar"/>
+      <include name="servlet-api-2.4.jar"/>
+      <include name="mysql-connector-java.jar"/>
+      <include name="lucene-analyzers.jar"/>
+      <include name="lucene-analyzers-2.2.0.jar"/>
+      <include name="lucene-core.jar"/>
+      <include name="mysql-connector-java-5.1.5.jar"/>
+    </fileset>
+  </path>
+   <target name="init">
+      <property name="sourceDir" value="." />
+      <property name="outputDir" value="." />
+      <property name="deployPortal" value="."/>
+   </target>
+   <target name="compile">
+     <javac srcdir="." destdir=".">
+	<classpath refid="class.path"/>
+     </javac>
+   </target>
+   <target name="deploy" depends="compile,init">
+     <copydir src="." dest="."/>
+    </target>
+</project>

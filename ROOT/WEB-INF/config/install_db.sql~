@@ -1,12 +1,12 @@
-drop table Title;
-drop table Creator;
-drop table Subject;
-drop table Description;
-drop table RecordDate;
-drop table RecordXML;
-drop table RecordTitle;
-drop table Type;
-drop table Format;
+drop table if exists Title;
+drop table if exists Creator;
+drop table if exists Subject;
+drop table if exists Description;
+drop table if exists RecordDate;
+drop table if exists RecordXML;
+drop table if exists RecordTitle;
+drop table if exists Type;
+drop table if exists Format;
 
 create table	Title
 (title_etd varchar(255),

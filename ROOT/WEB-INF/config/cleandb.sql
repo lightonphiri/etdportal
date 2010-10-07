@@ -5,7 +5,7 @@ drop table Description;
 drop table RecordDate;
 drop table RecordXML;
 drop table RecordTitle;
-drop table 'Type';
+drop table Type;
 drop table Format;
 
 create table	Title
@@ -38,7 +38,7 @@ create table Description
  primary key (oai_identifier)
  );
 
-create table 'Type'
+create table Type
 (type_etd varchar(255),
  oai_identifier varchar(255),
  constraint type_oai_identifier foreign key (oai_identifier) references Title(oai_identifier),

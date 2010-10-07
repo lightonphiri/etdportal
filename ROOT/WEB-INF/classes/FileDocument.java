@@ -1,7 +1,7 @@
 /**
 *Creates Lucene Documents for indexing a metadata record.
 *@author Tatenda M. Chipeperekwa
-*@date 25/06/09
+*@date 2010-07-25
 *
 */
   import java.io.*;
@@ -14,13 +14,9 @@
   import javax.xml.parsers.DocumentBuilder;
   import javax.xml.parsers.DocumentBuilderFactory;
   import javax.xml.parsers.ParserConfigurationException;
-
-  // import org.w3c.dom.Document;
   import org.w3c.dom.Element;
   import org.w3c.dom.NodeList;
-
   import org.xml.sax.SAXException;
-
   import java.util.*;	
 
 
@@ -41,8 +37,10 @@
 		// Add the identifier of the file as a field named "repository_identifier".  Use a field that is 
 		// indexed (i.e. searchable), but don't tokenize the field into words.
 		record_document.add(new Field("repository_identifier", record_to_convert.getRepositoryIdentifier(), Field.Store.YES,Field.Index.TOKENIZED ));
+		record_document.add(new Field("repository_identifier_updater", record_to_convert.getRepositoryIdentifier(), Field.Store.YES,Field.Index.UN_TOKENIZED ));
+
 		
-		String full_doc = "";				//String representation of record
+		String full_doc = "";								//String representation of record
 		InputStream record_to_transform = null;		//InputStream used for transformations on the records xml format	
 		
 
@@ -93,8 +91,9 @@
 		}
 
 		record_document.add(new Field("description",fields.getDescription(), Field.Store.YES, Field.Index.TOKENIZED));
-		//System.out.println(fields.getDescription());   
 
+		record_document.add(new Field("affiliation",record_to_convert.getAffiliation(), Field.Store.YES, Field.Index.TOKENIZED));
+		
 		record_document.add(new Field("portalXML",record_to_convert.getPortalXML(), Field.Store.YES, Field.Index.TOKENIZED));
 	
 		} catch (UnsupportedEncodingException e) {
@@ -124,8 +123,8 @@
       	//creating a new Record
          Record new_record = new Record();
       	
-	       //creating temporary varibles to store the record information
-		List<String> titles=new ArrayList<String>();     //Document Title(s)
+	      //creating temporary varibles to store the record information
+		   List<String> titles=new ArrayList<String>();     //Document Title(s)
      		List<String> creators=new ArrayList<String>();	//Document Creator(s)
       	        String description="";         	              //of the record
 	
@@ -228,7 +227,7 @@
             //parse using builder to get DOM representation of the XML file
             records = recordsBuilder.parse(record_to_transform);
             
-	  //get the root elememt
+	       //get the root elememt
           docEle = records.getDocumentElement();
          
          }
