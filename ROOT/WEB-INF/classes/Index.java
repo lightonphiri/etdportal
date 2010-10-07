@@ -214,7 +214,7 @@ public class Index extends HttpServlet
       }
       else
       {
-         Document summary = getDocument ("http://localhost:8180/summary/");
+         Document summary = getDocument ("http://localhost:8080/summary/");
       
          String collectionStatistics = "";
          int counter = 0;
@@ -243,7 +243,7 @@ public class Index extends HttpServlet
             counter += Integer.parseInt (count);
          }         
          
-         Document rss = getDocument ("http://localhost:8180/RSS/");
+         Document rss = getDocument ("http://localhost:8080/RSS/");
 
          String recentEntries = "";
          NodeList items = rss.getDocumentElement ().getElementsByTagName ("item");

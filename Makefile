@@ -4,6 +4,8 @@
 
 # variables
 
+TOMCAT = tomcat6
+
 # rules
 
 .java.class:
@@ -11,23 +13,27 @@
 
 # targets
 
-COMPONENTS = harvester OAI-PMH
+COMPONENTS = harvester ROOT
 	
 all:
 	for comp in $(COMPONENTS); do \
 	   $(MAKE) -C $$comp; \
 	done
-	@Echo Finis.
+	@echo Finis.
 	
 clean:
 	for comp in $(COMPONENTS); do \
-	   $(MAKE) -C $$comp; clean \
+	   $(MAKE) -C $$comp clean; \
 	done
-	@Echo Finis.
+	@echo Finis.
 	
 install:
 	for comp in $(COMPONENTS); do \
-	   $(MAKE) -C $$comp; install \
+	   $(MAKE) -C $$comp install; \
 	done
-	@Echo Finis.
-
+	
+	install -o $(TOMCAT) -v -m 644 installation/etc_apache2_sites-available_etd /etc/apache2/sites-available/etd
+#	install -o $(TOMCAT) -v -m 644 installation/etc_tomcat5.5_Catalina_localhost_ROOT.xml /etc/$(TOMCAT)/Catalina/localhost/ROOT.xml
+	install -o $(TOMCAT) -v -m 644 installation/etc_tomcat5.5_policy.d_04webapps.policy /etc/$(TOMCAT)/policy.d/04webapps.policy
+	
+	@echo Finis.

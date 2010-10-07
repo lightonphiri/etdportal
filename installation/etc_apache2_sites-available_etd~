@@ -1,5 +1,5 @@
 <VirtualHost *>
-        ServerName localhost
+        ServerName etd.cs.uct.ac.za
 	ServerAdmin hussein@cs.uct.ac.za
 	
 	DocumentRoot /home/etd/
@@ -28,6 +28,6 @@
     RewriteEngine On
     RewriteLog "/var/log/apache2/rewrite.log"
 #    RewriteLogLevel 5
-    RewriteRule ^(/.*) http://localhost:8080/$1 [P]
+    RewriteRule ^(/.*) http://mufasa.cs.uct.ac.za:8180/$1 [P]
 
 </VirtualHost>

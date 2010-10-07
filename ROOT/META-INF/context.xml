@@ -2,6 +2,6 @@
     Context configuration file for the Tomcat Web App Root
 -->
 
-<Context path="/" docBase="/usr/share/tomcat6/webapps/ROOT" 
+<Context path="/" docBase="/var/lib/tomcat6/webapps/ROOT"
    debug="0" privileged="true" allowLinking="true">
 </Context>
