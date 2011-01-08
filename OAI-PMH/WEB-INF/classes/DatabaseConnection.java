@@ -24,7 +24,7 @@ public class DatabaseConnection
     {
         formatSpecList = formatList;
         Class.forName("com.mysql.jdbc.Driver");
-        url = "jdbc:mysql:"+address;
+        url = address;
         this.username = username;
         this.password = password;
         con = DriverManager.getConnection (url, username, password);              

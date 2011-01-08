@@ -10,16 +10,19 @@ import java.sql.SQLException;
 import javax.servlet.http.*;
 import javax.servlet.*;
 import javax.xml.parsers.ParserConfigurationException;
+
 public class OAI_servlet extends HttpServlet
 {    
-    //establish a configuration object that will be passed around the rest
-    //of the program.
-    private boolean doServe;
     //doServe is a variable that tracks whether the servlet has sufficient data
     //to provide a OAI-PMH style response.
-    private Config settings;
+    private boolean doServe;
+
+    //establish a configuration object that will be passed around the rest
+    //of the program.
+//    private Config settings;
     
     //constructor - code here is only run once, at the startup of the webserver
+    @Override
     public void init ( ServletConfig config )
      throws ServletException
     {
@@ -61,15 +64,15 @@ public class OAI_servlet extends HttpServlet
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException
     {
-        //generic response to request
-        //instantiate as a particular type once we analyse the verb
+        //declare our response class, which we will instantiate as a particular
+        //subclass of response depending on what our verb is.
         Response verbResponse;
         //get the printWriter object with which we will print out data
+        response.setContentType ("text/xml");
         PrintWriter out = response.getWriter();       
         if(doServe)
             {
-            //declare our response class, which we will instantiate as a particular
-            //subclass of response depending on what our verb is.
+            
             //============ProcessRequest==================
 
             //Find out which of the 6 basic operations we are serving

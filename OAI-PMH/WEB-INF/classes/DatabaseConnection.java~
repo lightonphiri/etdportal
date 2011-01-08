@@ -469,12 +469,16 @@ public class DatabaseConnection
                         {
                             sqlResponse.append("LIS!");
                         }
+                        else
+                            sqlResponse.append("LI!");
                     }else
                     {
                         if(sets)
                         {
                             sqlResponse.append("LRS!");
                         }
+                        else
+                            sqlResponse.append("LR!");
                     }
                     sqlResponse.append(from);
                     sqlResponse.append("!");

@@ -36,7 +36,6 @@ TARGETS = WEB-INF/classes/CheckParams.class \
           WEB-INF/classes/OAI_servlet.class \
           WEB-INF/classes/Response.class \
           WEB-INF/classes/ResponseFormatter.class \
-          WEB-INF/classes/SqlManager.class \
           WEB-INF/classes/StorageFormat.class \
 
 all: $(TARGETS)
