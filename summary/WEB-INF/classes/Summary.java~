@@ -76,12 +76,12 @@ public class Summary extends HttpServlet
             // check to see if the base node has the correct name
             if(root.getNodeName().equals("configuration"))
             {
-                // get the descriptive configuration values 
+/*                // get the descriptive configuration values 
                 adminEmail = getXMLValue (root, "repository/adminEmail", "someone@somewhere.org");
                 repositoryName = getXMLValue (root, "repository/repositoryName", "Default repository name");
                 repositoryURL = getXMLValue (root, "repository/description/URL", "http://somewhere.org/");
                 repositoryDescription = getXMLValue (root, "repository/description/text", "Default repository description");
-                
+*/                
                 // get the database connection details
                 dbAddress = getXMLValue (root, "repository/database/URL", "localhost/dba");
                 dbUsername = getXMLValue (root, "repository/database/username", "");

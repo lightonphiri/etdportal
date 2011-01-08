@@ -168,7 +168,7 @@ public class Summary extends HttpServlet
                     //that put it there.
                         finalResponse.append ("<source>");
                         finalResponse.append ("<url>"+rs.getString ("source")+"</url>");
-                        finalResponse.append ("<count>"+rs.getString ("count(id)")+"</count>");
+                        finalResponse.append ("<count>"+rs.getString ("count(distinct id)")+"</count>");
                         finalResponse.append ("</source>");
                         
                 }
