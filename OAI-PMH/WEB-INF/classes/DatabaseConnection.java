@@ -20,14 +20,15 @@ public class DatabaseConnection
     private String url, username, password;
     
     /*Constructor class. Establishes a connection to the sql server and receives the formatList*/
-    public DatabaseConnection(String address, String username, String password, MetadataFormat [] formatList) throws ClassNotFoundException, SQLException
+    public DatabaseConnection(String address, String username, String password, MetadataFormat [] formatList, String databaseDriver ) 
+     throws ClassNotFoundException, SQLException
     {
         formatSpecList = formatList;
-        Class.forName("com.mysql.jdbc.Driver");
+        Class.forName (databaseDriver);
         url = address;
         this.username = username;
         this.password = password;
-        con = DriverManager.getConnection (url, username, password);              
+        con = DriverManager.getConnection (url, username, password);
     }
 
     /*

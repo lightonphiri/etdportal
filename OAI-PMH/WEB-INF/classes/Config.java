@@ -75,7 +75,7 @@ public class Config
         try
         {
             //declare the db variables
-            String dbAddress, dbUsername, dbPassword;
+            String dbAddress, dbUsername, dbPassword, dbDriver;
             //read in the xml config file
             DocumentBuilderFactory docBuilderFac = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docBuilderFac.newDocumentBuilder();
@@ -98,6 +98,7 @@ public class Config
                 dbAddress = getXMLValue (root, "repository/database/URL", "localhost/dba");
                 dbUsername = getXMLValue (root, "repository/database/username", "");
                 dbPassword = getXMLValue (root, "repository/database/password", "");
+                dbDriver = getXMLValue (root, "repository/database/driver", "com.mysql.jdbc.Driver");
             
                 // get the metadata formats
                 Element metadataFormats = getXMLElement (root, "repository/metadataFormats");
@@ -119,7 +120,7 @@ public class Config
             //instantiate the database connection
             //if this fails then we cannot continue with the response serving
             //hence errors are thrown back to the OAI_servlet
-            dbCon = new DatabaseConnection(dbAddress, dbUsername, dbPassword, formatList);
+            dbCon = new DatabaseConnection(dbAddress, dbUsername, dbPassword, formatList, dbDriver);
             
         }//exceptions
         catch(SAXException e)

@@ -13,7 +13,7 @@ JFLAGS = -classpath WEB-INF/lib/mysql-connector-java.jar:$(SERVLETAPI)/servlet-a
 
 JAVAC = javac
 
-WEBAPPS = /usr/share/$(TOMCAT)/webapps
+WEBAPPS = /var/lib/$(TOMCAT)/webapps
 APPNAME = RSS
 
 # rules

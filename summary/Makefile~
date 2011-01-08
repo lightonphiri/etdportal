@@ -14,7 +14,7 @@ JFLAGS = -classpath WEB-INF/lib/mysql-connector-java.jar:$(SERVLETAPI)/servlet-a
 JAVAC = javac
 
 WEBAPPS = /var/lib/$(TOMCAT)/webapps
-APPNAME = RSS
+APPNAME = summary
 
 # rules
 
@@ -23,7 +23,7 @@ APPNAME = RSS
 
 # targets
 
-TARGETS = WEB-INF/classes/RSS.class
+TARGETS = WEB-INF/classes/Summary.class
           
 all: $(TARGETS)
 
