@@ -14,7 +14,7 @@ JFLAGS = -classpath WEB-INF/lib/mysql-connector-java.jar:$(SERVLETAPI)/servlet-a
 JAVAC = javac
 
 WEBAPPS = /var/lib/$(TOMCAT)/webapps
-APPNAME = ROOT
+APPNAME = portal
 
 # rules
 
@@ -52,8 +52,8 @@ clean:
 	@echo Finis.
 	
 install:
-	install -o $(TOMCAT) -v -d $(WEBAPPS)/$(APPNAME)/META-INF
-	install -o $(TOMCAT) -v -m 644 META-INF/context.xml $(WEBAPPS)/$(APPNAME)/META-INF/
+#	install -o $(TOMCAT) -v -d $(WEBAPPS)/$(APPNAME)/META-INF
+#	install -o $(TOMCAT) -v -m 644 META-INF/context.xml $(WEBAPPS)/$(APPNAME)/META-INF/
 
 	install -o $(TOMCAT) -v -d $(WEBAPPS)/$(APPNAME)/style
 	install -o $(TOMCAT) -v -m 644 style/style.css $(WEBAPPS)/$(APPNAME)/style/

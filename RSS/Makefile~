@@ -34,9 +34,9 @@ clean:
 	@echo Finis.
 	
 install:
-	install -o $(TOMCAT) -v -d $(WEBAPPS)/$(APPNAME)/WEB-INF/config
+#	install -o $(TOMCAT) -v -d $(WEBAPPS)/$(APPNAME)/WEB-INF/config
 	install -o $(TOMCAT) -v -m 644 WEB-INF/web.xml $(WEBAPPS)/$(APPNAME)/WEB-INF/
-	install -o $(TOMCAT) -v -m 644 WEB-INF/config/config.xml $(WEBAPPS)/$(APPNAME)/WEB-INF/config/
+#	install -o $(TOMCAT) -v -m 644 WEB-INF/config/config.xml $(WEBAPPS)/$(APPNAME)/WEB-INF/config/
 
 	install -o $(TOMCAT) -v -d $(WEBAPPS)/$(APPNAME)/WEB-INF/lib
 	install -o $(TOMCAT) -v -m 644 WEB-INF/lib/mysql-connector-java.jar $(WEBAPPS)/$(APPNAME)/WEB-INF/lib/

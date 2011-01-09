@@ -1,0 +1,7 @@
+<!--
+    Context configuration file for the Tomcat Web App Root
+-->
+
+<Context path="" docBase="portal/"
+   debug="0" privileged="true" allowLinking="true" reloadable="true">
+</Context>
