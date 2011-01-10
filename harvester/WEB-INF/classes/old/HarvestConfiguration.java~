@@ -1,6 +1,3 @@
-
-
-
 /* import declarations */
 import java.util.Properties;
 import java.io.FileInputStream;
@@ -16,6 +13,7 @@ import java.sql.Timestamp;
  * store harvest properties.
  * @author Alexander van Olst
  * @author Lawrence Webley
+ * @author Hussein Suleman
  * @version 1.9.6.27
  */
 public class HarvestConfiguration{
@@ -29,12 +27,12 @@ public class HarvestConfiguration{
   /* Instance variables */
   /** location of settings for class */
   private String settingsFile;
-  /** the name of the configuration file that is being used*/
-  private String harvestFileName;
   /**  status of the harvest this configuration represents*/
   private String harvestStatus;
-  /** Set name of harvest */
-  private String harvestName;
+  /**  Id of repository */
+  private String ID;
+  /**  name of repository */
+  private String name;
   /**  url to harvest from */
   private String baseURL;
   /** the metadata format to harvest */
@@ -42,13 +40,15 @@ public class HarvestConfiguration{
   /** last date harvesed */
   private String dateFrom;
   /** the URL of the database to harvest to */
-  private String databaseURL;
+  private String dbAddress;
   /** the username to connect to the database with  */
-  private String databaseUser;
+  private String dbUsername;
   /** the plaintext password for the database */
-  private String databasePassword;
+  private String dbPassword;
+  /** the driver for the database */
+  private String dbDriver;
   /** the set to harvest (this will be an empty string if no set is to be specified) */
-  private String harvestSetSpec;
+  private String setSpec;
   /** the time between harvests (milliseconds)*/
   private long harvestInterval;
   /** whether the harvest is currently running */
@@ -62,31 +62,55 @@ public class HarvestConfiguration{
   public boolean isLoaded;
 
   /**
-   * Constructor to set up the instance variables and load up the harverst and database
+   * Constructor to set up the instance variables and load up the harvest and database
    * properties
    * @param target the file name of the repository configuration that is to be harvested
    */
-  public HarvestConfiguration(String target){ // create an instance of this object that will store the configuration of the harvest specified in target
+   public HarvestConfiguration ( String targetID )
+   {
+      isLoaded = true;
+      cursor = 0;
+      completeListSize = -1;
 
-        isLoaded = true;
-	harvestFileName = target; // set the filename instance variable
-        cursor = 0;
-        completeListSize = -1;
+      // find relative position of settings file
+      settingsFile = "/etc/etdportal/config.xml";
 
-	loadHarvestProperties(); // load the harvest properties
-	loadDatabaseProperties(); // load the database properties
-	     
-        settingsFile = new Settings ().getConfigDir () + "config.xml";
-  }
+      loadDatabaseProperties(); // load the database properties
+      loadHarvestProperties(targetID); // load the harvest properties
+   }
+   
+   // Constructor for new harvest entry
+   public HarvestConfiguration ( String anID, String aName, String aBaseURL, String aMetadataForamt, String aSetSpec, String aDateFrom, long aHarvestInterval )
+   {
+      ID = anID;
+      name = aName;
+      baseURL = aBaseURL;
+      metadataFormat = aMetadataFormat;
+      setSpec = aSetSpec;
+      dateFrom = aDateFrom;
+      harvestInterval = aHarvestInterval;
+      
+      cursor = 0;
+      completeListSize = -1;
+      isRunning = false;
+      
+      // find relative position of settings file
+      settingsFile = "/etc/etdportal/config.xml";
+
+      loadDatabaseProperties(); // load the database properties      
+   }
 
   /**
    * Loads the <code>xml</code> config file representing the repository settings
    * using a <code>Properties</code> object. Stores them in local private variables.
    */
-  private void loadHarvestProperties(){
+   private void loadHarvestProperties ( String targetID ) 
+   {
+   
+   
      Properties harvestSettings = new Properties(); // Properties object that will be used to load the harvest settings (source, metadataformats)
 
-     FileInputStream harvestSettingsFileStream = null;   
+     FileInputStream harvestSettingsFileStream = null;
      
      try {
        harvestSettingsFileStream = new FileInputStream(harvestFileName); // create inputstream for settingsFile
@@ -117,45 +141,80 @@ public class HarvestConfiguration{
 	// we should now cancel this specific harvest
         isLoaded = false;
      }
-
-	
-
   }
+      
+    /**
+     * auxiliary method to get an Element from an XPath
+     */
+    public Element getXMLElement ( Element root, String xpath )
+    {
+       StringTokenizer st = new StringTokenizer (xpath, "/");
+       while (st.hasMoreTokens ())
+       {
+          NodeList nextLevel = root.getElementsByTagName (st.nextToken ());
+          if (nextLevel.getLength () == 0)
+             return null;
+          else
+             root = (Element)nextLevel.item(0);
+       }
+       return root;
+    }
+
+    /**
+     * auxiliary method to get a value from an XPath
+     */
+    public String getXMLValue ( Element root, String xpath, String defaultValue )
+    {
+       root = getXMLElement (root, xpath);
+       if (root == null)
+          return defaultValue;
+       NodeList values = root.getChildNodes ();
+       if (values.getLength () == 0)
+          return defaultValue;
+       return values.item(0).getNodeValue().trim();   
+    }
 
   /**
    * Method to load the database properties from the configuration file settings file
    */
-  private void loadDatabaseProperties(){ 
-
-     Properties databaseSettings = new Properties(); // Properties object that will be used to load the database settings
-     FileInputStream dbSettingsFileStream = null;   
-     
-     try {
-System.out.println ("!!!"+settingsFile);
-       dbSettingsFileStream = new FileInputStream(settingsFile); // create inputstream for settingsFile
-     } catch (Exception e){ // if there is an error loading the settingsFile, exit and print a message
-	System.out.println("Could not load database configuration from " + settingsFile + "."); // error message
-	System.out.println("Please make sure that the file exists and you are allowed access to it.");
-	isLoaded = false;
-     }
-
-     try {
-	databaseSettings.loadFromXML(dbSettingsFileStream); // try load the database settings from the file input stream
-
-	/* Load all the values from the file */	
-	databaseURL = databaseSettings.getProperty("databaseURL");
-	databaseUser = databaseSettings.getProperty("databaseUsername");
-	databasePassword = databaseSettings.getProperty("databasePassword");
-
-        dbSettingsFileStream.close(); // close the file stream
-     } catch (Exception e){ // if there is an error
-	System.out.println("Could not load database configuration from " + settingsFile + "."); //error message
-	System.out.println("Please make sure that the file is correctly formatted.");
-	isLoaded = false;
-     }
-
-
-  }
+   private void loadDatabaseProperties()
+   {
+      try
+      {
+         //declare the db variables
+         String dbAddress, dbUsername, dbPassword, dbDriver;
+         //read in the xml config file
+         DocumentBuilderFactory docBuilderFac = DocumentBuilderFactory.newInstance();
+         DocumentBuilder docBuilder = docBuilderFac.newDocumentBuilder();
+         Document doc = docBuilder.parse("/etc/etdportal/config.xml");
+            
+         //normalize text representation
+         doc.getDocumentElement().normalize();
+         Element root = doc.getDocumentElement();
+            
+         // check to see if the base node has the correct name
+         if(root.getNodeName().equals("configuration"))
+         {
+            // get the database connection details
+            dbAddress = getXMLValue (root, "repository/database/URL", "localhost/dba");
+            dbUsername = getXMLValue (root, "repository/database/username", "");
+            dbPassword = getXMLValue (root, "repository/database/password", "");
+            dbDriver = getXMLValue (root, "repository/database/driver", "com.mysql.jdbc.Driver");
+         }
+         else
+         {
+            System.out.println ("Incorrect config file structure.  Base Node has wrong name.");
+            isLoaded = false;
+         }
+      }//exceptions
+      catch(SAXException e)
+      {
+         isLoaded= false;
+         Exception x = e.getException();
+         if(x != null)
+            x.printStackTrace();
+      }       
+   }
 
   /**
    * Save the harvest configuration back to the original file

@@ -39,7 +39,7 @@ public class OAIScheduledHarvest
     }
   
   /**
-   * Runs a harvest on a given source file, as per the instructions contained within.
+   * Runs a harvest on a given source repository
    * <p>
    * Depending on the last harvest date, harvest interval and harvest status, this
    * method will determine whether or not a harvest needs to be run on a given
