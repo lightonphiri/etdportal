@@ -25,7 +25,31 @@
     <servlet-mapping>
        <servlet-name>default</servlet-name>
        <url-pattern>*.css</url-pattern>
-    </servlet-mapping>
-                      
+    </servlet-mapping>                      
+
+    <!-- Define a Security Constraint on this Application -->
+    <security-constraint>
+       <web-resource-collection>
+          <web-resource-name>Entire Application</web-resource-name>
+          <url-pattern>/*</url-pattern>
+       </web-resource-collection>
+       <auth-constraint>
+          <role-name>netdmanager</role-name>
+       </auth-constraint>
+    </security-constraint>
+                                        
+    <!-- Define the Login Configuration for this Application -->
+    <login-config>
+       <auth-method>BASIC</auth-method>
+       <realm-name>Application</realm-name>
+    </login-config>
+                                              
+    <!-- Security roles referenced by this web application -->
+    <security-role>
+       <description>
+          The role that is required to log in to the Manager Application
+       </description>
+       <role-name>netdmanager</role-name>
+    </security-role>
 
 </web-app>

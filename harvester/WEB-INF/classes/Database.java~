@@ -165,8 +165,7 @@ public class Database {
          stm.executeUpdate ("delete from Repositories where ID=\'"+rep.getID ()+"\'");
          stm.close ();
          stm = conn.createStatement ();
-         stm.executeUpdate ("delete from Archive where Source=\'"+rep.getID ()+"\'");
-         stm.close ();
+         stm.executeUpdate ("delete from Archive where ID=\"
          conn.close ();
       } catch ( Exception e ) {
          return false;

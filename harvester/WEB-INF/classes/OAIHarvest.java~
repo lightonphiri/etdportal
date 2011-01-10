@@ -31,7 +31,7 @@ public class OAIHarvest
          Database db = new Database (conf);
          if (db.connect ())
          {
-            String[] repoList = db.getRepositoryIDList ();
+            String[] repoList = db.getRepositoryList ();
             new OAIHarvest(conf, repoList);
          }
       }

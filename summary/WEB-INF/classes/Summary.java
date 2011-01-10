@@ -157,7 +157,7 @@ public class Summary extends HttpServlet
 
                 //create a statement and execute our query
                 Statement stm = con.createStatement();
-                ResultSet rs = stm.executeQuery("SELECT source,count(distinct id) FROM Archive group by source");
+                ResultSet rs = stm.executeQuery("select r.id,r.name,r.baseURL,count(distinct a.id) from Archive as a,Repositories as r where a.source=r.id group by a.source");
 
                 //list our most recent 5 records
                 while(rs.next())
@@ -167,8 +167,10 @@ public class Summary extends HttpServlet
                     //We assume everything in the database has been validated by the harvesting program 
                     //that put it there.
                         finalResponse.append ("<source>");
-                        finalResponse.append ("<url>"+rs.getString ("source")+"</url>");
-                        finalResponse.append ("<count>"+rs.getString ("count(distinct id)")+"</count>");
+                        finalResponse.append ("<id>"+rs.getString ("id")+"</id>");
+                        finalResponse.append ("<name>"+rs.getString ("name")+"</name>");
+                        finalResponse.append ("<url>"+rs.getString ("baseURL")+"</url>");
+                        finalResponse.append ("<count>"+rs.getString ("count(distinct a.id)")+"</count>");
                         finalResponse.append ("</source>");
                         
                 }

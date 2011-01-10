@@ -3,6 +3,7 @@ font-size:10pt;
 font-family:Arial;
 margin:0;
 padding:0;
+color:#555555;
 }
 
 #mainarea {
@@ -21,9 +22,10 @@ padding-top:5px;
 }
 
 h1, h1 a {
-font-size:15pt;
+font-size:13pt;
 color:#555555;
 margin:0;
+padding-top:20px;
 }
 
 h2 {
@@ -39,4 +41,31 @@ text-decoration:none;
 
 a:hover {
 text-decoration:underline;
+}
+
+table {
+   border: 1px solid black;
+   border-collapse: collapse;
+   margin-top: 10pt;
+   margin-bottom: 10pt;
+}
+
+tr th {
+   font-size: 10pt;
+   font-style: bold;
+   border: 1px solid black;
+   background: #8888ff;
+   margin-top: 2px;
+   margin-bottom: 2px;
+   padding: 1px;
+}
+
+tr td {
+   
+   font-size: 10pt;
+   font-style: normal;
+   border-bottom: 1px solid green;
+   margin-top: 2px;
+   margin-bottom: 2px;
+   padding: 2px;;
 }

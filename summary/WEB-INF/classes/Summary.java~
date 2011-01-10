@@ -157,7 +157,7 @@ public class Summary extends HttpServlet
 
                 //create a statement and execute our query
                 Statement stm = con.createStatement();
-                ResultSet rs = stm.executeQuery("SELECT source,count(distinct id) FROM Archive group by source");
+                ResultSet rs = stm.executeQuery("select r.name,a.source,count(distinct a.id) from Archive as a,Repositories as r where a.source=r.id group by a.source");
 
                 //list our most recent 5 records
                 while(rs.next())
@@ -168,7 +168,7 @@ public class Summary extends HttpServlet
                     //that put it there.
                         finalResponse.append ("<source>");
                         finalResponse.append ("<url>"+rs.getString ("source")+"</url>");
-                        finalResponse.append ("<count>"+rs.getString ("count(id)")+"</count>");
+                        finalResponse.append ("<count>"+rs.getString ("count(distinct id)")+"</count>");
                         finalResponse.append ("</source>");
                         
                 }

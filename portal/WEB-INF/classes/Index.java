@@ -293,22 +293,9 @@
             for ( int i=0; i<sources.getLength(); i++ )
             {
                Element source = (Element)(sources.item(i));
-               String url = source.getElementsByTagName ("url").item(0).getFirstChild().getNodeValue();
+               String name = source.getElementsByTagName ("name").item(0).getFirstChild().getNodeValue();
                String count = source.getElementsByTagName ("count").item(0).getFirstChild().getNodeValue();
-               collectionStatistics += "<tr><td>";
-               if ("http://etd.sun.ac.za/oai/request".equals (url))
-                  url = "Stellenbosch University";
-               else if ("http://pubs.cs.uct.ac.za/perl/oai2".equals (url))
-                  url = "UCT Computer Science";
-               else if ("http://upetd.up.ac.za/ETD-db/NDLTD-OAI2/oai.pl".equals (url))
-                  url = "University of Pretoria";
-               else if ("http://witsetd.wits.ac.za:8080/oai/request".equals (url))
-                  url = "University of Witwatersrand";
-               else if ("http://eprints.ru.ac.za/cgi/oai2".equals (url))
-                  url = "Rhodes University";         
-               else if ("http://ujdigispace.uj.ac.za:8080/dspace-oai/request".equals (url))
-                  url = "University of Johannesburg";         
-               collectionStatistics += "<tr><td>"+url+"</td><td>"+count+"</td></tr>";
+               collectionStatistics += "<tr><td>"+name+"</td><td>"+count+"</td></tr>";
                counter += Integer.parseInt (count);
             }         
          

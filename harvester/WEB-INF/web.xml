@@ -7,12 +7,12 @@
     <display-name>Harvester Control Panel</display-name>
 
     <servlet>
-        <servlet-name>HarvesterServlet</servlet-name>
-        <servlet-class>HarvesterServlet</servlet-class>
+        <servlet-name>HarvesterControlPanel</servlet-name>
+        <servlet-class>HarvesterControlPanel</servlet-class>
     </servlet>
 
     <servlet-mapping>
-        <servlet-name>HarvesterServlet</servlet-name>
+        <servlet-name>HarvesterControlPanel</servlet-name>
         <url-pattern>/</url-pattern>
     </servlet-mapping>
 

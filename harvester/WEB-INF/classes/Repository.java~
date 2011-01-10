@@ -112,12 +112,12 @@ public class Repository
          if (! db.loadRepository (this))
          {
             isLoaded = false;
-            System.err.println ("Cannot load repository details");
+            System.out.println ("Cannot load repository details");
          }   
       }
       else
       {
-         System.err.println ("Cannot load database");
+         System.out.println ("Cannot load database");
          isLoaded = false;
       }
    }
@@ -131,25 +131,10 @@ public class Repository
       if (db.connect ())
       {
          if (! db.saveRepository (this))
-            System.err.println ("Cannot save repository details");
+            System.out.println ("Cannot save repository details");
       }
       else
-         System.err.println ("Cannot load database");
-   }
-   
-   /*
-    * Delete the repository and its data
-    */
-   public void delete () 
-   {
-      Database db = new Database (conf);
-      if (db.connect ())
-      {
-         if (! db.deleteRepository (this))
-            System.err.println ("Cannot delete repository");
-      }
-      else
-         System.err.println ("Cannot load database");      
+         System.out.println ("Cannot load database");
    }
 
    /**
