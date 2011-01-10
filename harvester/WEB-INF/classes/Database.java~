@@ -213,28 +213,18 @@ public class Database {
 
       // get entries from database
       try {
-         stm.executeQuery ("select * from Repositories");
+         stm.executeQuery ("select r.*,count(a.id) from Archive as a,Repositories as r where a.source=r.id group by a.source");
          ResultSet rs = stm.getResultSet ();
          while (rs.next ())
             repoList.add (new Repository (conf, rs.getString ("ID"), rs.getString ("name"), rs.getString ("baseURL"), 
                                           rs.getString ("metadataFormat"), rs.getString ("setSpec"), 
                                           rs.getString ("dateFrom"), rs.getInt ("harvestInterval"), 
-                                          rs.getInt ("isRunning"), rs.getString ("harvestStatus")));
+                                          rs.getInt ("isRunning"), rs.getString ("harvestStatus"),
+                                          rs.getInt ("count(a.id)")));
+
+select source,count(source) from Archive group by source;
          rs.close ();
          stm.close ();
-         
-         Statement stm2 = conn.createStatement ();
-         stm2.executeQuery ("select source,count(source) from Archive group by source");
-         ResultSet rs2 = stm2.getResultSet ();
-         while (rs2.next ())
-         {
-            for ( int i=0; i<repoList.size(); i++ )
-               if (repoList.get (i).getID ().equals (rs2.getString ("source")))
-                  repoList.get (i).setNumberOfRecords (rs2.getInt ("count(source)"));
-         }
-         rs2.close ();
-         stm2.close ();  
-         
          conn.close ();
       } catch ( Exception e ) {
       }

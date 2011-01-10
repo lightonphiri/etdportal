@@ -120,7 +120,7 @@ public class HarvesterControlPanel extends HttpServlet
       {
          page.append ("<div id=\"header\"><h1>Repository List</h1></div>\n" +
                       "<table>\n" + 
-                      "<tr><th>ID</th><th>name</th><th>md</th><th>set</th><th>on?</th><th>status</th><th>last harvest</th><th>#rec</th></tr>\n");
+                      "<tr><th>ID</th><th>name</th><th>md</th><th>set</th><th>on?</th><th>status</th><th>last harvest</th></tr>\n");
          
          Database db = new Database (conf);
          if (db.connect ())
@@ -137,7 +137,6 @@ public class HarvesterControlPanel extends HttpServlet
                             "<td>"+rep.getRunning()+"</td>"+
                             "<td>"+rep.getHarvestStatus()+"</td>"+
                             "<td>"+rep.getDateFrom()+"</td>"+
-                            "<td>"+rep.getNumberOfRecords()+"</td>"+
                             "</tr>");
             }
             

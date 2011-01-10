@@ -208,7 +208,7 @@ public class OAIResponseHandler
     public OAIRecord toRecord(String record, String id)
     {
         String identifier = id; // get the identifier
-        String source = rep.getID();
+        String source = rep.getBaseURL();
 
         /*TO BE FIXED AT A LATER DATE
          * Even though we have specifically requested a certain type of record from
