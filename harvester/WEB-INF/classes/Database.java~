@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.util.ArrayList;
 
 /**
  * A class to connect to a mysql db and store OAIRecord objects
@@ -15,20 +16,17 @@ public class Database {
    private Connection conn;
    /** contains whether the class is currenly connected to the database */
    private boolean connected;
-   /** database connection variables */
-   private String dbAddress, dbUsername, dbPassword, dbDriver;
+   /** configuration for database settings */
+   private Config conf;
 
    /**
     * Sets up the local variables and instantiates the class.
     * @param config the configuration object for the currently harvesting repository
     */
-   public Database ( String address, String username, String password, String driver )
+   public Database ( Config aConf )
    {
       connected = false;
-      dbAddress = address;
-      dbUsername = username;
-      dbPassword = password;
-      dbDriver = driver;
+      conf = aConf;
    }
 
    /**
@@ -43,8 +41,8 @@ public class Database {
    {
       connected = true;
       try {
-         Class.forName(dbDriver); // use the jdbc driver
-         conn = DriverManager.getConnection (dbAddress, dbUsername, dbPassword); // get a connection
+         Class.forName(conf.getDbDriver ()); // use the jdbc driver
+         conn = DriverManager.getConnection (conf.getDbAddress (), conf.getDbUsername (), conf.getDbPassword ()); // get a connection
          stm = conn.createStatement(); // create a statement
          if(stm == null)//if there are no errors, yet the statement was not created - normally incorrect authentification
          {
@@ -65,7 +63,7 @@ public class Database {
     *  
     * @param aRecord the record to be stored in the database
     */
-   public void addToBatch ( OAIRecord aRecord, Repository rep )
+    public void addToBatch ( OAIRecord aRecord, Repository rep )
    {
       try {
          String about;
@@ -105,7 +103,7 @@ public class Database {
    {
       boolean found = false;
       try {
-         stm.executeQuery ("select * from Repository where ID='" + rep.getID () + "'");
+         stm.executeQuery ("select * from Repositories where ID='" + rep.getID () + "'");
          ResultSet rs = stm.getResultSet ();
          if (rs.next ())
          {
@@ -117,6 +115,7 @@ public class Database {
             rep.setSetSpec (rs.getString ("setSpec"));
             rep.setDateFrom (rs.getString ("dateFrom"));
             rep.setHarvestInterval (rs.getInt ("harvestInterval"));
+            rep.setRunning ((rs.getInt ("isRunning") > 0));
          }
          
          rs.close ();
@@ -137,8 +136,51 @@ public class Database {
     */
    public boolean saveRepository ( Repository rep )
    {
-      stm.close ();
-      conn.close ();
+      try {
+         stm.executeUpdate ("replace into Repositories (ID, name, baseURL, metadataFormat, setSpec, dateFrom, harvestInterval, harvestStatus, isRunning) values ("+
+                            "'" + rep.getID () + "', " +
+                            "'" + rep.getName () + "', " +
+                            "'" + rep.getBaseURL () + "', " +
+                            "'" + rep.getMetadataFormat () + "', " +
+                            "'" + rep.getSetSpec () + "', " +
+                            "'" + rep.getDateFrom () + "', " +
+                            "'" + rep.getHarvestInterval () + "', " +
+                            "'" + rep.getHarvestStatus () + "', " +
+                            "'" + rep.getRunning () + "')");
+         stm.close ();
+         conn.close ();
+      } catch ( Exception e ) {
+         return false;
+      }
       return true;
    }  
+   
+   /*
+    * list IDs of repositories
+    */
+   public String[] getRepositoryList ()
+   {
+      // use a variable length list
+      ArrayList<String> repoList = new ArrayList<String> ();
+
+      // get entries from database
+      try {
+         stm.executeQuery ("select ID from Repositories");
+         ResultSet rs = stm.getResultSet ();
+         while (rs.next ())
+            repoList.add (rs.getString ("ID"));
+         
+         rs.close ();
+         stm.close ();
+         conn.close ();
+      } catch ( Exception e ) {
+      }
+      
+      // convert list to a simple String list
+      String[] rList = new String[repoList.size()];
+      for ( int i=0; i<repoList.size(); i++ )
+         rList[i] = repoList.get (i);
+
+      return rList;
+   } 
 }

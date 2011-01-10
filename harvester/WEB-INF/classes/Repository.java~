@@ -1,7 +1,4 @@
-import java.util.Properties;
 import java.util.StringTokenizer;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.util.Date;
 import java.sql.Timestamp;
 import javax.xml.parsers.DocumentBuilder;
@@ -23,8 +20,8 @@ import org.xml.sax.SAXException;
  */
 public class Repository
 {
-  /** location of settings for class */
-  private String settingsFile;
+  /** settings for class */
+  private Config conf;
   /**  status of the harvest this configuration represents*/
   private String harvestStatus;
   /**  Id of repository */
@@ -35,22 +32,14 @@ public class Repository
   private String baseURL;
   /** the metadata format to harvest */
   private String metadataFormat;
-  /** last date harvesed */
+  /** last date harvested */
   private String dateFrom;
-  /** the URL of the database to harvest to */
-  private String dbAddress;
-  /** the username to connect to the database with  */
-  private String dbUsername;
-  /** the plaintext password for the database */
-  private String dbPassword;
-  /** the driver for the database */
-  private String dbDriver;
   /** the set to harvest (this will be an empty string if no set is to be specified) */
   private String setSpec;
   /** the time between harvests (milliseconds)*/
   private long harvestInterval;
   /** whether the harvest is currently running */
-  private boolean running;
+  private int running;
   /** The current position in the harvest */
   public long cursor;
   /** The total size of the harvest (if not supported by the target repository this will be -1)*/
@@ -64,22 +53,19 @@ public class Repository
    * properties
    * @param target the file name of the repository configuration that is to be harvested
    */
-   public Repository ( String targetID )
+   public Repository ( Config aConf, String targetID )
    {
       ID = targetID;
       isLoaded = true;
       cursor = 0;
       completeListSize = -1;
 
-      // find relative position of settings file
-      settingsFile = "/etc/etdportal/config.xml";
-
-      loadDatabaseProperties (); // load the database properties
+      conf = aConf;
       load (); // load the repository properties
    }
    
    // Constructor for new harvest entry
-   public Repository ( String anID, String aName, String aBaseURL, String aMetadataFormat, String aSetSpec, String aDateFrom, long aHarvestInterval )
+   public Repository ( Config aConf, String anID, String aName, String aBaseURL, String aMetadataFormat, String aSetSpec, String aDateFrom, long aHarvestInterval )
    {
       ID = anID;
       name = aName;
@@ -91,13 +77,10 @@ public class Repository
       
       cursor = 0;
       completeListSize = -1;
-      running = false;
+      running = 0;
       harvestStatus = "Not yet harvested";
       
-      // find relative position of settings file
-      settingsFile = "/etc/etdportal/config.xml";
-
-      loadDatabaseProperties(); // load the database properties      
+      conf = aConf;
    }
 
   /**
@@ -106,7 +89,7 @@ public class Repository
    */
    private void load ()
    {
-      Database db = new Database (dbAddress, dbUsername, dbPassword, dbDriver);
+      Database db = new Database (conf);
       if (db.connect ())
       {
          if (! db.loadRepository (this))
@@ -122,80 +105,12 @@ public class Repository
       }
    }
       
-    /**
-     * auxiliary method to get an Element from an XPath
-     */
-    public Element getXMLElement ( Element root, String xpath )
-    {
-       StringTokenizer st = new StringTokenizer (xpath, "/");
-       while (st.hasMoreTokens ())
-       {
-          NodeList nextLevel = root.getElementsByTagName (st.nextToken ());
-          if (nextLevel.getLength () == 0)
-             return null;
-          else
-             root = (Element)nextLevel.item(0);
-       }
-       return root;
-    }
-
-    /**
-     * auxiliary method to get a value from an XPath
-     */
-    public String getXMLValue ( Element root, String xpath, String defaultValue )
-    {
-       root = getXMLElement (root, xpath);
-       if (root == null)
-          return defaultValue;
-       NodeList values = root.getChildNodes ();
-       if (values.getLength () == 0)
-          return defaultValue;
-       return values.item(0).getNodeValue().trim();   
-    }
-
-  /**
-   * Method to load the database properties from the database
-   */
-   private void loadDatabaseProperties ()
-   {
-      try {
-         //declare the db variables
-         String dbAddress, dbUsername, dbPassword, dbDriver;
-         //read in the xml config file
-         DocumentBuilderFactory docBuilderFac = DocumentBuilderFactory.newInstance();
-         DocumentBuilder docBuilder = docBuilderFac.newDocumentBuilder();
-         Document doc = docBuilder.parse("/etc/etdportal/config.xml");
-            
-         //normalize text representation
-         doc.getDocumentElement().normalize();
-         Element root = doc.getDocumentElement();
-            
-         // check to see if the base node has the correct name
-         if(root.getNodeName().equals("configuration"))
-         {
-            // get the database connection details
-            dbAddress = getXMLValue (root, "repository/database/URL", "localhost/dba");
-            dbUsername = getXMLValue (root, "repository/database/username", "");
-            dbPassword = getXMLValue (root, "repository/database/password", "");
-            dbDriver = getXMLValue (root, "repository/database/driver", "com.mysql.jdbc.Driver");
-         }
-         else
-         {
-            System.out.println ("Incorrect config file structure.  Base Node has wrong name.");
-            isLoaded = false;
-         }
-      } catch ( Exception e ) {
-         isLoaded= false;
-         e.printStackTrace();
-      }       
-   }
-
   /**
    * Save the repository configuration back to the original file
    */
    private void save () 
    {
-      Database db = new Database (dbAddress, dbUsername, dbPassword, dbDriver);
+      Database db = new Database (conf);
       if (db.connect ())
       {
          if (! db.saveRepository (this))
@@ -367,7 +282,7 @@ public class Repository
     * Returns whether or not a harvest is currently being run on this repository.
     * @return true if a harvest is currently being run on this repository. False otherwise.
     */
-   public boolean getRunning ()
+   public int getRunning ()
    {
       return running;
    }
@@ -375,7 +290,7 @@ public class Repository
     * Sets whether or not a harvest is currently being run on this repository.
     * @return true if a harvest is currently being run on this repository. False otherwise.
     */
-   public void setRunning ( boolean aRunning )
+   public int setRunning ( int aRunning )
    {
       running = aRunning;
    }
@@ -383,7 +298,7 @@ public class Repository
     * Sets whether a harvest is currently running on the given repository.
     * @param newValue whether the harvest is currently running.
     */
-   public void updateRunning ( boolean aRunning )
+   public void updateRunning ( int aRunning )
    {
       setRunning (aRunning);
       save ();

@@ -5,8 +5,8 @@
  * checks all valid config files in the sources directory, and harvests the repositories
  * represented by each if they need to be harvested. The decision of whether to harvest
  * each of the repositories is made in the {@link Harvester.OAIScheduledHarvest}
- * class. All reading and writing of config files is handled in the
- * {@link Harvester.HarvestConfiguration} class. {@link Harvester.DatabaseConnection}
+ * class. All reading and writing of repository details is handled in the
+ * {@link Harvester.Repository} class. {@link Harvester.Database}
  * is responsible for how the harvester connects to, and stores the records in a
  * database. The current version stores records in a Mysql database, but the
  * harvester could easily store them to a different database should that class
@@ -16,5 +16,6 @@
  * seperates the response into its constituent records.
  * @author Alexander van Olst
  * @author Lawrence Webley
+ * @author Hussein Suleman
  */
 package Harvester;

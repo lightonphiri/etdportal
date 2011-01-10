@@ -116,7 +116,7 @@ public class OAIRequest
      */
     private void updateHarvestStatus()
     {
-        if (rep.completeListSize == -1)
+        if(rep.completeListSize == -1)
         {
             rep.updateHarvestStatus ("Harvesting ("+ rep.cursor+"/???)");
         }

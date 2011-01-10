@@ -94,15 +94,18 @@ public class OAIResponseHandler
        System.out.println ("in GetRecords ...");
     
         ArrayList<OAIRecord> result = new ArrayList<OAIRecord>();
+System.out.println (response.toString());
         Pattern p = Pattern.compile("< *record *>.*?< */ *record *>", Pattern.CANON_EQ | Pattern.DOTALL);
         Matcher recordMatch = p.matcher(response);
+System.out.println ("almost ...");
         //Iterate through records
         while(recordMatch.find())
         {            
+   System.out.println ("found 1");
             String record = response.substring(recordMatch.start(), recordMatch.end());
 
             //Find identifier
-            Pattern identPattern = Pattern.compile("< *identifier *>[^>]*< */ *identifier *>", Pattern.CANON_EQ | Pattern.DOTALL);
+            Pattern identPattern = Pattern.compile("<identifier>[^>]*</identifier>", Pattern.CANON_EQ | Pattern.DOTALL);
             Matcher identMatch = identPattern.matcher(record);
             if(identMatch.find())
             {
@@ -152,7 +155,7 @@ public class OAIResponseHandler
     public void setCompleteListSize()
     {
         //<resumptionToken completeListSize='819' cursor='0'>1950426</resumptionToken> 
-        Pattern p = Pattern.compile("< *resumptionToken.*?>[^>]*< */ *resumptionToken *>", Pattern.CANON_EQ | Pattern.DOTALL);
+        Pattern p = Pattern.compile("<resumptionToken.*?>[^>]*</resumptionToken>", Pattern.CANON_EQ | Pattern.DOTALL);
         Matcher m = p.matcher(response);
         if(m.find()) // If there is a resumptionToken
         {
@@ -187,7 +190,7 @@ public class OAIResponseHandler
      */
     public String getResumptionToken()
     { // get the resumption token from the repsonse
-        Pattern p = Pattern.compile("< *resumptionToken.*?>[^>]*< */ *resumptionToken *>", Pattern.CANON_EQ | Pattern.DOTALL);
+        Pattern p = Pattern.compile("<resumptionToken.*?>[^>]*</resumptionToken>", Pattern.CANON_EQ | Pattern.DOTALL);
         Matcher m = p.matcher(response);
 
         if(m.find())
@@ -222,7 +225,7 @@ public class OAIResponseHandler
          */
         String metadataType = rep.getMetadataFormat();
 
-        Pattern p = Pattern.compile("< *header *status *= *\"deleted\" *>");
+        Pattern p = Pattern.compile("<header status=\"deleted\">");
         Matcher m = p.matcher(record);
         
         boolean deleted;
@@ -239,7 +242,7 @@ public class OAIResponseHandler
         String xml = "";
         if (!deleted)  // get the metadata (xml) if the node is not deleted
         {
-            Pattern metadataPattern = Pattern.compile("< *metadata *>.*?< */ *metadata *>", Pattern.CANON_EQ | Pattern.DOTALL);
+            Pattern metadataPattern = Pattern.compile("<metadata>.*?</metadata>", Pattern.CANON_EQ | Pattern.DOTALL);
             Matcher metadataMatcher = metadataPattern.matcher(record);
             if(metadataMatcher.find())
             {

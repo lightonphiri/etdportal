@@ -88,7 +88,7 @@ public class OAIHarvest
             /* we now start with a harvest */
             System.out.println("Harvesting " + repositoryName);
             rep.updateHarvestStatus ("Starting Harvest...");
-            rep.updateRunning(1); // update the isRunning variable
+            rep.setRunning(1); // update the isRunning variable
 
             try
             {
@@ -101,7 +101,7 @@ public class OAIHarvest
                rep.updateHarvestStatus ("Failed connecting to baseURL");
                System.err.println("Error caught in OAIHarvest.java : "+e);
             } finally {
-               rep.updateRunning(0); // the harvest has finished
+               rep.setRunning(0); // the harvest has finished
             }
          }
          else
