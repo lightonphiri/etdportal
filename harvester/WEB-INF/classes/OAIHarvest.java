@@ -26,8 +26,6 @@ public class OAIHarvest
    {
       Config conf = new Config ();
     
-      System.out.println("OAI Harvester Starting... \n");
-
       if (args.length == 0)
       { // checks database for repository list and harvests all
          Database db = new Database (conf);
@@ -86,8 +84,8 @@ public class OAIHarvest
          if ( ((isRunning == 0) && ( ( currentDate.getTime() - lastDate.getTime() > (harvestInterval*1000) ) || ("Update forced".equals(status) ) ) ))
          { // if the harvest should be done
             /* we now start with a harvest */
-            System.out.println("Harvesting " + repositoryName);
-            rep.updateHarvestStatus ("Starting Harvest...");
+            System.out.println("Harvesting: " + repositoryName + " " + rep.getBaseURL ());
+            rep.updateHarvestStatus ("Starting harvest");
             rep.updateRunning(1); // update the isRunning variable
 
             try
@@ -96,7 +94,7 @@ public class OAIHarvest
                OAIRequest request = new OAIRequest (conf, rep);
 
                rep.updateDateFrom(); // update the dateFrom in the harvest file
-               System.out.println("Harvest completed. \n");
+               System.out.println("Harvest completed\n");
             } catch(Exception e) {
                rep.updateHarvestStatus ("Failed connecting to baseURL");
                System.err.println("Error caught in OAIHarvest.java : "+e);

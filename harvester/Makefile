@@ -25,10 +25,9 @@ APPNAME = harvester
 
 TARGETS = WEB-INF/classes/OAIHarvest.class \
           WEB-INF/classes/HarvesterServlet.class \
-          WEB-INF/classes/ConfigWriter.class \
-          WEB-INF/classes/DatabaseConnection.class \
-          WEB-INF/classes/HarvestConfiguration.class \
-          WEB-INF/classes/HarvesterThread.class \
+          WEB-INF/classes/Config.class \
+          WEB-INF/classes/Database.class \
+          WEB-INF/classes/Repository.class \
           WEB-INF/classes/HtmlPane.class \
           WEB-INF/classes/HTMLWriter.class \
           WEB-INF/classes/NavBar.class \
@@ -36,10 +35,8 @@ TARGETS = WEB-INF/classes/OAIHarvest.class \
           WEB-INF/classes/OAIRecord.class \
           WEB-INF/classes/OAIRequest.class \
           WEB-INF/classes/OAIResponseHandler.class \
-          WEB-INF/classes/OAIScheduledHarvest.class \
           WEB-INF/classes/RepoList.class \
           WEB-INF/classes/RepositoryEditor.class \
-          WEB-INF/classes/Settings.class \
           WEB-INF/classes/StatusPane.class
           
 all: $(TARGETS)
@@ -54,10 +51,10 @@ install:
 	install -o $(TOMCAT) -v -d $(WEBAPPS)/$(APPNAME)/style
 	install -o $(TOMCAT) -v -m 644 style/style.css $(WEBAPPS)/$(APPNAME)/style/
 
-	install -o $(TOMCAT) -v -d $(WEBAPPS)/$(APPNAME)/WEB-INF/config/sources
+	install -o $(TOMCAT) -v -d $(WEBAPPS)/$(APPNAME)/WEB-INF/db
 	install -o $(TOMCAT) -v -m 644 WEB-INF/web.xml $(WEBAPPS)/$(APPNAME)/WEB-INF/
-	install -o $(TOMCAT) -v -m 644 WEB-INF/config/config.xml $(WEBAPPS)/$(APPNAME)/WEB-INF/config/
-	install -o $(TOMCAT) -v -m 644 WEB-INF/config/install_db.sql $(WEBAPPS)/$(APPNAME)/WEB-INF/config/
+	install -o $(TOMCAT) -v -m 644 WEB-INF/db/create_db.sql $(WEBAPPS)/$(APPNAME)/WEB-INF/db/
+	install -o $(TOMCAT) -v -m 644 WEB-INF/db/clean_db.sql $(WEBAPPS)/$(APPNAME)/WEB-INF/db/
 
 	install -o $(TOMCAT) -v -d $(WEBAPPS)/$(APPNAME)/WEB-INF/lib
 	install -o $(TOMCAT) -v -m 644 WEB-INF/lib/mysql-connector-java.jar $(WEBAPPS)/$(APPNAME)/WEB-INF/lib/

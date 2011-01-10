@@ -35,7 +35,6 @@ public class OAIRequest
    { 
       conf = aConf; 
       rep = r;
-      System.out.println("Starting with a request to " + rep.getBaseURL());
       doHarvest();
    }
 
@@ -86,7 +85,7 @@ public class OAIRequest
             String rtoken = ""; // at first there is no resumption token
             do {
                 String request = generateRequest(rtoken);
-                System.out.println("OAI request: " + request);
+                System.out.println("OAI request: " + rep.getBaseURL () + "?" + request);
                 BufferedInputStream response = sendRequest(request);
 
                 updateHarvestStatus();
@@ -126,7 +125,7 @@ public class OAIRequest
         }
         else
         {
-            rep.updateHarvestStatus ("Successfully harvested "+rep.cursor+" records.");
+            rep.updateHarvestStatus ("Harvested "+rep.cursor+" records");
         }
     }
 

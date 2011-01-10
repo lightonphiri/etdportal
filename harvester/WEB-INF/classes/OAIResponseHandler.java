@@ -42,16 +42,14 @@ public class OAIResponseHandler
       }
    }
 
-    /**
-     * Uses regex to seperate out records and then store them in the database.
-     * Uses the <code>getRecords</code> method to retrieve the
-     * seperated out records.
-     */
+   /**
+    * Uses regex to seperate out records and then store them in the database.
+    * Uses the <code>getRecords</code> method to retrieve the
+    * seperated out records.
+    */
    public void store () 
     throws Exception
    {
-      System.out.println ("in store...");
-   
       ArrayList<OAIRecord> results = getRecords(); // get a list of the records in the document
       Database db = new Database (conf);
       if(! db.connect())
@@ -91,8 +89,6 @@ public class OAIResponseHandler
     public ArrayList<OAIRecord> getRecords() 
      throws Exception
     {
-       System.out.println ("in GetRecords ...");
-    
         ArrayList<OAIRecord> result = new ArrayList<OAIRecord>();
         Pattern p = Pattern.compile("< *record *>.*?< */ *record *>", Pattern.CANON_EQ | Pattern.DOTALL);
         Matcher recordMatch = p.matcher(response);

@@ -1,13 +1,19 @@
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.xml.validation.SchemaFactory;
-
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import org.w3c.dom.*;
+import org.xml.sax.SAXException;
+import org.xml.sax.InputSource;
+import java.io.StringReader;
 
 
 /** OAI record - Class to represent a record in OAI-PMH format
  * @author Alexander van Olst
  * @author Lawrence Webley (Javadoc only)
+ * @author Hussein Suleman
  * @version 1.9.5.12
  */
 public class OAIRecord {
@@ -150,56 +156,27 @@ public class OAIRecord {
      * Runs xml validation on this records metadata in order to check if it is valid.
      * @return true if the metadata validates successfully.
      */
-    public boolean selfValidate(SchemaFactory factory)
-    {
-        boolean result = true;
+   public boolean selfValidate(SchemaFactory factory)
+   {
+      boolean result = true;
 
-        //First remove any ' and " that might break the sql storage statement        
-        xml.replaceAll("[\"\']", "\\\"");
+      //First remove any ' and " that might break the sql storage statement
+      xml.replaceAll("[\"\']", "\\\"");
+        
+      // use simple XML parser for validation
+      try {
+         //read in the xml config file
+         DocumentBuilderFactory docBuilderFac = DocumentBuilderFactory.newInstance();
+         DocumentBuilder docBuilder = docBuilderFac.newDocumentBuilder();
+         Document doc = docBuilder.parse ( new InputSource ( new StringReader (xml)));
+         doc.getDocumentElement().normalize();
+         Element root = doc.getDocumentElement();
+      } catch ( Exception e ) {
+         e.printStackTrace();
+         return false;
+      }
 
-        /*
-        try
-        {   
-            //Compiling the schema.
-            StringBuffer temp = new StringBuffer(xml);
-            int begin = temp.indexOf("xsi:schemaLocation");
-            begin = temp.indexOf("\n", (begin + 1));
-            int end = temp.indexOf("\">");
-            String validationURL = temp.substring(begin, end);
-
-            URL url = new URL(validationURL);
-            Schema schema = factory.newSchema(url);
-
-            //validator from the schema.
-            Validator validator = schema.newValidator();
-
-            //Parsing the document
-
-            //
-           InputStream xmlStream = null;
-            try {//converting the portalXML into an inputStream for XSLT trasformtion
-                xmlStream = new ByteArrayInputStream(xml.getBytes("UTF-8"));
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-            StreamSource xmlSource = new StreamSource(xmlStream);
-
-            //Checking the document
-            validator.validate(xmlSource);
-        }
-        catch (SAXException ex)
-        {         
-          result = false;
-        }
-        catch(Exception e)
-        {          
-          result = false;
-        }*/
-				
-		//Change this to ACTUALY validate. Should work, but untested, hence the return true.
-        //return result;
-		return true;
-		
-    }
+      return true;		
+   }
 
 }
