@@ -28,16 +28,10 @@ TARGETS = WEB-INF/classes/OAIHarvest.class \
           WEB-INF/classes/Config.class \
           WEB-INF/classes/Database.class \
           WEB-INF/classes/Repository.class \
-          WEB-INF/classes/HtmlPane.class \
           WEB-INF/classes/HTMLWriter.class \
-#          WEB-INF/classes/NavBar.class \
-#          WEB-INF/classes/OAIConfigEditor.class \
           WEB-INF/classes/OAIRecord.class \
           WEB-INF/classes/OAIRequest.class \
           WEB-INF/classes/OAIResponseHandler.class \
-#          WEB-INF/classes/RepoList.class \
-#          WEB-INF/classes/RepositoryEditor.class \
-#          WEB-INF/classes/StatusPane.class
           
 all: $(TARGETS)
 
