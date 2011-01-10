@@ -44,7 +44,7 @@ the Lucene library.
        public String search (String user_query,String startat,String maxresults)
       {
 	  ConfigurationManager applicationSettings = new ConfigurationManager();
-	  applicationSettings.configureApplication(realApplicationPath + "WEB-INF/config/config.xml",false);
+	  applicationSettings.configureApplication(false);
 	  setServletUrl(applicationSettings.getServletUrl());
 
          int lastDisplayed=0;			     //the value of the last result displayed	
@@ -65,7 +65,7 @@ the Lucene library.
 
              try 
          {
-            searcher = new IndexSearcher(realApplicationPath + "WEB-INF/config/index");
+            searcher = new IndexSearcher(applicationSettings.getIndexDirectory () + "/index");
               //applicationSettings.getIndexDirectory());      //create an indexSearcher for our page
 	  } 
              catch (Exception e) 
@@ -183,23 +183,19 @@ the Lucene library.
 
 	
 	if(current_page!=1)
-	  links+= "<span class=\"link_first\"><a href="+getServletUrl()+"?action=search&amp;query="+URLEncoder.encode(queryString)+  "&amp;maxresults="+maxpage+"&amp;start=" + 0 +">First</a></span>\n";
+	  links+= "<span class=\"link_previous\"><a href="+getServletUrl()+"?action=search&amp;query="+URLEncoder.encode(queryString)+  "&amp;maxresults="+maxpage+"&amp;start=" + 0 +">First</a></span>\n";
 	else
-	  links+="<span class=\"link_first\">First</span>\n";
+	  links+="<span class=\"link_previous\">First</span>\n";
 
 	if ( (startindex - maxpage) >= 0) 
 	{//used to create the previous results link
 	
 	    String lessurl=getServletUrl()+"?action=search&amp;query="+URLEncoder.encode(queryString)+  "&amp;maxresults="+maxpage+"&amp;start=" + (startindex - maxpage);
 	
-	    links += "<span class=\"link_previous\">"+"\n"+
-		      "<p></p><a href="+lessurl+">Previous</a>"+"\n"+
-		      "</span>"+"\n";
+	    links += "<span class=\"link_previous\"><a href=\""+lessurl+"\">Previous</a></span>\n";
 	}else
 	{
-	    links += "<span class=\"link_previous\">"+"\n"+
-		      "<p></p>Previous\n"+
-		      "</span>"+"\n";
+	    links += "<span class=\"link_previous\">Previous</span>\n";
 	}
 
 	      
@@ -248,20 +244,16 @@ the Lucene library.
 	    //construct the "more" link
 	    String moreurl=getServletUrl()+"?action=search&amp;query="+URLEncoder.encode(queryString)+  "&amp;maxresults="+maxpage+"&amp;start=" + (startindex + maxpage);
 	
-	    links += "<span class=\"link_next\">"+"\n"+
-		      "<p></p><a href="+moreurl+">Next</a>"+"\n"+
-		      "</span>"+"\n";
+	    links += "<span class=\"link_next\"><a href=\""+moreurl+"\">Next</a></span>\n";
 	}else
 	{
-	    links += "<span class=\"link_next\">"+"\n"+
-		      "<p></p>Next\n"+
-		      "</span>"+"\n";
+	    links += "<span class=\"link_next\">Next</span>\n";
 	}
 	 
 	if(current_page!=pages.size())
-	  links+= "<span class=\"link_last\"><a href="+getServletUrl()+"?action=search&amp;query="+URLEncoder.encode(queryString)+  "&amp;maxresults="+maxpage+"&amp;start=" + last_page +">Last"+"</a></span>\n";
+	  links+= "<span class=\"link_next\"><a href=\""+getServletUrl()+"?action=search&amp;query="+URLEncoder.encode(queryString)+  "&amp;maxresults="+maxpage+"&amp;start=" + last_page +"\">Last</a></span>\n";
 	else
-	 links+="<span class=\"link_last\">Last</span>\n";
+	 links+="<span class=\"link_next\">Last</span>\n";
 
 	       links += "</div>";		  
 

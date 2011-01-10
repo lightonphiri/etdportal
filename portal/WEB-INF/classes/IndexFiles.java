@@ -29,8 +29,12 @@ be searched easily.
    
        public void createIndex(ConfigurationManager applicationSettings)
       {	
-         String configPath = "../config/";
-         File indexDirectory = new File(configPath+"index");
+//         String configPath = applicationSettings.getIndexDirectory ();
+//         File indexDirectory = new File(configPath+"/index");
+         
+         String configPath = "/etc/etdportal/portal/";
+         File indexDirectory = new File(applicationSettings.getIndexDirectory ()+"/index");
+         
       
          DatabaseBrowser allRecords = new DatabaseBrowser();                   //new database object to retrieve all the records
          int total_records=0;																	//store the total number of records

@@ -15,6 +15,7 @@ JAVAC = javac
 
 WEBAPPS = /var/lib/$(TOMCAT)/webapps
 APPNAME = portal
+INDEXDIR = /var/db
 
 # rules
 
@@ -37,9 +38,9 @@ TARGETS = WEB-INF/classes/ConfigurationManager.class \
           WEB-INF/classes/ResumptionToken.class \
           WEB-INF/classes/SearchEngine.class
           
-CONFIGFILES = viewsnippets.xsl config.xml dc_index.xsl dc_snippet.xsl \
+CONFIGFILES = viewsnippets.xsl dc_index.xsl dc_snippet.xsl \
           dc.xsl etdms_index.xsl etdms_snippet.xsl etdms.xsl \
-          index.xsl install_db.sql marc_index.xsl marc_snippet.xsl \
+          index.xsl marc_index.xsl marc_snippet.xsl \
           marc.xsl rfc1807_index.xsl rfc1807_snippet.xsl rfc1807.xsl \
           viewfull.xsl viewsnippets.xsl stopwords.xml
 
@@ -55,6 +56,8 @@ install:
 #	install -o $(TOMCAT) -v -d $(WEBAPPS)/$(APPNAME)/META-INF
 #	install -o $(TOMCAT) -v -m 644 META-INF/context.xml $(WEBAPPS)/$(APPNAME)/META-INF/
 
+	install -o $(TOMCAT) -v -m 777 -d $(INDEXDIR)
+
 	install -o $(TOMCAT) -v -d $(WEBAPPS)/$(APPNAME)/style
 	install -o $(TOMCAT) -v -m 644 style/style.css $(WEBAPPS)/$(APPNAME)/style/
 
@@ -63,10 +66,10 @@ install:
 	install -o $(TOMCAT) -v -m 644 images/header.png $(WEBAPPS)/$(APPNAME)/images/
 	install -o $(TOMCAT) -v -m 644 images/footer.png $(WEBAPPS)/$(APPNAME)/images/
 
-	install -o $(TOMCAT) -v -d $(WEBAPPS)/$(APPNAME)/WEB-INF/config
+	install -o $(TOMCAT) -v -d /etc/etdportal/portal
 	install -o $(TOMCAT) -v -m 644 WEB-INF/web.xml $(WEBAPPS)/$(APPNAME)/WEB-INF/
 	for comp in $(CONFIGFILES); do \
-	   install -o $(TOMCAT) -v -m 644 WEB-INF/config/$$comp $(WEBAPPS)/$(APPNAME)/WEB-INF/config/; \
+	   install -o $(TOMCAT) -v -m 644 WEB-INF/xsl/$$comp /etc/etdportal/portal/; \
 	done
 
 	install -o $(TOMCAT) -v -d $(WEBAPPS)/$(APPNAME)/WEB-INF/lib

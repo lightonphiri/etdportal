@@ -100,7 +100,7 @@
             if (request.getParameter ("maxresults") != null)
                maxResults = request.getParameter ("maxresults");
             
-            SearchEngine engine = new SearchEngine(getServletContext().getRealPath("/"));
+            SearchEngine engine = new SearchEngine("/etc/etdportal/portal/");
             engine.search (query, start, maxResults);
          
             content = "<div id=\"contentarea\">"+
@@ -114,10 +114,11 @@
                "<h2>Advanced Search</h2>"+
                "<form method='get'>"+
                "<div class = 'labels'>"+
-               "<p class='intro'>Modify your query to narrow your search by making use of the 		      <a class='tip'>AND<span>Use AND to match documents that contain two or more chosen terms existing anywhere in the text of a single document. This is equivalent to an intersection using sets. The symbol && can be used in place of the word AND.</span></a>, <a class='tip'>OR<span>Use OR to show records that have one or more of the chosen terms.</span></a> and <a class='tip'>NOT<span>Use NOT to exclude documents that contain the chosen terms. This is equivalent to a difference using sets.</span></a> operators</p>"+
-                      "<label class = 'labeltype'>Search type:</label>"+
-               "<label class = 'labelquery'>Search for:</label><p></p>"+
-               "<label class ='space'></label>"+
+               "<p class='intro'>Modify your query to narrow your search by making use of the AND, OR and NOT. Use AND to match "+
+               "documents that contain two or more chosen terms existing anywhere in the text of a single document. "+
+               "This is equivalent to an intersection using sets. The symbol && can be used in place of the word AND. "+
+               "Use OR to show records that have one or more of the chosen terms.  Use NOT to exclude documents that "+
+               "contain the chosen terms - this is equivalent to a difference using sets.</p>"+
                "<select name='option' size='1'>"+
                "<option>Keyword</option>"+
                "<option>Title</option>"+
@@ -175,7 +176,7 @@
             if (request.getParameter ("maxresults") != null)
                maxResults = request.getParameter ("maxresults");
             
-            SearchEngine engine = new SearchEngine(getServletContext().getRealPath("/"));
+            SearchEngine engine = new SearchEngine("/etc/etdportal/portal/");
             engine.search (advancedQuery, start, maxResults);
          
             content = "<div id=\"contentarea\">"+
@@ -187,7 +188,7 @@
          {   //instantiating the ConfigurationManager by reading the configuration file
          	//config.xml		
             applicationSettings = new ConfigurationManager();
-            applicationSettings.configureApplication(getServletContext().getRealPath("/")+"WEB-INF/config/config.xml",false);
+            applicationSettings.configureApplication(false);
             applicationSettings.createDatabaseConnection();
             
             if(applicationSettings.getDatabaseConnection()==null)
@@ -209,7 +210,7 @@
                   e.printStackTrace();
                }
          
-            String record=(new ResultFormat()).viewRecord(record_to_transform,getServletContext().getRealPath("/")+"WEB-INF/config/viewfull.xsl",getServletContext().getRealPath("/")+"WEB-INF/config/");
+            String record=(new ResultFormat()).viewRecord(record_to_transform,"/etc/etdportal/portal/viewfull.xsl","/etc/etdportal/portal/");
          
             content = "<div id=\"contentarea\">"+
                        "<h2>View Record</h2>"+
@@ -222,10 +223,10 @@
          //instantiating the ConfigurationManager by reading the configuration file
          //config.xml		
             applicationSettings = new ConfigurationManager();
-            applicationSettings.configureApplication(getServletContext().getRealPath("/")+"WEB-INF/config/config.xml",false);
+            applicationSettings.configureApplication(false);
             applicationSettings.createDatabaseConnection();
             
-            String configPath = getServletContext().getRealPath("/")+"WEB-INF/config/";
+            String configPath = "/etc/etdportal/portal/";
          
             if(applicationSettings.getDatabaseConnection()==null)
                out.println("no connection");					
@@ -401,11 +402,11 @@
        private String getBrowsingLinks()
       {
          applicationSettings = new ConfigurationManager();
-         applicationSettings.configureApplication(getServletContext().getRealPath("/")+"WEB-INF/config/config.xml",false);
+         applicationSettings.configureApplication(false);
        	
          String links = "";
       
-         if(applicationSettings.getBrowseCategories()!=null&&applicationSettings.getBrowseCategories().size()>0)	
+         if(applicationSettings.getBrowseCategories()!=null && applicationSettings.getBrowseCategories().size()>0)	
          {
             links = "<p class=\"menusep\">Browse</p>";
          
@@ -418,7 +419,7 @@
             if(applicationSettings.getBrowseCategories().contains("affiliation"))	
             {
                links+="<a "+(highlight==3?"class=\"active\" ":"")+
-                  "href=\"?action=browse&category=Affiliation&order=asc\">Affiliation (A-Z)</a>";
+                  "href=\"?action=browse&category=Affiliation&order=asc\">Institution (A-Z)</a>";
             }
          
             if(applicationSettings.getBrowseCategories().contains("date"))	

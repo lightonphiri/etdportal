@@ -63,20 +63,7 @@
        public void run(String [] args)
       {
          ConfigurationManager applicationSettings = new ConfigurationManager();
-      
-      //stores the file name passed to the program		
-         String configFileName="";			
-      
-         if(args.length!=1)
-         {
-            System.out.println("Error Condition.\nUsage : HarvestingMain <config file name>\n");
-            System.exit(0);
-         }
-         else
-         {
-            configFileName=args[0];
-            applicationSettings.configureApplication(configFileName,true);
-         }	
+         applicationSettings.configureApplication(true);
       
          List<String> identifiers =  new ArrayList<String>();					//stores all the identifiers found during the harvesting  
          ResponseParser oaiParser = new ResponseParser();							//is used to parse the responses received from the central repository

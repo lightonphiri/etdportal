@@ -44,7 +44,7 @@ the Lucene library.
        public String search (String user_query,String startat,String maxresults)
       {
 	  ConfigurationManager applicationSettings = new ConfigurationManager();
-	  applicationSettings.configureApplication(realApplicationPath + "WEB-INF/config/config.xml",false);
+	  applicationSettings.configureApplication(false);
 	  setServletUrl(applicationSettings.getServletUrl());
 
          int lastDisplayed=0;			     //the value of the last result displayed	
@@ -65,7 +65,7 @@ the Lucene library.
 
              try 
          {
-            searcher = new IndexSearcher(realApplicationPath + "WEB-INF/config/index");
+            searcher = new IndexSearcher(applicationSettings.getIndexDirectory () + "/index");
               //applicationSettings.getIndexDirectory());      //create an indexSearcher for our page
 	  } 
              catch (Exception e) 
@@ -278,7 +278,7 @@ the Lucene library.
 				    try {//converting the portalXML into an inputStream for XSLT trasformtion
 				      record_to_transform = new ByteArrayInputStream(portalXML.getBytes("UTF-8"));
 
-  				      results_page += (new ResultFormat()).viewRecord(record_to_transform,realApplicationPath + "WEB-INF/config/"+"viewsnippets.xsl",realApplicationPath + "WEB-INF/config/");
+  				      results_page += (new ResultFormat()).viewRecord(record_to_transform,realApplicationPath+"viewsnippets.xsl",realApplicationPath);
 
 				    } catch (UnsupportedEncodingException e) {
 				      e.printStackTrace();

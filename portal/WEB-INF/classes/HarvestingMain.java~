@@ -185,7 +185,7 @@
                         }
                      
                         //setting the affiliation of the record 	
-                        if(records_to_update.get(i).getMetadataFormats().size()>0)
+                        if(records_to_update.get(i).getMetadataRecords().size()>0)
                         {
                            Element docEle = records_to_update.get(i).getMetadataRecords().get(0).getDocumentElement();
                            String setSpec = oaiParser.getTagValue(docEle,"setSpec");

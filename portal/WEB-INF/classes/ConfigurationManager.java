@@ -27,9 +27,11 @@
    import java.io.FileWriter;
    import java.io.File;
    import java.sql.*;
+   import java.util.StringTokenizer;
    import java.util.TimeZone;
    import java.text.SimpleDateFormat;
-   import java.util.List;   import java.util.ArrayList;
+   import java.util.List;   
+   import java.util.ArrayList;
 	
 
     public class ConfigurationManager
@@ -42,6 +44,7 @@
       private String databaseUrl;						//url of the database in the server
       private String databaseUsername;				//stores the username used to access the database
       private String databasePassword;				//stores the corresponding password used to access the database
+      private String databaseDriver;				//stores the driver name for the database
       private String configFileName;					//stores the name of the config file used
       private String servletUrl;						//Stores the URL of the servlet that handles the browse requests
       private List<String> stopWords;					//stores a list of stop words that are removed for ordering 
@@ -59,7 +62,37 @@
          lastHarvest="";
       }
     
-   
+    /**
+     * auxiliary method to get an Element from an XPath
+     */
+    public Element getXMLElement ( Element root, String xpath )
+    {
+       StringTokenizer st = new StringTokenizer (xpath, "/");
+       while (st.hasMoreTokens ())
+       {
+          NodeList nextLevel = root.getElementsByTagName (st.nextToken ());
+          if (nextLevel.getLength () == 0)
+             return null;
+          else
+             root = (Element)nextLevel.item(0);
+       }
+       return root;
+    }
+
+    /**
+     * auxiliary method to get a value from an XPath
+     */
+    public String getXMLValue ( Element root, String xpath, String defaultValue )
+    {
+       root = getXMLElement (root, xpath);
+       if (root == null)
+          return defaultValue;
+       NodeList values = root.getChildNodes ();
+       if (values.getLength () == 0)
+          return defaultValue;
+       return values.item(0).getNodeValue().trim();   
+    }
+
    /**
    *Extracts configuration settings from the configuration file stored on disk,
    *namely config.xml or otherwise.
@@ -71,159 +104,91 @@
    *		   out,for example during harvesting of new records from the 
    *		   central OAI repository,otherwise <code>false</code>.				
    */
-       public void configureApplication(String configFileName,Boolean harvesting)
-      {
-      
-         File configFile = new File(configFileName);	
-         setConfigFileName(configFileName);//saving the name of the configuration file name
-      
-         //stores the configuration information passed to the program
-         Document newConfigFile=null;
-      
-         //get the factory
-         DocumentBuilderFactory configFactory = DocumentBuilderFactory.newInstance();
-      
-         //Document builder
-         DocumentBuilder configBuilder=null;
-      
-      
-      
-         try
-         {
-         
-            //Using factory get an instance of document builder
-            configBuilder = configFactory.newDocumentBuilder();
-         }
-             catch(ParserConfigurationException pce) {
-               pce.printStackTrace();
-            }
-      
-      
-         try
-         {
-            //parse using builder to get DOM representation of the XML file
-            newConfigFile = configBuilder.parse(configFile.getAbsolutePath());
-         
-         }
-             catch(SAXException se) {
-               se.printStackTrace();
-            }    
-             catch(IOException ioe){
-               ioe.printStackTrace();
-            }
-      
-      
-      
-         try
-         {
-            //get the root elememt
-            Element configRoot = newConfigFile.getDocumentElement();
-         
-         	 //get a nodelist of <configFile> elements
-            NodeList configList = configRoot.getElementsByTagName("configFile");
-               
-         
-            if(configList != null && configList.getLength() > 0)
+     public void configureApplication ( Boolean harvesting )
+     {
+        try
+        {
+            //declare the db variables
+            String dbAddress, dbUsername, dbPassword, dbDriver;
+            //read in the xml config file
+            DocumentBuilderFactory docBuilderFac = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docBuilderFac.newDocumentBuilder();
+            Document doc = docBuilder.parse("/etc/etdportal/config.xml");
+            
+            //normalize text representation
+            doc.getDocumentElement().normalize();
+            Element root = doc.getDocumentElement();
+            
+            // check to see if the base node has the correct name
+            if(root.getNodeName().equals("configuration"))
             {
-               for(int i = 0 ; i < configList.getLength();i++) 
-               {
-               
-               	//get the configFile element
-                  Element configElement = (Element)configList.item(i);
-               
-               	//extracting the fields to set Configuration settings
-                  String repositoryURL= getTagValue(configElement,"repositoryURL");
-                  String indexDirectory=getTagValue(configElement,"indexDirectory");
-                  String lastHarvest=getTagValue(configElement,"lastHarvest");
-                  String databaseUrl=getTagValue(configElement,"databaseUrl");  
-                  String databasePassword=getTagValue(configElement,"databasePassword");  
-                  String databaseUsername=getTagValue(configElement,"databaseUsername");
-                  String servletUrl=getTagValue(configElement,"servletUrl");
-                  setBrowseCategories(readBrowseCategories(configElement));
-               
-               	
-                  if(repositoryURL.equals("Not Available")|| servletUrl.equals("Not Available")||indexDirectory.equals("Not Available"))
-                  {
-                     System.out.println("Error Condition.\n Please provide sufficient configuration data");
-                     System.out.println();
-                     System.exit(0);
-                  }
-                  else
-                  {	
-                     setRepositoryURL(repositoryURL);
-                  	
-                  	
+               // get basic values
+                String repositoryURL = getXMLValue (root, "portal/repositoryURL", "http://localhost:8080/OAI-PMH/");
+                String indexDirectory = getXMLValue (root, "portal/indexDirectory", "index");
+//                String lastHarvest = getXMLValue (root, "portal/lastHarvest", "");
+                String databaseUrl = getXMLValue (root, "portal/database/URL", "localhost/dbp");  
+                String databasePassword = getXMLValue (root, "portal/database/password", "");  
+                String databaseUsername = getXMLValue (root, "portal/database/username", "");
+                String databaseDriver = getXMLValue (root, "repository/database/driver", "com.mysql.jdbc.Driver");
+                String servletUrl = getXMLValue (root, "repository/servletUrl", "http://localhost:8080/");
+
+                // get the browse categories
+                browseCategories = new ArrayList<String>();
+                Element portal = getXMLElement (root, "portal");
+                NodeList listOfBrowsers = portal.getElementsByTagName("browser");
+                for ( int i=0; i<listOfBrowsers.getLength (); i++ )
+                   browseCategories.add (getXMLValue ((Element)listOfBrowsers.item(i), "", "title"));
+
+                // get the last harvest date from the database
+                String lastHarvest = "";
+                Class.forName (databaseDriver);
+                Connection databaseConnection = DriverManager.getConnection (databaseUrl, databaseUsername, databasePassword);
+                Statement stm = databaseConnection.createStatement ();
+                ResultSet rs = stm.executeQuery ("select value from Properties where name=\'lastHarvest'");
+                if (rs.next ())
+                   lastHarvest = rs.getString ("value");
+                rs.close ();
+                stm.close ();
+                databaseConnection.close ();
+
+                // store config if values are sensible
+                if("".equals (repositoryURL) || "".equals (servletUrl) || "".equals (indexDirectory))
+                {
+                   System.out.println("Error Condition.\n Please provide sufficient configuration data");
+                   System.out.println();
+                   System.exit(0);
+                }
+                else
+                {	
+                   setRepositoryURL(repositoryURL);
                   		
-                     if(harvesting)
-                     {
-                        setStopWords(readStopWords());				
-                     }
+                   if(harvesting)
+                   {
+                      setStopWords(readStopWords());				
+                   }
                   	
-                  	//saving the configuration settings as instance variables
-                     setIndexDirectory(indexDirectory); 
-                     setLastHarvest(lastHarvest);
-                     setDatabaseUrl(databaseUrl);
-                     setDatabaseUsername(databaseUsername);
-                     setDatabasePassword(databasePassword);
-                     setServletUrl(servletUrl);
-                  	
-                  }	
-               
-               }
+                   //saving the configuration settings as instance variables
+                   setIndexDirectory(indexDirectory); 
+                   setLastHarvest(lastHarvest);
+                   setDatabaseUrl(databaseUrl);
+                   setDatabaseUsername(databaseUsername);
+                   setDatabasePassword(databasePassword);
+                   setDatabaseDriver(databaseDriver);
+                   setServletUrl(servletUrl);
+                }	
             }
             else
             {
-               System.out.println("Error Condition.\nNo data sources specified in configuration file.\n");
-               System.exit(0);
+                throw new IOException("Incorrect config file structure. Base Node has wrong name.");
+            }
             
-            }
-         }  
-             catch(Exception e)//Exception condition that results from undefined elements in the configFile element
-            {
-               e.printStackTrace();
-            
-            }	
-      
-      }	
+        }//exceptions
+        catch(Exception e)
+        {
+           e.printStackTrace();
+        }       
+    }	
    
-   
-   
-   /**
-   *Extracts the tag value for elements in a <code>Document</code> tree.
-   *@param recordElement <code>Element</code> representing the the tag in 
-   *			the XML file that is to be extracted.
-   *@param tagName the textual name of the tag to be extracted.
-   *@return tagValue <code>String</code> representation of tag.
-   */
-       private String getTagValue(Element recordElement, String tagName)
-      {
-         String tagValue="";//temporary variable for tag field
-         try{
-            NodeList tagList = recordElement.getElementsByTagName(tagName);
-         	 
-            if(tagList != null && tagList.getLength() > 0) 
-            {
-               Element tag = (Element)tagList.item(0);
-               if(tag.getFirstChild().getNodeValue() != null)
-               {
-                  tagValue=tag.getFirstChild().getNodeValue();
-                  return tagValue;
-               }
-               else{
-                  return "";}
-            }
-            else
-            {
-               return "";}	
-         }
-             catch(Exception e)
-            {	//some config files might have a tag but the tag might not contain any value
-            //Uncomment the next line to view tag without value
-            //System.out.println("Cannot extract value for: " + tagName);
-               return "Not Available.";	
-            }
-      
-      }
    
    /**
    *Recursively deletes the contents of the specified directory,dir.
@@ -279,6 +244,12 @@
        public String getDatabaseUrl()
       {
          return databaseUrl;
+       
+      }
+
+       public String getDatabaseDriver()
+      {
+         return databaseDriver;
        
       }
        
@@ -342,6 +313,12 @@
          databaseUrl=param;
        
       }
+
+       public void setDatabaseDriver(String param)
+      {
+         databaseDriver=param;
+       
+      }
    
        public void setLastHarvest (String param)
       {
@@ -400,46 +377,21 @@
       }
    
    /**
-   *Updates the configuration file after every harvest.
+   *Updates the configuration data in the database after every harvest.
    */
        public void updateConfigurationFile()
-      {	
-      
-      
-         String newConfigFile=
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"+
-            "<configData>\n"+
-            "	<configFile>\n"+
-               "		<repositoryURL>"+getRepositoryURL()+"</repositoryURL>\n"+
-            "		<indexDirectory>"+getIndexDirectory()+"</indexDirectory>\n"+
-            "		<lastHarvest>"+getLastHarvest()+"</lastHarvest>\n"+
-            "		<databaseUrl>"+getDatabaseUrl()+"</databaseUrl>\n"+
-            "		<databaseUsername>"+getDatabaseUsername()+"</databaseUsername>\n"+
-              "		<databasePassword>"+getDatabasePassword()+"</databasePassword>\n"+
-              "		<servletUrl>"+getServletUrl()+"</servletUrl>\n";
-      
-         for(int i = 0;i<getBrowseCategories().size();i++)
-         {
-            newConfigFile+="		<browser>"+getBrowseCategories().get(i).trim()+"</browser>\n";
-         
-         }
-         newConfigFile+="	</configFile>\n"+
-            "</configData>\n";
-      
-         //stores a copy of the contents of the config file for use with the browsing interface
-         String userIntefaceConfig=newConfigFile;
-      
+      {
          try {
-         	//deleteIndexDirectory(new File("../config/confg.xml"));
-            BufferedWriter configOutput = new BufferedWriter(new FileWriter("../config/config.xml"));
-            configOutput.write(newConfigFile);
-            configOutput.close();
-         } 
-             catch (IOException e) {
-               System.out.println("Error Condition.\n Error writing out to config file");		
-            }
-      }
-   
+                Class.forName (databaseDriver);
+                Connection databaseConnection = DriverManager.getConnection (databaseUrl, databaseUsername, databasePassword);
+                Statement stm = databaseConnection.createStatement ();
+                stm.executeUpdate ("replace into Properties values (\'lastHarvest\', \'"+getLastHarvest ()+"\')");
+                stm.close ();
+                databaseConnection.close ();
+          } catch (Exception e) {
+             
+          }       
+      }         
    
    /**
    *Creates a connection to the portal database when the harvesting is initiated,
@@ -450,7 +402,7 @@
       {
          try{
             				
-            Class.forName ("com.mysql.jdbc.Driver");
+            Class.forName (getDatabaseDriver ());
          	
          //creating connection using settings saved when configuration file was read.	
             databaseConnection = DriverManager.getConnection (getDatabaseUrl(),getDatabaseUsername() , getDatabasePassword());
@@ -474,7 +426,7 @@
        private List<String> readStopWords()
       {
          List<String> stopWordsTemp = new ArrayList<String>();
-         File stopWordsFile = new File("../config/stopwords.xml");	
+         File stopWordsFile = new File("/etc/etdportal/portal/stopwords.xml");	
         
 		   Document newStopWordsFile=null;
       
@@ -542,45 +494,4 @@
          return stopWordsTemp;
       
       }
-   
-   /**
-   *Reads in a list of browsing categories used when browsing on the portal front-end.
-   *
-   */
-       private List<String> readBrowseCategories(Element configElement)
-      {
-         List<String> browseCategoriesTemp = new ArrayList<String>();
-          
-         try
-         {
-            //get a nodelist of <browse> elements
-            NodeList browseCategoriesList = configElement.getElementsByTagName("browser");
-               
-         
-            if(browseCategoriesList != null && browseCategoriesList.getLength() > 0)
-            {
-               for(int i = 0 ; i < browseCategoriesList.getLength();i++) 
-               {
-                  Element category = (Element)browseCategoriesList.item(i);
-                  if(category.getFirstChild().getNodeValue() != null)
-                  {
-                     browseCategoriesTemp.add(category.getFirstChild().getNodeValue());
-                  }
-               }
-               System.out.println("Categories list size"+browseCategoriesTemp.size());
-               return browseCategoriesTemp;
-            
-            }
-         } 
-             catch(Exception e)//Exception condition that results from undefined elements in the "word" element
-            {
-               e.printStackTrace();
-            
-            }			System.out.println("Categories list size"+browseCategoriesTemp.size());
-         return browseCategoriesTemp;
-      
-      }		 
-        
-   
-   
    }
