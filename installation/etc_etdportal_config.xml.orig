@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+   <repository> 
+      <database>
+         <URL>jdbc:mysql://localhost:3306/dba</URL>
+         <username>dba</username>
+         <password>dba</password>
+         <driver>com.mysql.jdbc.Driver</driver>
+      </database>   
+      <adminEmail>someone@somewhere.org</adminEmail>
+      <repositoryName>National ETD Portal</repositoryName>
+      <description>
+         <URL>http://somewhere.org/</URL>
+         <text>Metadata archive of theses and dissertations from the universities of XYZ</text>
+      </description>
+      <metadataFormats>
+         <metadataFormat>
+            <prefix>oai_dc</prefix>
+            <schema>http://www.openarchives.org/OAI/2.0/oai_dc.xsd</schema>
+            <namespace>http://www.openarchives.org/OAI/2.0/oai_dc/</namespace>
+         </metadataFormat>
+      </metadataFormats>
+   </repository>
+
+   <portal>
+      <repositoryURL>http://localhost:8080/OAI-PMH/</repositoryURL>
+      <indexDirectory>/var/db/index</indexDirectory>
+      <database>
+         <URL>jdbc:mysql://localhost:3306/dbp</URL>
+         <username>dbp</username>
+         <password>dbp</password>
+         <driver>com.mysql.jdbc.Driver</driver>
+      </database>
+      <servletUrl>http://localhost:8080/</servletUrl>
+      <browser>title</browser>
+      <browser>affiliation</browser>
+      <browser>date</browser>
+   </portal>
+
+</configuration>
+                                                                    
