@@ -67,6 +67,7 @@ install:
 	install -o $(TOMCAT) -v -m 644 images/footer.png $(WEBAPPS)/$(APPNAME)/images/
 
 	install -o $(TOMCAT) -v -d /etc/etdportal/portal
+	install -o $(TOMCAT) -v -d $(WEBAPPS)/$(APPNAME)/WEB-INF
 	install -o $(TOMCAT) -v -m 644 WEB-INF/web.xml $(WEBAPPS)/$(APPNAME)/WEB-INF/
 	for comp in $(CONFIGFILES); do \
 	   install -o $(TOMCAT) -v -m 644 WEB-INF/xsl/$$comp /etc/etdportal/portal/; \
