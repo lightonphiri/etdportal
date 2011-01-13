@@ -1,14 +1,14 @@
-<VirtualHost *>
-        ServerName etd
+<VirtualHost *:80>
+        ServerName www.netd.ac.za
 	ServerAdmin hussein@cs.uct.ac.za
 	
-	DocumentRoot /home/etd/
-	<Directory /home/etd/>
-		Options Indexes FollowSymLinks MultiViews
-		AllowOverride None
-		Order allow,deny
-		allow from all
-	</Directory>
+#	DocumentRoot /home/etd/
+#	<Directory /home/etd/>
+#		Options Indexes FollowSymLinks MultiViews
+#		AllowOverride None
+#		Order allow,deny
+#		allow from all
+#	</Directory>
 
 	ErrorLog /var/log/apache2/error.log
 
