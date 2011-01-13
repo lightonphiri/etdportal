@@ -15,7 +15,7 @@ JAVAC = javac
 
 WEBAPPS = /var/lib/$(TOMCAT)/webapps
 APPNAME = portal
-INDEXDIR = /var/db/index
+INDEXDIR = /var/db
 
 # rules
 
