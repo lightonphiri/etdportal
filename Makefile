@@ -32,6 +32,7 @@ install:
 	   $(MAKE) -C $$comp install; \
 	done
 	
+	install -o $(TOMCAT) -v -m 755 installation/Harvest.sh /var/lib/$(TOMCAT)/webapps
 	install -o $(TOMCAT) -v -m 644 installation/etc_apache2_sites-available_etd /etc/apache2/sites-available/etd
 	install -o $(TOMCAT) -v -m 644 installation/etc_tomcat5.5_policy.d_04webapps.policy /etc/$(TOMCAT)/policy.d/04webapps.policy
        
