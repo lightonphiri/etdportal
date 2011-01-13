@@ -7,7 +7,7 @@
 TOMCAT = tomcat6
 SERVLETAPI = /usr/share/tomcat6/lib
 
-JFLAGS = -classpath WEB-INF/lib/mysql-connector-java.jar:$(SERVLETAPI)/servlet-api.jar:WEB-INF/lib/lucene-analyzers.jar:WEB-INF/lib/lucene-core.jar:. \
+JFLAGS = -classpath WEB-INF/lib/mysql-connector-java.jar:WEB-INF/lib/servlet-api.jar:WEB-INF/lib/lucene-analyzers.jar:WEB-INF/lib/lucene-core.jar:. \
          -d WEB-INF/classes \
          -sourcepath WEB-INF/classes
 
@@ -67,6 +67,7 @@ install:
 	install -o $(TOMCAT) -v -m 644 images/footer.png $(WEBAPPS)/$(APPNAME)/images/
 
 	install -o $(TOMCAT) -v -d /etc/etdportal/portal
+	install -o $(TOMCAT) -v -d $(WEBAPPS)/$(APPNAME)/WEB-INF
 	install -o $(TOMCAT) -v -m 644 WEB-INF/web.xml $(WEBAPPS)/$(APPNAME)/WEB-INF/
 	for comp in $(CONFIGFILES); do \
 	   install -o $(TOMCAT) -v -m 644 WEB-INF/xsl/$$comp /etc/etdportal/portal/; \

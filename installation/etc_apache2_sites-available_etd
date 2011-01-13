@@ -1,5 +1,5 @@
 <VirtualHost *>
-        ServerName localhost
+        ServerName etd
 	ServerAdmin hussein@cs.uct.ac.za
 	
 	DocumentRoot /home/etd/

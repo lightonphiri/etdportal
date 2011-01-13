@@ -38,4 +38,4 @@ install:
 	install -o $(TOMCAT) -v -d 644 /etc/etdportal
 	install -o $(TOMCAT) -v -m 644 installation/etc_etdportal_config.xml.orig /etc/etdportal/config.xml.orig
 	
-	@echo Finis.
+	@echo Finished.
