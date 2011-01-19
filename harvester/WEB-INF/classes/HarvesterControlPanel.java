@@ -129,11 +129,14 @@ public class HarvesterControlPanel extends HttpServlet
             for ( int i=0; i<reps.size(); i++ )
             {
                Repository rep = reps.get(i);
+               String setSpec = rep.getSetSpec ();
+               if (setSpec.length () > 12)
+                  setSpec = setSpec.substring (0, 12)+"...";
                page.append ("<tr>"+
                             "<td><a href=\"?action=edit&id="+rep.getID()+"\">"+rep.getID()+"</a></td>"+
                             "<td>"+rep.getName()+"</td>"+
                             "<td>"+rep.getMetadataFormat()+"</td>"+
-                            "<td>"+rep.getSetSpec()+"</td>"+
+                            "<td>"+setSpec+"</td>"+
                             "<td>"+rep.getRunning()+"</td>"+
                             "<td>"+rep.getHarvestStatus()+"</td>"+
                             "<td>"+rep.getDateFrom()+"</td>"+
