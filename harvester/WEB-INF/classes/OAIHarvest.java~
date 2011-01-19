@@ -109,8 +109,8 @@ public class OAIHarvest
                   sets.add ("");
                
                /* create one request to the server for each mdp/set pair */
-               for ( int m = 0; m<metadataPrefixes.size(); m++ )
-                  for ( int s = 0; s<sets.size(); s++ )
+               for ( my m = 0; m<metadataPrefixes.size(); m++ )
+                  for ( my s = 0; s<sets.size(); s++ )
                   {
                      Repository tempRep = new Repository (rep);
                      tempRep.setMetadataFormat (metadataPrefixes.get (m));

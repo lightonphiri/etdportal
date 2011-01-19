@@ -413,7 +413,7 @@ public class DatabaseConnection
                     sqlResponse.append(UTCDateFormatter.format(rs.getTimestamp("Date")));
                     sqlResponse.append("</datestamp>\n");
                     //sets
-                    sqlResponse.append("<setSpec>\n");
+                    sqlResponse.append("<setSpec>");
                     sqlResponse.append(rs.getString("SetSpec"));
                     sqlResponse.append("</setSpec>\n");
                     
@@ -426,7 +426,7 @@ public class DatabaseConnection
                     sqlResponse.append(UTCDateFormatter.format(rs.getTimestamp("Date")));
                     sqlResponse.append("</datestamp>\n");
                     //sets                      
-                    sqlResponse.append("<setSpec>\n");
+                    sqlResponse.append("<setSpec>");
                     sqlResponse.append(rs.getString("SetSpec"));
                     sqlResponse.append("</setSpec>\n");
                     

@@ -74,21 +74,32 @@
       {
       
          try {
-            record.setPortalXML(getPortalXML(record));
-            record.setRecordTitle(getField(record,"title"));     	
-            record.setDate(getField(record,"date"));
-  
-            Statement stm = con.createStatement();
-            Statement stm2 = con.createStatement();
-         
             if(record != null)
-            {		
-               stm.addBatch("REPLACE INTO RecordTitle VALUES('"+record.getRecordTitle()+"','"+removeStopWords(record.getRecordTitle(),stopWords)+"','"+record.getRepositoryIdentifier()+"')" );
-               stm.addBatch("REPLACE INTO RecordDate VALUES('"+record.getDate()+"','"+record.getRepositoryIdentifier()+"')" );
-               stm.addBatch("REPLACE INTO RecordAffiliation VALUES('"+record.getAffiliation()+"','"+record.getRepositoryIdentifier()+"')" );
-               stm.addBatch("REPLACE INTO RecordXML VALUES('"+record.getPortalXML()+"','"+record.getRepositoryIdentifier()+"')" ); 
-               stm.addBatch("REPLACE INTO RecordLastHarvestDate VALUES('"+lastHarvestDate+"','"+record.getRepositoryIdentifier()+"')" ); 
-               stm.executeBatch();
+            {
+               if (record.getStatus ()) // deleted record
+               {
+                  Statement stm = con.createStatement();
+                  stm.addBatch("delete from RecordTitle where identifier_etd=\'"+record.getRepositoryIdentifier()+"\'");
+                  stm.addBatch("delete from RecordDate where identifier_etd=\'"+record.getRepositoryIdentifier()+"\'");
+                  stm.addBatch("delete from RecordAffiliation where identifier_etd=\'"+record.getRepositoryIdentifier()+"\'");
+                  stm.addBatch("delete from RecordXML where identifier_etd=\'"+record.getRepositoryIdentifier()+"\'");
+                  stm.addBatch("delete from RecordLastHarvestDate where identifier_etd=\'"+record.getRepositoryIdentifier()+"\'");
+                  stm.executeBatch();
+               }
+               else
+               {
+                  record.setPortalXML(getPortalXML(record));
+                  record.setRecordTitle(getField(record,"title"));     	
+                  record.setDate(getField(record,"date"));
+     
+                  Statement stm = con.createStatement();
+                  stm.addBatch("REPLACE INTO RecordTitle VALUES('"+record.getRecordTitle()+"','"+removeStopWords(record.getRecordTitle(),stopWords)+"','"+record.getRepositoryIdentifier()+"')" );
+                  stm.addBatch("REPLACE INTO RecordDate VALUES('"+record.getDate()+"','"+record.getRepositoryIdentifier()+"')" );
+                  stm.addBatch("REPLACE INTO RecordAffiliation VALUES('"+record.getAffiliation()+"','"+record.getRepositoryIdentifier()+"')" );
+                  stm.addBatch("REPLACE INTO RecordXML VALUES('"+record.getPortalXML()+"','"+record.getRepositoryIdentifier()+"')" ); 
+                  stm.addBatch("REPLACE INTO RecordLastHarvestDate VALUES('"+lastHarvestDate+"','"+record.getRepositoryIdentifier()+"')" ); 
+                  stm.executeBatch();
+               }   
             }
             else{System.out.println("--Updating the database--\nError:Record is null,please check harvest source before updating the database");}
          }   	

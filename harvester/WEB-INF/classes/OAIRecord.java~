@@ -160,9 +160,7 @@ public class OAIRecord {
      */
    public boolean selfValidate(SchemaFactory factory)
    {
-      // return valid for deleted records
-      if (deleted)
-         return true;
+      boolean result = true;
 
       //First remove any ' and " that might break the sql storage statement
       xml.replaceAll("[\"\']", "\\\"");

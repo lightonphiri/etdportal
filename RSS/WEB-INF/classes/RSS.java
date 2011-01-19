@@ -176,7 +176,7 @@ public class RSS extends HttpServlet
 
                 //create a statement and execute our query
                 Statement stm = con.createStatement();
-                ResultSet rs = stm.executeQuery("SELECT DISTINCT * FROM Archive ORDER BY Date desc LIMIT 5;");
+                ResultSet rs = stm.executeQuery("SELECT DISTINCT * FROM Archive where Deleted=\'0\' ORDER BY Date desc LIMIT 5;");
 
                 //list our most recent 5 records
                 while(rs.next())

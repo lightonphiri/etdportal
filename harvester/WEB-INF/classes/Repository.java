@@ -89,6 +89,22 @@ public class Repository
       
       conf = aConf;
    }
+
+   // copy constructor
+   public Repository ( Repository rep )
+   {
+      ID = rep.ID;
+      name = rep.name;
+      baseURL = rep.baseURL;
+      metadataFormat = rep.metadataFormat;
+      setSpec = rep.setSpec;
+      dateFrom = rep.dateFrom;
+      harvestInterval = rep.harvestInterval;
+      running = rep.running;
+      harvestStatus = rep.harvestStatus;
+      
+      conf = rep.conf;
+   }
    
    // Constructor for new harvest entry
    public Repository ( Config aConf, String anID, String aName, String aBaseURL, String aMetadataFormat, 

@@ -104,7 +104,6 @@ public class Repository
       harvestInterval = aHarvestInterval;
       running = aRunning;
       harvestStatus = aHarvestStatus;
-      numberOfRecords = numOfRecords;
       
       cursor = 0;
       completeListSize = -1;

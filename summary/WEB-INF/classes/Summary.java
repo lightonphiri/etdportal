@@ -1,7 +1,8 @@
 /**
  *
  * @author Lawrence Webley
- *  RSS Feed Generator
+ * @author Hussein Suleman
+ *  Summary of collection
  *  18 June 2009
  */
 import java.io.*;
@@ -157,7 +158,7 @@ public class Summary extends HttpServlet
 
                 //create a statement and execute our query
                 Statement stm = con.createStatement();
-                ResultSet rs = stm.executeQuery("select r.id,r.name,r.baseURL,count(distinct a.id) from Archive as a,Repositories as r where a.source=r.id group by a.source");
+                ResultSet rs = stm.executeQuery("select r.id,r.name,r.baseURL,count(distinct a.id) from Archive as a,Repositories as r where a.source=r.id and a.Deleted=\'0\' group by a.source");
 
                 //list our most recent 5 records
                 while(rs.next())

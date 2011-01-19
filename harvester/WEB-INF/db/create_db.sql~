@@ -22,7 +22,7 @@ CREATE TABLE `Repositories` (
   `baseURL` varchar(2048) NOT NULL,
   `metadataFormat` varchar(128) NOT NULL default 'oai_dc',
   `setSpec` varchar(128) NOT NULL default '',
-  `dateFrom` timestamp NOT NULL,
+  `dateFrom` varchar(64) NOT NULL default '',
   `harvestInterval` INT NOT NULL default '3000',
   PRIMARY KEY  (`ID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;

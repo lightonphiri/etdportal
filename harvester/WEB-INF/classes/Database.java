@@ -67,7 +67,7 @@ public class Database {
    {
       try {
          String about;
-         if (! ("").equals (rep.getSetSpec ())) 
+         if (! ("").equals (rep.getSetSpec ()))
             about = "Harvested from source set of "+ rep.getSetSpec();
          else
             about = "Record wasnt in a set when it was harvested";
@@ -165,7 +165,7 @@ public class Database {
          stm.executeUpdate ("delete from Repositories where ID=\'"+rep.getID ()+"\'");
          stm.close ();
          stm = conn.createStatement ();
-         stm.executeUpdate ("delete from Archive where Source=\'"+rep.getID ()+"\'");
+         stm.executeUpdate ("update Archive set Deleted=\'1\' where Source=\'"+rep.getID ()+"\'");
          stm.close ();
          conn.close ();
       } catch ( Exception e ) {
