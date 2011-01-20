@@ -129,8 +129,8 @@
                 String databaseUrl = getXMLValue (root, "portal/database/URL", "localhost/dbp");  
                 String databasePassword = getXMLValue (root, "portal/database/password", "");  
                 String databaseUsername = getXMLValue (root, "portal/database/username", "");
-                String databaseDriver = getXMLValue (root, "repository/database/driver", "com.mysql.jdbc.Driver");
-                String servletUrl = getXMLValue (root, "repository/servletUrl", "http://localhost:8080/");
+                String databaseDriver = getXMLValue (root, "portal/database/driver", "com.mysql.jdbc.Driver");
+                String servletUrl = getXMLValue (root, "portal/servletUrl", "http://localhost:8080/");
 
                 // get the browse categories
                 browseCategories = new ArrayList<String>();
