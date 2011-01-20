@@ -36,7 +36,7 @@ install:
 	install -o $(TOMCAT) -v -m 644 installation/etc_apache2_sites-available_etd /etc/apache2/sites-available/etd
 	install -o $(TOMCAT) -v -m 644 installation/etc_tomcat5.5_policy.d_04webapps.policy /etc/$(TOMCAT)/policy.d/04webapps.policy
        
-	install -o $(TOMCAT) -v -d -m 644 /etc/etdportal
+	install -o $(TOMCAT) -v -m 644 -d /etc/etdportal
 	install -o $(TOMCAT) -v -m 644 installation/etc_etdportal_config.xml.orig /etc/etdportal/config.xml.orig
 	
 	@echo Finished.
