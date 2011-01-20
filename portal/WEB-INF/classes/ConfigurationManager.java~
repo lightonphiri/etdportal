@@ -426,7 +426,7 @@
        private List<String> readStopWords()
       {
          List<String> stopWordsTemp = new ArrayList<String>();
-         File stopWordsFile = new File("../config/stopwords.xml");	
+         File stopWordsFile = new File("/etc/etdportal/portal/stopwords.xml");	
         
 		   Document newStopWordsFile=null;
       

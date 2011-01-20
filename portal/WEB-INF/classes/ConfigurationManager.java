@@ -370,8 +370,10 @@
       
          //create our date formatting tools and set the timezone to UTC time.
          SimpleDateFormat UTCDateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'Z'");
-         TimeZone tz = TimeZone.getTimeZone("UTC");
-         UTCDateFormatter.setTimeZone(tz);
+         // switch off UTC because harvester is not using it!
+         // [hussein, 20 jan 2011]
+         //TimeZone tz = TimeZone.getTimeZone("UTC");
+         //UTCDateFormatter.setTimeZone(tz);
       
          return UTCDateFormatter.format(currentTimeStamp);
       }
