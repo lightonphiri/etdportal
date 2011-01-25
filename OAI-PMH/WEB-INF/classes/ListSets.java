@@ -47,8 +47,9 @@ public class ListSets extends Response
                 outputResponse.append(settings.dbCon.listSets());                
             }
             catch(SQLException e)
-            {
+            {                
                 outputResponse.append(" <error>A Sql exception occured while trying to access the database! Please contact an admin for assistance.</error>\n");
+                settings.log.add("SQL Exception occured while trying to access the database: "+e);
             }
         }//bad arguments
         else

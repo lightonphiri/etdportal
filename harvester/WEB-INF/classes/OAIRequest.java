@@ -85,19 +85,19 @@ public class OAIRequest
             String rtoken = ""; // at first there is no resumption token
             do {
                 String request = generateRequest(rtoken);
-                System.out.println("OAI request: " + rep.getBaseURL () + "?" + request);
+                conf.log.add("OAI request: " + rep.getBaseURL () + "?" + request);
                 BufferedInputStream response = sendRequest(request);
 
                 updateHarvestStatus();
                 OAIResponseHandler handler = new OAIResponseHandler (conf, response, rep); // create a response handler to parse and store the response
-                System.out.println("Storing the responses");
+                conf.log.add("Storing the responses...");
                 handler.store(); // store the entries in the response in the database
                 //update harvest status
 
-                System.out.println ("Getting the resumption token");
+                conf.log.add("Getting resumption token...");
                 rtoken = handler.getResumptionToken(); // get the resumption token from the response
                 if (! rtoken.equals (""))
-                   System.out.println ("resumptionToken: " + rtoken);
+                   conf.log.add ("resumptionToken: " + rtoken);
             } while (!rtoken.equals("")); // if there is no resumption token, end the harvest
             //Harvest completed, so we know the list size
             rep.completeListSize = rep.cursor;
@@ -157,7 +157,8 @@ public class OAIRequest
         }
         catch (Exception e)
         {
-            System.out.println("Error sending request: "+e);
+            conf.log.add("Error sending request to remote repository: "+e,
+                    "Error sending request to remote repository: "+e);
             return null;
         }
 
@@ -196,12 +197,14 @@ public class OAIRequest
         }
         catch (SAXException ex)
         {
-          System.out.println("There was an error validating an xml document from: " + rep.getBaseURL());
+          conf.log.add("There was an error validating an xml document from: " + rep.getBaseURL(),
+                  "There was an error validating an xml document from: " + rep.getBaseURL());
           result = false;
         }
         catch(Exception e)
         {
-          System.out.println("There was an error validating an xml document from: " + rep.getBaseURL());
+          conf.log.add("There was an error validating an xml document from: " + rep.getBaseURL(),
+                  "There was an error validating an xml document from: " + rep.getBaseURL());
           result = false;
         }
         return result;

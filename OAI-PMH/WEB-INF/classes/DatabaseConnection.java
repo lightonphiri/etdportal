@@ -555,16 +555,27 @@ public class DatabaseConnection
         StringBuffer sqlResponse = new StringBuffer();
         //Create statement so we can execute a query
         Statement stm = con.createStatement();
+        
         //Exectute our query and get the result from the database.
         ResultSet rs = stm.executeQuery("SELECT DISTINCT SetSpec FROM Archive;");
+
 
         sqlResponse.append("<ListSets>\n");
         //Iterate through all the results, adding them to the response
         while(rs.next())
         {
             sqlResponse.append("<set>\n");
-            sqlResponse.append("<setSpec>"+rs.getString("SetSpec")+"</setSpec>\n");
-            sqlResponse.append("<setName>"+rs.getString("SetSpec")+"</setName>\n");
+            
+            String setSpec = rs.getString("SetSpec");
+            sqlResponse.append("<setSpec>"+setSpec+"</setSpec>\n");            
+            
+            Statement stmName = con.createStatement();
+            ResultSet rsName = stmName.executeQuery("SELECT name FROM Repositories WHERE ID = '"+setSpec+"';");
+            while(rsName.next())
+            {
+            	sqlResponse.append("<setName>"+rsName.getString("name")+"</setName>\n");
+            }
+            
             sqlResponse.append("</set>\n");
         }
 

@@ -47,11 +47,12 @@ public class Database {
          if(stm == null)//if there are no errors, yet the statement was not created - normally incorrect authentification
          {
             connected = false;
-            System.out.println("Error: Could not connect to database. Incorrect Authentication Details?");
+            conf.log.add("Error: Could not connect to database. Incorrect Authentication Details?", "Error: Could not connect to database. Incorrect Authentication Details?");
+
          }
       } catch (Exception e) {
          connected = false;
-         System.out.println("Error connecting to database: "+e);
+         conf.log.add("Error connecting to database: "+e, "Error connecting to database: "+e);
       }
       return connected;
    }
@@ -77,6 +78,7 @@ public class Database {
             "','"+rep.getID()+"')";
          stm.addBatch(query);
       } catch (Exception e){
+          conf.log.add("Error adding a record to the batch: "+e);
          //System.out.println(e);
          // do nothing, exceptions will be thrown for duplicates
       }
@@ -92,7 +94,8 @@ public class Database {
          stm.close ();
          conn.close ();
       } catch(Exception e) {
-         System.err.println("Error occured while storing batch: \n"+e);
+          conf.log.add("Error occured while storing batch of records: \n"+e, "Error occured while storing batch of records: \n"+e);
+         
       }
    }
    
@@ -193,6 +196,7 @@ public class Database {
          stm.close ();
          conn.close ();
       } catch ( Exception e ) {
+          conf.log.add("Failed to get repository list! Error: "+e);
       }
       
       // convert list to a simple String list
@@ -237,6 +241,7 @@ public class Database {
          
          conn.close ();
       } catch ( Exception e ) {
+          conf.log.add("Failed to get repository list! Error: "+e);
       }
 
       return repoList;

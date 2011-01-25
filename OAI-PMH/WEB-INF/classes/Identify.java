@@ -41,7 +41,7 @@ public class Identify extends Response
             }catch(SQLException e)
             {//if failed, set this to begining
                 outputResponse.append("0000-00-00T00:00:00Z");
-                e.printStackTrace();
+                settings.log.add("Failed to find and earliest date stamp in the repository!");
             }
             outputResponse.append("</earliestDatestamp>\n");
             outputResponse.append("   <deletedRecord>persistent</deletedRecord>\n");

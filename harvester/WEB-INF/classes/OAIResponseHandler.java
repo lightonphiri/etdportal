@@ -66,14 +66,15 @@ public class OAIResponseHandler
          for (int i = 0; i < results.size(); i++)
          {
             OAIRecord rec = results.get(i);
-            if(rec.selfValidate(factory))
+            if(rec.selfValidate(factory, conf))
             {
                db.addToBatch (rec, rep);
                rep.cursor++;
             }
             else
             {
-               System.err.println("Record with ID: ("+rec.getID()+") failed validation and was not added...");
+               conf.log.add("Record with ID: ("+rec.getID()+") failed validation and was not added!",
+                       "Record with ID: ("+rec.getID()+") failed validation and was not added!");
             }
          }
          //execute the batch run to add the records to the database
@@ -103,12 +104,12 @@ public class OAIResponseHandler
             if(identMatch.find())
             {
                 String identifier = extractTagValue(record.substring(identMatch.start(), identMatch.end()));
-                result.add(toRecord(record, identifier));
-                System.out.println ("record: " + identifier);
+                result.add(toRecord(record, identifier));                
             }
             else
             {
-                System.err.println("Malformed Record encountered - No Identifier! Ignoring and continuing");
+                conf.log.add("Malformed Record encountered - No Identifier! Ignoring and continuing",
+                        "Malformed Record encountered - No Identifier! Ignoring and continuing");
             }            
         }
 
@@ -116,8 +117,8 @@ public class OAIResponseHandler
         Matcher nonXmlMatch = nonXml.matcher(response);
         if(!nonXmlMatch.find())
         {
-            System.err.println("A non-xml reply was received from the target host:");
-            System.err.println(response);
+            conf.log.add("A non-xml reply was received from the target host:\n"+response,
+                    "A non-xml reply was received from the target host, check log for details");            
             throw new Exception("Non-XML response from target host.");
         }
 
@@ -243,7 +244,8 @@ public class OAIResponseHandler
             }
             else
             {
-                System.err.println("Malformed Record encountered - No metadata! Ignoring and continuing");
+                conf.log.add("Malformed Record encountered with ID: "+id+" - No metadata! Ignoring and continuing",
+                        "Malformed Record encountered with ID: "+id+" - No metadata! Ignoring and continuing");
             }            
         }
         OAIRecord result = new OAIRecord(identifier,source,metadataType,xml, deleted); // create a OAI record instance

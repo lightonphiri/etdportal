@@ -37,24 +37,24 @@ public class OAI_servlet extends HttpServlet
             settings = new Config(this);
         }catch(IOException e)
         {
-            e.printStackTrace();
+            settings.log.add(e.toString());
             doServe = false;
         }catch(ParserConfigurationException e)
         {
-            e.printStackTrace();
+            settings.log.add(e.toString());
             doServe = false;
         }catch(ClassNotFoundException e)
         {
-            e.printStackTrace();
+            settings.log.add(e.toString());
             doServe = false;
         }catch(SQLException e)
         {
-            e.printStackTrace();
+            settings.log.add(e.toString());
             doServe = false;
         }
         catch(Exception e)
         {
-            e.printStackTrace();
+            settings.log.add(e.toString());
             doServe = false;
         }
         
@@ -152,8 +152,8 @@ public class OAI_servlet extends HttpServlet
             }
         }else
         {
-            out.println("Incorrect or missing Config file contents! Please fix this" +
-                    " before trying to run this servlet again! See the log file for more details");
+            settings.log.add("Incorrect or missing Config file contents! Please fix this" +
+                    " before trying to run this servlet again!");
         }
     }
     

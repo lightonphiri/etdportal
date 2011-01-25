@@ -158,7 +158,7 @@ public class OAIRecord {
      * Runs xml validation on this records metadata in order to check if it is valid.
      * @return true if the metadata validates successfully.
      */
-   public boolean selfValidate(SchemaFactory factory)
+   public boolean selfValidate(SchemaFactory factory, Config conf)
    {
       // return valid for deleted records
       if (deleted)
@@ -175,8 +175,7 @@ public class OAIRecord {
          Document doc = docBuilder.parse ( new InputSource ( new StringReader (xml)));
          doc.getDocumentElement().normalize();
          Element root = doc.getDocumentElement();
-      } catch ( Exception e ) {
-         e.printStackTrace();
+      } catch ( Exception e ) {                  
          return false;
       }
 

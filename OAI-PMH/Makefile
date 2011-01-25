@@ -37,6 +37,7 @@ TARGETS = WEB-INF/classes/CheckParams.class \
           WEB-INF/classes/Response.class \
           WEB-INF/classes/ResponseFormatter.class \
           WEB-INF/classes/StorageFormat.class \
+          WEB-INF/classes/Log.class \
 
 all: $(TARGETS)
 

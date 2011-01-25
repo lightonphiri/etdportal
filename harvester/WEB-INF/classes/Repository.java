@@ -138,12 +138,12 @@ public class Repository
          if (! db.loadRepository (this))
          {
             isLoaded = false;
-            System.err.println ("Cannot load repository details");
+            conf.log.add("Cannot load repository details", "Cannot load repository details");
          }   
       }
       else
       {
-         System.err.println ("Cannot load database");
+         conf.log.add("Cannot load database", "Cannot load database");
          isLoaded = false;
       }
    }
@@ -157,10 +157,10 @@ public class Repository
       if (db.connect ())
       {
          if (! db.saveRepository (this))
-            System.err.println ("Cannot save repository details");
+            conf.log.add("Cannot save repository details", "Cannot save repository details");
       }
       else
-         System.err.println ("Cannot load database");
+         conf.log.add("Cannot load database","Cannot load database");
    }
    
    /*
@@ -172,10 +172,10 @@ public class Repository
       if (db.connect ())
       {
          if (! db.deleteRepository (this))
-            System.err.println ("Cannot delete repository");
+            conf.log.add("Cannot delete repository", "Cannot delete repository");
       }
       else
-         System.err.println ("Cannot load database");      
+         conf.log.add("Cannot load database","Cannot load database");
    }
 
    /**

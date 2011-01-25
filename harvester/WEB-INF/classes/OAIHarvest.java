@@ -51,7 +51,7 @@ public class OAIHarvest
       conf = aConf;
       for ( int i=0; i<args.length; i++ )
       {
-         System.out.println("Checking "+args[i]);
+         conf.log.add("Checking "+args[i]+" to see if it needs harvesting....");
          doHarvest (args[i]);
       }
    }
@@ -86,7 +86,7 @@ public class OAIHarvest
          if ( ((isRunning == 0) && ( ( currentDate.getTime() - lastDate.getTime() > (harvestInterval*1000) ) || ("Update forced".equals(status) ) ) ))
          { // if the harvest should be done
             /* we now start with a harvest */
-            System.out.println("Harvesting: " + repositoryName + " " + rep.getBaseURL ());
+            conf.log.add("Harvesting: " + repositoryName + " @ " + rep.getBaseURL ());
             rep.updateHarvestStatus ("Starting harvest");
             rep.updateRunning(1); // update the isRunning variable
 
@@ -119,22 +119,23 @@ public class OAIHarvest
                   }   
 
                rep.updateDateFrom(); // update the dateFrom in the harvest file
-               System.out.println("Harvest completed\n");
+               conf.log.add("Harvest completed on "+repositoryName);
             } catch(Exception e) {
                rep.updateHarvestStatus ("Failed connecting to baseURL");
-               System.err.println("Error caught in OAIHarvest.java : "+e);
+               conf.log.add("Error caught in during harvest on "+repositoryName+": "+e,
+                       "Error caught in during harvest on "+repositoryName+": "+e);
             } finally {
                rep.updateRunning(0); // the harvest has finished
             }
          }
          else
          {
-            System.out.println ("Skipping harvest on " + repositoryName);
+            conf.log.add("Skipping harvest on " + repositoryName);            
          }
       }
       else
       {
-         System.out.println ("Harvest configuration not loaded for " + repositoryName);
+         conf.log.add("Harvest configuration not loaded for " + repositoryName);
       }
    }
 }

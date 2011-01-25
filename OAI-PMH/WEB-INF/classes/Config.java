@@ -33,6 +33,7 @@ public class Config
      * only be created once and then all statements passed to that. This is a 
      * performance enhancing change*/
     public DatabaseConnection dbCon;
+    public Log log;
     
     /**
      * auxiliary method to get an Element from an XPath
@@ -80,6 +81,14 @@ public class Config
             DocumentBuilderFactory docBuilderFac = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docBuilderFac.newDocumentBuilder();
             Document doc = docBuilder.parse("/etc/etdportal/config.xml");
+            
+			try{
+				log = new Log("/etc/etdportal/log.txt");
+			}
+			catch(IOException e)
+			{
+				System.out.println("Could not open log file! Error: "+e);
+			}
             
             //normalize text representation
             doc.getDocumentElement().normalize();

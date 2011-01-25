@@ -32,6 +32,7 @@ TARGETS = WEB-INF/classes/OAIHarvest.class \
           WEB-INF/classes/OAIRecord.class \
           WEB-INF/classes/OAIRequest.class \
           WEB-INF/classes/OAIResponseHandler.class \
+          WEB-INF/classes/Log.class \
           
 all: $(TARGETS)
 

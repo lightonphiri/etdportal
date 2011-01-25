@@ -97,6 +97,7 @@ public class ListRecords extends Response
                     outputResponse.append("\t<error>Failed to connect to the database here... Perhaps it is under maintainance?\n");
                     outputResponse.append(e);
                     outputResponse.append("\t</error>\n");
+                    settings.log.add("SQL Exception occured while trying to access the database: "+e);
                 }
             }                 
         }//else if the resumption token exists and it is the only argument
@@ -118,6 +119,7 @@ public class ListRecords extends Response
                 {
                     outputResponse.append("\t<error>Failed to connect to the database... Perhaps it is under maintainance?\n");
                     outputResponse.append("\t</error>\n");
+                    settings.log.add("SQL Exception occured while trying to access the database: "+e);
                 }
             }
             else

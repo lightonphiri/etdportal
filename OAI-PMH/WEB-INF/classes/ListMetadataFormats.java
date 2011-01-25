@@ -40,6 +40,8 @@ public class ListMetadataFormats extends Response
                 outputResponse.append("\t<error>Failed to connect to the database here... Perhaps it is under maintainance?\n");
                 outputResponse.append(e);
                 outputResponse.append("\t</error>\n");
+                settings.log.add("SQL Exception occured while trying to access the database: "+e);
+
             }
             outputResponse.append(" </ListMetadataFormats>\n");
            
@@ -63,6 +65,7 @@ public class ListMetadataFormats extends Response
                 outputResponse.append("\t<error>Failed to connect to the database... Perhaps it is under maintainance?\n");
                 outputResponse.append(e);
                 outputResponse.append("\t</error>\n");
+                settings.log.add("SQL Exception occured while trying to access the database: "+e);
             }
         }//otherwise we have bad arguments
         else

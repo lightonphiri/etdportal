@@ -1,11 +1,8 @@
+import java.io.IOException;
 import java.util.StringTokenizer;
-import java.util.Date;
-import java.sql.Timestamp;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.*;
-import org.xml.sax.SAXException;
 
 /**
  * Configuration information for the database
@@ -23,6 +20,8 @@ public class Config
   private String dbPassword;
   /** the driver for the database */
   private String dbDriver;
+  /** logging class */
+  public Log log;
 
    /**
     * Constructor to set up the instance variables and load up the harvest and database
@@ -33,6 +32,13 @@ public class Config
    {
       // find relative position of settings file
       settingsFile = "/etc/etdportal/config.xml";
+      try{
+        log = new Log("/etc/etdportal/log.txt");
+      }
+      catch(IOException e)
+      {
+          System.out.println("Could not open log file! Error: "+e);
+      }
 
       loadDatabaseProperties (); // load the database properties
    }
