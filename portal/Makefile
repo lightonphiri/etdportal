@@ -36,7 +36,9 @@ TARGETS = WEB-INF/classes/ConfigurationManager.class \
           WEB-INF/classes/ResponseParser.class \
           WEB-INF/classes/ResultFormat.class \
           WEB-INF/classes/ResumptionToken.class \
-          WEB-INF/classes/SearchEngine.class
+          WEB-INF/classes/SearchEngine.class \
+          WEB-INF/classes/Log.class 
+          
           
 CONFIGFILES = viewsnippets.xsl dc_index.xsl dc_snippet.xsl \
           dc.xsl etdms_index.xsl etdms_snippet.xsl etdms.xsl \

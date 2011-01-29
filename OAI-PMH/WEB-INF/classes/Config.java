@@ -33,6 +33,7 @@ public class Config
      * only be created once and then all statements passed to that. This is a 
      * performance enhancing change*/
     public DatabaseConnection dbCon;
+    private String logLocation;
     public Log log;
     
     /**
@@ -82,13 +83,7 @@ public class Config
             DocumentBuilder docBuilder = docBuilderFac.newDocumentBuilder();
             Document doc = docBuilder.parse("/etc/etdportal/config.xml");
             
-			try{
-				log = new Log("/etc/etdportal/log.txt");
-			}
-			catch(IOException e)
-			{
-				System.out.println("Could not open log file! Error: "+e);
-			}
+
             
             //normalize text representation
             doc.getDocumentElement().normalize();
@@ -102,6 +97,7 @@ public class Config
                 repoName = getXMLValue (root, "repository/repositoryName", "Default repository name");
                 repoDescUrl = getXMLValue (root, "repository/description/URL", "http://somewhere.org/");
                 repoDescText = getXMLValue (root, "repository/description/text", "Default repository description");
+                logLocation = getXMLValue (root, "repository/logLocation", "/var/log/etdportal/repository.log");
                 
                 // get the database connection details
                 dbAddress = getXMLValue (root, "repository/database/URL", "localhost/dba");
@@ -140,6 +136,14 @@ public class Config
                 x.printStackTrace();
             }
         }       
+        
+    	try{
+			log = new Log(logLocation);
+		}
+		catch(IOException e)
+		{
+			System.out.println("Could not open log file! Error: "+e);
+		}
         
     }//end constructor
 }

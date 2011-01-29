@@ -207,7 +207,7 @@
                record_to_transform = new ByteArrayInputStream(record_to_view.getPortalXML().getBytes("UTF-8"));
             } 
                 catch (UnsupportedEncodingException e) {
-                  e.printStackTrace();
+                    ConfigurationManager.log.add("Error: \n"+e.toString());
                }
          
             String record=(new ResultFormat()).viewRecord(record_to_transform,"/etc/etdportal/portal/viewfull.xsl","/etc/etdportal/portal/");

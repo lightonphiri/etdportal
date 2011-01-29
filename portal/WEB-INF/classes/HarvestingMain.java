@@ -76,25 +76,29 @@
       
       //creating the verb used to harvest the repositiory
          String ListIdentifiersVerb = "verb=ListIdentifiers&metadataPrefix=oai_dc&from="+applicationSettings.getLastHarvest();
-         System.out.println("Request: "+applicationSettings.getRepositoryURL()+"?"+ListIdentifiersVerb);	
+         ConfigurationManager.log.add("Request: "+applicationSettings.getRepositoryURL()+"?"+ListIdentifiersVerb);	
       
       //getting a list of setspecs and corresponding set names from the central repository
          List<String> setSpecList = new ArrayList<String>();
          List<String> setNameList = new ArrayList<String>();
          String ListSetsVerb = "verb=ListSets";
-         System.out.println("Request: "+applicationSettings.getRepositoryURL()+"?"+ListSetsVerb);	
+         ConfigurationManager.log.add("Request: "+applicationSettings.getRepositoryURL()+"?"+ListSetsVerb);	
          InputStream ListSetsResponse = oaiRequest.ListSets(ListSetsVerb,applicationSettings.getRepositoryURL());
          if(ListSetsResponse!=null)//if there was a valid response for the request made	
          { 
             Document listSetsDocument = oaiParser.parseXmlFile(ListSetsResponse);
             Element listSetsElement = listSetsDocument.getDocumentElement();
             setSpecList = oaiParser.getList(listSetsElement,"setSpec");
-            System.out.println("setSpecs "+setSpecList.size());
+            ConfigurationManager.log.add("setSpecs "+setSpecList.size());
             setNameList = oaiParser.getList(listSetsElement,"setName");
-            System.out.println("setNames "+setNameList.size());
+            ConfigurationManager.log.add("setNames "+setNameList.size());
          
          }
-         else{System.out.println("Error obtain sets from central repository.");System.exit(0);}
+         else{
+         	ConfigurationManager.log.add("Error obtaining sets from central repository.",
+         	"Error obtaining sets from central repository.");
+         	System.exit(0);
+         }
       
       //creating a timestamp for the current batch of records updated
          String currentHarvestTime = applicationSettings.createLastHarvestDate();
@@ -165,8 +169,7 @@
                            }
                                catch(Exception e)
                               {
-                                 System.out.println("Parsing Error, mal-formed record\n");
-                                 e.printStackTrace();
+                                   ConfigurationManager.log.add("Parsing Error, malformed record: \n"+e.toString());
                               }
                         
                         }
@@ -186,15 +189,19 @@
                      
                      } 
                   }
-               } 
-               System.out.println("Resumption Token: "+oaiParser.getTokenValue());
+               }
+               ConfigurationManager.log.add("Resumption Token: "+oaiParser.getTokenValue());
             }
-            else{System.out.println("Failed to make connection to central repository");}
+            else
+            {
+                ConfigurationManager.log.add("Error: Failed to make connection to central repository",
+                        "Error: Failed to make connection to central repository");
+            }
          
             if(!oaiParser.getTokenValue().equals(""))//if there is a valid resumptionToken,set the verb again
             {
                ListIdentifiersVerb = "verb=ListIdentifiers"+"&resumptionToken="+oaiParser.getTokenValue();
-               System.out.println("Request: "+applicationSettings.getRepositoryURL()+"?"+ListIdentifiersVerb);	
+               ConfigurationManager.log.add("Request: "+applicationSettings.getRepositoryURL()+"?"+ListIdentifiersVerb);
             }
          
          }while(!oaiParser.getTokenValue().equals(""));
@@ -202,16 +209,16 @@
       
          try{
          //indexing the database
-            System.out.println("Indexing records...");
+             ConfigurationManager.log.add("Indexing records...");
             IndexFiles newIndex = new IndexFiles();
             newIndex.createIndex(applicationSettings);
-            System.out.println("Indexing records complete.");
+            ConfigurationManager.log.add("Indexing records complete.");
          
          }
              catch(Exception e)
             {
-               System.out.println("Indexing Error, mal-formed record\n\n\n");
-               e.printStackTrace();
+                 ConfigurationManager.log.add("Error: Indexing Error, mal-formed record\n"+e.toString(),
+                         "Error: Indexing Error, mal-formed record, see log for details.");
             }
       
       //updating the configuration file after the harvesting procedure
@@ -224,7 +231,7 @@
          }
              catch(SQLException sqle)
             {
-               sqle.printStackTrace();
+               ConfigurationManager.log.add("Error: \n"+sqle.toString());
             }	
       
       

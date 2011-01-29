@@ -173,7 +173,7 @@ public class ResultFormat
 	    try {//converting the portalXML into an inputStream for XSLT trasformtion
 	      record_to_transform = new ByteArrayInputStream(recordToDisplay.getPortalXML().getBytes("UTF-8"));
 	    } catch (UnsupportedEncodingException e) {
-	      e.printStackTrace();
+	      ConfigurationManager.log.add("Error: \n"+e.toString());
 	    }
 
 	    String record = viewRecord(record_to_transform,configPath+"viewsnippets.xsl",configPath);
@@ -226,15 +226,19 @@ public class ResultFormat
             return getStringFromDocument(doc);
         } catch (ParserConfigurationException e) {
             // An error occurred while creating an empty DOM document
-	    test=test+"parseConfigError";e.printStackTrace();
+	    test=test+"parseConfigError";
+            ConfigurationManager.log.add("Error: \n"+e.toString());
         } catch (FileNotFoundException e) {
-	  test=test+"IOError\n"+e.getMessage();e.printStackTrace();
+	  test=test+"IOError\n"+e.getMessage();
+          ConfigurationManager.log.add("Error: \n"+e.toString());
         } catch (TransformerConfigurationException e) {
             // An error occurred in the XSL file
             test=test+"Transformer Configuration Error\n"+e.getMessage();
+            ConfigurationManager.log.add("Error: \n"+e.toString());
         } catch (TransformerException e) {
             // An error occurred while applying the XSL file
-	    test=test+"Transformer Application Error\n"+e.getMessage();e.printStackTrace();
+	    test=test+"Transformer Application Error\n"+e.getMessage();
+            ConfigurationManager.log.add("Error: \n"+e.toString());
         }
         return test;
 
@@ -254,7 +258,7 @@ public class ResultFormat
 	  }
 	  catch(TransformerException ex)
 	  {
-	    ex.printStackTrace();
+	    ConfigurationManager.log.add("Error: \n"+ex.toString());
 	    return null;
 	  }
       } 	

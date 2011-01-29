@@ -20,6 +20,8 @@ public class Config
   private String dbPassword;
   /** the driver for the database */
   private String dbDriver;
+  /** path of log file */
+  private String logLocation;
   /** logging class */
   public Log log;
 
@@ -32,15 +34,15 @@ public class Config
    {
       // find relative position of settings file
       settingsFile = "/etc/etdportal/config.xml";
-      try{
-        log = new Log("/etc/etdportal/log.txt");
+      loadDatabaseProperties (); // load the database properties
+	  try{
+        log = new Log(logLocation);
       }
       catch(IOException e)
       {
           System.out.println("Could not open log file! Error: "+e);
       }
 
-      loadDatabaseProperties (); // load the database properties
    }
 
     /**
@@ -97,6 +99,7 @@ public class Config
             dbUsername = getXMLValue (root, "repository/database/username", "");
             dbPassword = getXMLValue (root, "repository/database/password", "");
             dbDriver = getXMLValue (root, "repository/database/driver", "com.mysql.jdbc.Driver");
+            logLocation = getXMLValue (root, "repository/logLocation", "/var/log/etdportal/repository.log");
          }
          else
          {

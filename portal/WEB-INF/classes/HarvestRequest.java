@@ -185,7 +185,7 @@ public class HarvestRequest
          }
          catch (Exception e)
          {
-            e.printStackTrace();
+             ConfigurationManager.log.add("Error: \n"+e.toString());
          }
          	     
 	 return response;

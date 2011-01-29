@@ -110,20 +110,21 @@
          }
              catch(ParserConfigurationException pce) {
                setParsingStatus(false);
-               pce.printStackTrace();
+               ConfigurationManager.log.add("Failed to parse XML file: \n"+pce.toString());
             }
              catch(SAXException se) {
                setParsingStatus(false);
-               System.out.println("Error in parsing records.");
+               ConfigurationManager.log.add("Error in record parsing: \n"+se.toString(),
+                       "Error in record parsing, see log for details.");
             //se.printStackTrace();
             }
              catch(IOException ioe) {
                setParsingStatus(false);
-               ioe.printStackTrace();
+               ConfigurationManager.log.add("IOException while parsing XML response: \n"+ioe.toString());
             }
              catch (Exception e) {
                setParsingStatus(false);
-               e.printStackTrace ();
+               ConfigurationManager.log.add("Failed to parse XML file: \n"+e.toString());
             }   
       
       
@@ -221,12 +222,15 @@
             }
             else
             {//there are no <record> or <header> elements in the document
-               System.out.println("Error Condition: Check response,no record/header elements found.");
+                ConfigurationManager.log.add("Error Condition: Check response,no record/header elements found.",
+                        "Error Condition: Check response, no record/header elements found.");
                System.exit(0);
             }
          }
              catch(Exception e)
-            {e.printStackTrace(); }
+            {
+                 ConfigurationManager.log.add("General exception in listElements method of ResponseParser: "+e.toString());                 
+            }
          return records_list;
       }
    /**
@@ -266,10 +270,8 @@
             }
                 catch(Exception e)
                {
-                  e.printStackTrace();
-               //System.out.println("record could not be created,missing vital information,incorrect,incompatible..");
-               //System.exit(0);
-               
+                    ConfigurationManager.log.add("Record could not be created,missing vital information,incorrect,incompatible: \n" + e.toString(),
+                            "Record could not be created,missing vital information,incorrect,incompatible, see log for details.");
                }		
          
          }
@@ -301,12 +303,15 @@
             }
             else
             {//there are no <metadataFormat> elements in the document
-               System.out.println("Error Condition: Check response,no metadataFormat elements found.");
+                ConfigurationManager.log.add("Error Condition: Check response,no metadataFormat elements found.",
+                        "Error Condition: Check response,no metadataFormat elements found.");
                System.exit(0);
             }
          }
              catch(Exception e)
-            {e.printStackTrace(); }
+            {
+                 ConfigurationManager.log.add("Error: \n"+e.toString());
+             }
       
          return formats; 
       }
@@ -341,7 +346,9 @@
             }
          }
              catch(Exception e)
-            {e.printStackTrace(); }
+            {
+                 ConfigurationManager.log.add("Error: \n"+e.toString());
+             }
       
          return itemList;
       }
@@ -456,7 +463,7 @@
             }
                 catch(Exception e)
                {
-                  e.printStackTrace();
+                  ConfigurationManager.log.add("Error: \n"+e.toString());
                //System.out.println("record could not be created,missing vital information,incorrect,incompatible..");
                //System.exit(0);
                
@@ -494,7 +501,7 @@
              catch(Exception e)
             {	//Some records might have a tag but the tag might not contain any value
             //Uncomment the next line to view tag without value
-               System.out.println("Cannot extract value for: " + tagName);
+                 ConfigurationManager.log.add("Cannot extract value for: " + tagName);
                return "Not Available";	
             }
       
@@ -559,18 +566,22 @@
          } 
              catch (ParserConfigurationException e) {
             // An error occurred while creating an empty DOM document
-               test=test+"parseConfigError";e.printStackTrace();
+               test=test+"parseConfigError";
+               ConfigurationManager.log.add("Error: \n"+e.toString());
             } 
              catch (FileNotFoundException e) {
-               test=test+"IOError\n"+e.getMessage();e.printStackTrace();
+               test=test+"IOError\n"+e.getMessage();
+               ConfigurationManager.log.add("Error: \n"+e.toString());
             } 
              catch (TransformerConfigurationException e) {
             // An error occurred in the XSL file
                test=test+"Transformer Configuration Error\n"+e.getMessage();
+               ConfigurationManager.log.add("Error: \n"+e.toString());
             } 
              catch (TransformerException e) {
             // An error occurred while applying the XSL file
-               test=test+"Transformer Application Error\n"+e.getMessage();e.printStackTrace();
+               test=test+"Transformer Application Error\n"+e.getMessage();
+               ConfigurationManager.log.add("Error: \n"+e.toString());
             }
          return test;
       
@@ -590,7 +601,7 @@
          }
              catch(TransformerException ex)
             {
-               ex.printStackTrace();
+               ConfigurationManager.log.add("Error: \n"+ex.toString());
                return null;
             }
       } 

@@ -57,7 +57,7 @@
          }
              catch(SQLException sqle)
             {
-               sqle.printStackTrace();
+                 ConfigurationManager.log.add("SQL Error: \n"+sqle.toString());
             }		 
          
       
@@ -101,13 +101,14 @@
                   stm.executeBatch();
                }   
             }
-            else{System.out.println("--Updating the database--\nError:Record is null,please check harvest source before updating the database");}
+            else
+            {
+                ConfigurationManager.log.add("SQL Error:Record is null,please check harvest source before updating the database");
+            }
          }   	
           
              catch (SQLException sqle) {//catches any exceptions throw by queries on the database
-            
-               System.out.println(record.toString());
-               sqle.printStackTrace();
+                 ConfigurationManager.log.add("Error in SQL while trying to insert record: \n"+sqle.toString()+"\nRecord was: "+record.toString());
             }
       
       
@@ -243,8 +244,9 @@
          //System.out.println (value);
          
          }
-             catch(Exception e){e.printStackTrace();
-            
+             catch(Exception e)
+             {
+                ConfigurationManager.log.add("Error: \n"+e.toString());
             }
       
          if(field.equals ("date")&&value.equals("Not Available"))//additional error check for incomplete records
@@ -341,7 +343,7 @@
          }
              catch(TransformerException ex)
             {
-               ex.printStackTrace();
+                 ConfigurationManager.log.add("Error: \n"+ex.toString());
             //System.out.println("In DatabaseUpdater getStringFromDocument");
                return null;
             }

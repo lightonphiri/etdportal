@@ -97,12 +97,12 @@
 		record_document.add(new Field("portalXML",record_to_convert.getPortalXML(), Field.Store.YES, Field.Index.TOKENIZED));
 	
 		} catch (UnsupportedEncodingException e) {
-		  e.printStackTrace();
+		  ConfigurationManager.log.add("Error: \n"+e.toString());
 
 
 		}catch(IOException e)
 		{
-		  e.printStackTrace();
+		  ConfigurationManager.log.add("Error: \n"+e.toString());
 		  }
 		
       // returns the document
@@ -160,7 +160,7 @@
 				
           	}catch(Exception e)
 		{
-			e.printStackTrace();
+			ConfigurationManager.log.add("Error: \n"+e.toString());
 			//System.out.println("record could not be created,missing vital information,incorrect,incompatible..");
 			//System.exit(0);
 			
@@ -232,13 +232,13 @@
          
          }
              catch(ParserConfigurationException pce) {
-               pce.printStackTrace();
+               ConfigurationManager.log.add("Error: \n"+pce.toString());
             }
              catch(SAXException se) {
-               se.printStackTrace();
+               ConfigurationManager.log.add("Error: \n"+se.toString());
             }
              catch(IOException ioe) {
-               ioe.printStackTrace();
+               ConfigurationManager.log.add("Error: \n"+ioe.toString());
             }
 	  
 	  return docEle;

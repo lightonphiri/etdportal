@@ -281,10 +281,7 @@ the Lucene library.
   				      results_page += (new ResultFormat()).viewRecord(record_to_transform,realApplicationPath+"viewsnippets.xsl",realApplicationPath);
 
 				    } catch (UnsupportedEncodingException e) {
-				      e.printStackTrace();
-
-
-
+				      ConfigurationManager.log.add("Error: \n"+e.toString());
 				    }
 				
 				results_page += "</li></p>"+"\n";

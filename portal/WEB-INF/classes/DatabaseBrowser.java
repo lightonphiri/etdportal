@@ -106,7 +106,7 @@
          }
              catch(SQLException sqle)
             {
-               sqle.printStackTrace();
+                 ConfigurationManager.log.add("Error: \n"+sqle.toString());
             }
       
       
@@ -130,7 +130,7 @@
          }
              catch(Exception e)
             {//exception caught in the private methods,but this is for any other errors
-               e.printStackTrace();
+               ConfigurationManager.log.add("Error: \n"+e.toString());
             }
          return new ArrayList<Record>();
       }
@@ -166,7 +166,7 @@
          }
              catch(SQLException sqle)
             {
-               sqle.printStackTrace();
+               ConfigurationManager.log.add("Error: \n"+sqle.toString());
             }
        
          return record_found;
@@ -239,7 +239,7 @@
          }
              catch(SQLException sqle)
             {
-               sqle.printStackTrace();
+               ConfigurationManager.log.add("Error: \n"+sqle.toString());
             }
       
          return allRecords;

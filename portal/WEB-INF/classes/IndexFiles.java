@@ -53,7 +53,7 @@ be searched easily.
          }
              catch(SQLException sqle)
             {
-               sqle.printStackTrace();
+               ConfigurationManager.log.add("Error: \n"+sqle.toString());
             }
       
          List<Record> recordsToIndex = browse(applicationSettings.getDatabaseConnection(),applicationSettings.getLastHarvest());//calls the method that gets all the records
@@ -73,9 +73,9 @@ be searched easily.
             writer.close();
          
          } 
-             catch (IOException e) {
-               System.out.println(" caught a " + e.getClass() +
-                  "\n with message: " + e.getMessage());
+             catch (IOException e)
+             {
+                 ConfigurationManager.log.add("Error: \n"+e.toString());
             }	
       
       } 
@@ -146,8 +146,8 @@ be searched easily.
             
          }
              catch(SQLException sqle)
-            {
-               sqle.printStackTrace();
+            {            
+                 ConfigurationManager.log.add("Error: \n"+sqle.toString());
             }
       
          return allRecords;

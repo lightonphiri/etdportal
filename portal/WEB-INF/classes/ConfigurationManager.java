@@ -48,7 +48,8 @@
       private String configFileName;					//stores the name of the config file used
       private String servletUrl;						//Stores the URL of the servlet that handles the browse requests
       private List<String> stopWords;					//stores a list of stop words that are removed for ordering 
-      private List<String> browseCategories;		//stores a list of categories that are enabled for browsing 
+      private List<String> browseCategories;		//stores a list of categories that are enabled for browsing
+      public static Log log;
    
    
    /**
@@ -131,6 +132,10 @@
                 String databaseUsername = getXMLValue (root, "portal/database/username", "");
                 String databaseDriver = getXMLValue (root, "portal/database/driver", "com.mysql.jdbc.Driver");
                 String servletUrl = getXMLValue (root, "portal/servletUrl", "http://localhost:8080/");
+                String logPath = getXMLValue(root, "portal/logLocation", "/var/log/etdportal/portal.log");
+                
+                log = new Log(logPath);
+
 
                 // get the browse categories
                 browseCategories = new ArrayList<String>();
@@ -391,7 +396,7 @@
                 stm.close ();
                 databaseConnection.close ();
           } catch (Exception e) {
-             
+             log.add("Failed to update configuration file:\n "+e);
           }       
       }         
    
@@ -412,11 +417,13 @@
          }
              catch(SQLException sqle)
             {
-               sqle.printStackTrace();
+                 log.add("SQL Exception when trying to connect to the database:\n "+ sqle.toString(),
+                         "SQL Exception when trying to connect to the database! See log for details.");
             }
              catch(ClassNotFoundException cnf)
             {
-               cnf.printStackTrace();
+                 log.add("Failed to connect to database, Error: \n"+cnf.toString(),
+                         "Failed to connect to database, see log for details.");
             }	
       
       }

@@ -8,13 +8,13 @@ import java.util.Date;
 import java.util.TimeZone;
 
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Small class which is used to write all loged activity to file. Can also print out
+ * critical messages so that cron will email them to the admin (for harvesting).
  */
 
 /**
  *
- * @author lawrence
+ * @author Lawrence Webley
  */
 public class Log
 {

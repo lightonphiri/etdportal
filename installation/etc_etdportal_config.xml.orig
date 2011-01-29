@@ -14,6 +14,9 @@
          <URL>http://somewhere.org/</URL>
          <text>Metadata archive of theses and dissertations from the universities of XYZ</text>
       </description>
+      <logLocation>
+      	/var/log/etdportal/repository.log
+      </logLocation>
       <metadataFormats>
          <metadataFormat>
             <prefix>oai_dc</prefix>
@@ -32,6 +35,9 @@
          <password>dbp</password>
          <driver>com.mysql.jdbc.Driver</driver>
       </database>
+      <logLocation>
+      	/var/log/etdportal/portal.log
+      </logLocation>
       <servletUrl>http://localhost:8080/</servletUrl>
       <browser>title</browser>
       <browser>affiliation</browser>
