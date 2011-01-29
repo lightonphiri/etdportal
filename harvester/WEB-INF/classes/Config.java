@@ -23,7 +23,8 @@ public class Config
   /** path of log file */
   private String logLocation;
   /** logging class */
-  public Log log;
+  public Log log;  
+  public MetadataFormat [] formatList;
 
    /**
     * Constructor to set up the instance variables and load up the harvest and database
@@ -100,6 +101,17 @@ public class Config
             dbPassword = getXMLValue (root, "repository/database/password", "");
             dbDriver = getXMLValue (root, "repository/database/driver", "com.mysql.jdbc.Driver");
             logLocation = getXMLValue (root, "repository/logLocation", "/var/log/etdportal/repository.log");
+            
+            // get the metadata formats
+            Element metadataFormats = getXMLElement (root, "repository/metadataFormats");
+            NodeList listOfFormats = metadataFormats.getElementsByTagName("metadataFormat");
+            formatList = new MetadataFormat [listOfFormats.getLength()];
+            for ( int i=0; i<listOfFormats.getLength (); i++ )
+               formatList[i] = new MetadataFormat (
+                                  getXMLValue ((Element)listOfFormats.item(i), "prefix", ""),
+                                  getXMLValue ((Element)listOfFormats.item(i), "schema", ""),
+                                  getXMLValue ((Element)listOfFormats.item(i), "namespace", "")                                       
+                                   );
          }
          else
          {

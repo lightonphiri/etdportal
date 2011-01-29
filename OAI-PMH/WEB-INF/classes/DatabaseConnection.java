@@ -441,10 +441,10 @@ public class DatabaseConnection
                         //check for an about section
                         if(rs.getString("About")!= null && rs.getString("About").length() != 0)
                        {
-                           //sqlResponse.append("<about>\n");
-                           //sqlResponse.append(rs.getString("About"));
-                           //sqlResponse.append("\n");
-                           //sqlResponse.append("</about>");
+                           sqlResponse.append("<about>\n");
+                           sqlResponse.append(rs.getString("About"));
+                           sqlResponse.append("\n");
+                           sqlResponse.append("</about>");
                        }
                     }
                 }

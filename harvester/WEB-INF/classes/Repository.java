@@ -245,6 +245,11 @@ public class Repository
    {
       metadataFormat = aMetadataFormat;
    }
+   
+   public void getNameSpace()
+   {
+   		
+   }
 
    /**
     * Gets the set spec to harvest

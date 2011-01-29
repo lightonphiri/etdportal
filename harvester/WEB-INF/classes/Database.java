@@ -67,11 +67,8 @@ public class Database {
     public void addToBatch ( OAIRecord aRecord, Repository rep )
    {
       try {
-         String about;
-         if (! ("").equals (rep.getSetSpec ()))
-            about = "Harvested from source set of "+ rep.getSetSpec();
-         else
-            about = "Record wasnt in a set when it was harvested";
+         String about = aRecord.getAboutField();
+         
          String query = "REPLACE INTO Archive VALUES('" +aRecord.getID() +
             "', CURRENT_TIMESTAMP, '" + aRecord.getType() + "','" + aRecord.getSource()+
             "','" + aRecord.getXml() + "'," +aRecord.isDeleted() +",'"+about+

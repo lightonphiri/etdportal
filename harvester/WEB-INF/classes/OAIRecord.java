@@ -8,6 +8,9 @@ import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 import org.xml.sax.InputSource;
 import java.io.StringReader;
+import java.util.Date;
+import java.util.TimeZone;
+import java.text.SimpleDateFormat;
 
 
 /** OAI record - Class to represent a record in OAI-PMH format
@@ -19,12 +22,18 @@ import java.io.StringReader;
 public class OAIRecord {
     /** the unique id of the record */
 	private String ID;
-    /** the url source this record came from */
+    /** the name of the source this record came from */
     private String source;
+    /** the url this record was harvested from */
+    private String baseURL;
     /** the metadata format this record is in */
     private String type;
     /** the raw xml metadata */
     private String xml;
+    /** the dataStamp that came with the harvested record */
+    private String dateStamp;
+    /** the xml namespace of this records type */
+    private String nameSpace;
     /** whether the record is flagged as deleted or not */
 	private boolean deleted;
 
@@ -37,12 +46,15 @@ public class OAIRecord {
      * @param contents the actual metadata content
      * @param isDeleted whether or not the record is deleted or not.
      */
-	public OAIRecord (String id, String Source, String metadata, String contents, boolean isDeleted){
+	public OAIRecord (String id, String Source, String baseURL, String metadata, String contents, String datestamp, String nameSpace, boolean isDeleted){
 		ID = id;
 		source = Source;
+		this.baseURL = baseURL;
 		type = metadata;
 		xml = contents;
 		deleted = isDeleted;
+		dateStamp = datestamp;
+		this.nameSpace = nameSpace;
 		
 	}
 
@@ -82,6 +94,34 @@ public class OAIRecord {
      */
 	public String getType() {
 		return type;
+	}
+	
+	/**
+	 * Constructs and returns the about field for the record using provenance format
+	 */
+	public String getAboutField()
+	{
+		StringBuffer data = new StringBuffer("");
+		data.append("<provenance\n");
+		data.append("xmlns=\"http://www.openarchives.org/OAI/2.0/provenance\"\n");
+		data.append("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n");
+		data.append("xsi:schemaLocation=\"http://www.openarchives.org/OAI/2.0/provenance \n");
+		data.append("http://www.openarchives.org/OAI/2.0/provenance.xsd\">\n");
+		
+		SimpleDateFormat UTCDateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'Z'");
+        TimeZone tz = TimeZone.getTimeZone("UTC");
+        UTCDateFormatter.setTimeZone(tz);
+		
+		data.append(" <originDescription harvestDate=\""+UTCDateFormatter.format(new Date())+"\" altered=\"false\">\n");
+		data.append("  <baseURL>"+baseURL+"</baseURL>\n");
+		data.append("  <identifier>"+ID+"</identifier>\n");
+		data.append("  <datestamp>"+dateStamp+"</datestamp>\n");
+		data.append("  <metadataNamespace>"+nameSpace+"</metadataNamespace>\n");
+		data.append(" </originDescription>\n");
+		data.append("</provenance>\n");
+		
+		return data.toString();
+		
 	}
     /**
      * Sets the type of metadata stored in this records

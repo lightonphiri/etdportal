@@ -222,6 +222,19 @@ public class OAIResponseHandler
         Pattern p = Pattern.compile("< *header *status *= *\"deleted\" *>");
         Matcher m = p.matcher(record);
         
+        //Find DateStamp
+		String dateStamp;
+        Pattern datePattern = Pattern.compile("< *datestamp *>[^>]*< */ *datestamp *>", Pattern.CANON_EQ | Pattern.DOTALL);
+        Matcher dateMatch = datePattern.matcher(record);
+        if(dateMatch.find())
+        {
+            dateStamp = extractTagValue(record.substring(dateMatch.start(), dateMatch.end()));
+        }
+        else
+        {
+        	dateStamp = "unknown";
+        }
+        
         boolean deleted;
         if(m.find())
         {
@@ -248,7 +261,19 @@ public class OAIResponseHandler
                         "Malformed Record encountered with ID: "+id+" - No metadata! Ignoring and continuing");
             }            
         }
-        OAIRecord result = new OAIRecord(identifier,source,metadataType,xml, deleted); // create a OAI record instance
+        //Get correct namespace
+        String namespace = "";
+        for(int i = 0; i < conf.formatList.length; i++)
+        {
+
+            if(metadataType.equals(conf.formatList[i].getPrefix()))
+            {
+                namespace = conf.formatList[i].getNamespace();
+            }
+
+        }
+        OAIRecord result = new OAIRecord(identifier, source, rep.getBaseURL() ,metadataType, xml, dateStamp, namespace, deleted); // create a OAI record instance
+
         return result;
     }    
 }
