@@ -92,6 +92,10 @@ public class OAIHarvest
 
             try
             {
+            	/* backup the original repository settings */
+            	String metadataFormat = rep.getMetadataFormat();
+            	String setInfo = rep.getSetSpec();
+            	
                /* creates list of metadataPrefixes */
                ArrayList<String> metadataPrefixes = new ArrayList<String>();
                StringTokenizer m_st = new StringTokenizer (rep.getMetadataFormat (), ", ");
@@ -112,18 +116,21 @@ public class OAIHarvest
                for ( int m = 0; m<metadataPrefixes.size(); m++ )
                   for ( int s = 0; s<sets.size(); s++ )
                   {
-                     Repository tempRep = new Repository (rep);
-                     tempRep.setMetadataFormat (metadataPrefixes.get (m));
-                     tempRep.setSetSpec (sets.get (s));
-                     OAIRequest request = new OAIRequest (conf, tempRep);
+                     rep.setMetadataFormat (metadataPrefixes.get (m));
+                     rep.setSetSpec (sets.get (s));
+                     OAIRequest request = new OAIRequest (conf, rep);
                   }   
+                  
+               //Now restore the original properties we had
+               rep.setMetadataFormat(metadataFormat);
+               rep.setSetSpec(setInfo);
 
                rep.updateDateFrom(); // update the dateFrom in the harvest file
                conf.log.add("Harvest completed on "+repositoryName);
             } catch(Exception e) {
                rep.updateHarvestStatus ("Failed connecting to baseURL");
-               conf.log.add("Error caught in during harvest on "+repositoryName+": "+e,
-                       "Error caught in during harvest on "+repositoryName+": "+e);
+               conf.log.add("Error caught during harvest on "+repositoryName+": "+e,
+                       "Error caught during harvest on "+repositoryName+": "+e);
             } finally {
                rep.updateRunning(0); // the harvest has finished
             }

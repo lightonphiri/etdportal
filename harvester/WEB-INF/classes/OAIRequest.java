@@ -135,7 +135,7 @@ public class OAIRequest
      * @param request the request to be sent to the server
      * @return the response from the server
      */
-    private BufferedInputStream sendRequest(String request)
+    private BufferedInputStream sendRequest(String request) throws Exception
     {
         try
         {
@@ -159,7 +159,7 @@ public class OAIRequest
         {
             conf.log.add("Error sending request to remote repository: "+e,
                     "Error sending request to remote repository: "+e);
-            return null;
+            throw new Exception("Failed to communicate with remote server");
         }
 
     }
@@ -168,7 +168,7 @@ public class OAIRequest
      * Currently not used, this method is supposed to take an input stream
      * and validate it agains the XML schema. This validates the ENTIRE server response
      * which is impractical, since no records can then be salavaged if a single one
-     * is broken. Current scheme validates on a record to record basis.
+     * is broken. Current scheme validates on a record to record basis
      * @param is the response from the repository server
      * @return whether or not the response is valid or not.
      */
