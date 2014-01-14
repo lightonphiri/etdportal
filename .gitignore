@@ -1,0 +1,7 @@
+## Ignore application-specific backup files from version tracking
+*.~
+*.swp
+*.backup
+
+## Ignore Java class files from version tracking
+*.class
