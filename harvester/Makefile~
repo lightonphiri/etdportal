@@ -13,8 +13,8 @@ JFLAGS = -classpath WEB-INF/lib/mysql-connector-java.jar:$(SERVLETAPI)/servlet-a
 
 JAVAC = javac
 
-WEBAPPS = /var/lib/$(TOMCAT)/webapps
-APPNAME = harvester
+WEBAPPS = /var/lib/$(TOMCAT)/webapps/union
+APPNAME = union.harvester
 
 # rules
 
@@ -28,16 +28,12 @@ TARGETS = WEB-INF/classes/OAIHarvest.class \
           WEB-INF/classes/Config.class \
           WEB-INF/classes/Database.class \
           WEB-INF/classes/Repository.class \
-          WEB-INF/classes/HtmlPane.class \
           WEB-INF/classes/HTMLWriter.class \
-#          WEB-INF/classes/NavBar.class \
-#          WEB-INF/classes/OAIConfigEditor.class \
           WEB-INF/classes/OAIRecord.class \
           WEB-INF/classes/OAIRequest.class \
           WEB-INF/classes/OAIResponseHandler.class \
-#          WEB-INF/classes/RepoList.class \
-#          WEB-INF/classes/RepositoryEditor.class \
-#          WEB-INF/classes/StatusPane.class
+          WEB-INF/classes/Log.class \
+          WEB-INF/classes/MetadataFormat.class \
           
 all: $(TARGETS)
 

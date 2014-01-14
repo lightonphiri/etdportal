@@ -1,6 +1,7 @@
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.io.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.xml.validation.SchemaFactory;
@@ -15,7 +16,7 @@ import javax.xml.validation.SchemaFactory;
 public class OAIResponseHandler
 {
     /** The response from the server */
-    StringBuffer response;
+    String response;
     /** repository configuration */
     Repository rep;
     /** database configuration */
@@ -28,18 +29,44 @@ public class OAIResponseHandler
      * @param config the harvester configuration object containing the settigns
      * pertinent to this harvest.
      */
-   public OAIResponseHandler ( Config aConf, InputStream is, Repository r ) 
+//   public OAIResponseHandler ( Config aConf, InputStream is, Repository r ) 
+   public OAIResponseHandler ( Config aConf, String res, Repository r ) 
     throws Exception
    {
       rep = r;
       conf = aConf;
+      response = res;
 
-      Scanner in = new Scanner(is);
+/*      BufferedReader input = new BufferedReader(new InputStreamReader(is, "UTF-8")); 
+      StringBuilder strB = new StringBuilder();
+      String str;
+      while (null != (str = input.readLine())) 
+         strB.append(str).append("\n"); 
+      input.close();
+      String response = strB;
+*/
+/*      Scanner in = new Scanner(is);
       response = new StringBuffer("");
       while(in.hasNext())
       {
          response.append(in.nextLine() + "\n");
       }
+*/
+      conf.log.add("Downloaded document with size: "+response.length ());
+      if (response.indexOf ("<error") >= 0)
+         conf.log.add("OAI-PMH error in response: "+response);
+
+/*      InputStreamReader isr = new InputStreamReader(is);
+      BufferedReader br = new BufferedReader(isr);
+      String line = null;
+System.out.println ("3a");
+      while ( (line = br.readLine()) != null)
+      {
+System.out.println ("3b "+line);
+         response.append(line + "\n");
+      }                                                                                  
+System.out.println ("3c");
+*/
    }
 
    /**
@@ -68,7 +95,8 @@ public class OAIResponseHandler
             OAIRecord rec = results.get(i);
             if(rec.selfValidate(factory, conf))
             {
-               db.addToBatch (rec, rep);
+//               db.addToBatch (rec, rep);
+               db.saveRecord (rec, rep);
                rep.cursor++;
             }
             else
@@ -78,8 +106,9 @@ public class OAIResponseHandler
             }
          }
          //execute the batch run to add the records to the database
-         db.executeBatch();
+//         db.executeBatch();
       }
+      db.disconnect ();      
    }
 
     /**
@@ -91,7 +120,7 @@ public class OAIResponseHandler
      throws Exception
     {
         ArrayList<OAIRecord> result = new ArrayList<OAIRecord>();
-        Pattern p = Pattern.compile("< *record *>.*?< */ *record *>", Pattern.CANON_EQ | Pattern.DOTALL);
+        Pattern p = Pattern.compile("< *record[^>]*>.*?< */ *record *>", Pattern.CANON_EQ | Pattern.DOTALL);
         Matcher recordMatch = p.matcher(response);
         //Iterate through records
         while(recordMatch.find())
@@ -99,7 +128,7 @@ public class OAIResponseHandler
             String record = response.substring(recordMatch.start(), recordMatch.end());
 
             //Find identifier
-            Pattern identPattern = Pattern.compile("< *identifier *>[^>]*< */ *identifier *>", Pattern.CANON_EQ | Pattern.DOTALL);
+            Pattern identPattern = Pattern.compile("< *identifier[^>]*>[^<]*< */ *identifier *>", Pattern.CANON_EQ | Pattern.DOTALL);
             Matcher identMatch = identPattern.matcher(record);
             if(identMatch.find())
             {
@@ -184,7 +213,7 @@ public class OAIResponseHandler
      */
     public String getResumptionToken()
     { // get the resumption token from the repsonse
-        Pattern p = Pattern.compile("< *resumptionToken.*?>[^>]*< */ *resumptionToken *>", Pattern.CANON_EQ | Pattern.DOTALL);
+        Pattern p = Pattern.compile("< *resumptionToken.*?>[^<]*< */ *resumptionToken *>", Pattern.CANON_EQ | Pattern.DOTALL);
         Matcher m = p.matcher(response);
 
         if(m.find())
@@ -224,7 +253,7 @@ public class OAIResponseHandler
         
         //Find DateStamp
 		String dateStamp;
-        Pattern datePattern = Pattern.compile("< *datestamp *>[^>]*< */ *datestamp *>", Pattern.CANON_EQ | Pattern.DOTALL);
+        Pattern datePattern = Pattern.compile("< *datestamp *>[^<]*< */ *datestamp *>", Pattern.CANON_EQ | Pattern.DOTALL);
         Matcher dateMatch = datePattern.matcher(record);
         if(dateMatch.find())
         {
@@ -249,11 +278,11 @@ public class OAIResponseHandler
         String xml = "";
         if (!deleted)  // get the metadata (xml) if the node is not deleted
         {
-            Pattern metadataPattern = Pattern.compile("< *metadata *>.*?< */ *metadata *>", Pattern.CANON_EQ | Pattern.DOTALL);
+            Pattern metadataPattern = Pattern.compile("< *metadata *>(.*?)< */ *metadata *>", Pattern.CANON_EQ | Pattern.DOTALL);
             Matcher metadataMatcher = metadataPattern.matcher(record);
             if(metadataMatcher.find())
             {
-                xml = record.substring(metadataMatcher.start(), metadataMatcher.end());
+                xml = record.substring(metadataMatcher.start(1), metadataMatcher.end(1));
             }
             else
             {
@@ -272,7 +301,23 @@ public class OAIResponseHandler
             }
 
         }
-        OAIRecord result = new OAIRecord(identifier, source, rep.getBaseURL() ,metadataType, xml, dateStamp, namespace, deleted); // create a OAI record instance
+
+        // get the string representation of provenance content
+        String origin = "";
+            Pattern originPattern = Pattern.compile("< *originDescription.*?< */ *originDescription *>", Pattern.CANON_EQ | Pattern.DOTALL);
+            Matcher originMatcher = originPattern.matcher(record);
+            if(originMatcher.find())
+            {
+                origin = record.substring(originMatcher.start(), originMatcher.end());
+            }
+            //else
+            //{
+            //    conf.log.add("Malformed Record encountered with ID: "+id+" - No metadata! Ignoring and continuing",
+            //            "Malformed Record encountered with ID: "+id+" - No metadata! Ignoring and continuing");
+            //}            
+
+
+        OAIRecord result = new OAIRecord(identifier, source, rep.getBaseURL() ,metadataType, xml, dateStamp, namespace, deleted, origin); // create a OAI record instance
 
         return result;
     }    

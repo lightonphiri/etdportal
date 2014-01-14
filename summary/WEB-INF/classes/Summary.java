@@ -68,7 +68,7 @@ public class Summary extends HttpServlet
             //read in the xml config file
             DocumentBuilderFactory docBuilderFac = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docBuilderFac.newDocumentBuilder();
-            Document doc = docBuilder.parse("/etc/etdportal/config.xml");
+            Document doc = docBuilder.parse("/etc/etdportal/union/config.xml");
             
             //normalize text representation
             doc.getDocumentElement().normalize();
@@ -127,6 +127,7 @@ public class Summary extends HttpServlet
      {
         //get the printWriter object with which we will print out data
         response.setContentType ("text/xml");
+        response.setCharacterEncoding("UTF-8");
         PrintWriter out = response.getWriter();
         
         //if we have no config file errors, then go ahead and service the request
@@ -158,7 +159,8 @@ public class Summary extends HttpServlet
 
                 //create a statement and execute our query
                 Statement stm = con.createStatement();
-                ResultSet rs = stm.executeQuery("select r.id,r.name,r.baseURL,count(distinct a.id) from Archive as a,Repositories as r where a.source=r.id and a.Deleted=\'0\' group by a.source");
+                //ResultSet rs = stm.executeQuery("select r.id,r.name,r.baseURL,count(distinct a.id) from Archive as a,Repositories as r where a.source=r.id and a.Deleted=\'0\' group by a.source");
+                ResultSet rs = stm.executeQuery("select * from Counter LEFT JOIN Repositories on Counter.setSpec=Repositories.id order by Repositories.name");
 
                 //list our most recent 5 records
                 while(rs.next())
@@ -167,11 +169,23 @@ public class Summary extends HttpServlet
                     //NOTE, WE ARE NOT VALIDATING THE XML, JUST READING IT.
                     //We assume everything in the database has been validated by the harvesting program 
                     //that put it there.
-                        finalResponse.append ("<source>");
+/*                        finalResponse.append ("<source>");
                         finalResponse.append ("<id>"+rs.getString ("id")+"</id>");
                         finalResponse.append ("<name>"+rs.getString ("name")+"</name>");
                         finalResponse.append ("<url>"+rs.getString ("baseURL")+"</url>");
                         finalResponse.append ("<count>"+rs.getString ("count(distinct a.id)")+"</count>");
+                        finalResponse.append ("</source>");*/
+                        finalResponse.append ("<source>");
+                        finalResponse.append ("<id>"+rs.getString ("setSpec")+"</id>");
+                        if (rs.getString ("name") == null)
+                           finalResponse.append ("<name>"+rs.getString ("setSpec")+"</name>");
+                        else   
+                           finalResponse.append ("<name>"+rs.getString ("name")+"</name>");
+                        if (rs.getString ("baseURL") == null)
+                           finalResponse.append ("<url>unspecified</url>");
+                        else
+                           finalResponse.append ("<url>"+rs.getString ("baseURL")+"</url>");
+                        finalResponse.append ("<count>"+rs.getString ("count")+"</count>");
                         finalResponse.append ("</source>");
                         
                 }

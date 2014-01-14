@@ -28,6 +28,9 @@ public class OAI_servlet extends HttpServlet
     {
         //make sure the parent constructor is run
         super.init (config);
+        
+        System.setProperty ("file.encoding", "UTF-8");
+
         doServe = true;
         //if the config object fails to instantiate, then we know that we 
         //have insufficient data to continue, so rather than terminating the program
@@ -69,6 +72,7 @@ public class OAI_servlet extends HttpServlet
         Response verbResponse;
         //get the printWriter object with which we will print out data
         response.setContentType ("text/xml");
+        response.setCharacterEncoding("UTF-8");
         PrintWriter out = response.getWriter();       
         if(doServe)
             {

@@ -1,0 +1,64 @@
+id	name	baseURL	count(distinct a.id)
+ADTP	Australiasian Digital Theses Program	http://metasuite.nun.unsw.edu.au:9004/CMD/OAI	205236
+AUCKLAND	University of Auckland	http://researchspace.auckland.ac.nz/dspace-oai/request	899
+BICfB	Bibliothèque interuniversitaire de la Communauté française de Belgique	http://edoc.bib.ucl.ac.be/DBUnion/ndltd/oaiunion.pl	2367
+BRADFORD	Bradford Scholars	http://bradscholars.brad.ac.uk/dspace-oai/request	2296
+CALPOLY	California Polytechnic State University	http://digitalcommons.calpoly.edu/cgi/oai2.cgi	484
+CALTECH	California Institute of Technology	http://thesis.library.caltech.edu/cgi/oai2	5976
+CCSD	CCSD theses-EN-ligne, France	http://tel.archives-ouvertes.fr/oai/oai.php	22138
+CHENGCHI	National Chengchi University Libraries	http://thesis.lib.nccu.edu.tw/cgi-bin/cdrfb3/oai.cgi	22294
+CRANFIELD1	CRANFIELD1	http://dspace.lib.cranfield.ac.uk/dspace-oai/request	757
+DITED	National Library of Portugal DiTeD ETD Repository	http://dited.bn.pt/oaicat/OAIHandler	222
+DocTA	Universita Cattolica del Sacro Cuore. DocTA	http://tesionline.unicatt.it/dspace-oai/request	574
+DRESDEN	Hochschulschriftenserver (HSSS) der SLUB Dresden	http://www.qucosa.de/oai/	6455
+DUKE	Duke University	http://dukespace.lib.duke.edu/dspace-oai/request	568
+DUQUESNE	Duquesne University	http://digital.library.duq.edu/cgi-bin/oai.exe	2034
+ETSU	East Tennessee State University	http://etd-submit.etsu.edu/ETD-db/OAI/oai.pl	1205
+GWUD	George Washington University Theses	http://dspace.wrlc.org/dspace-oai/request	29
+HKU	Hong Kong University Theses	http://oai.lib.hku.hk/hkuto/OAIHandler	18708
+IISc	India Institute of Science	http://etd.ncsi.iisc.ernet.in/dspace-oai/request	1046
+IUPUI	Indiana University-Purdue University Indianapolis	http://scholarworks.iupui.edu/oai/request	455
+IUP_Thesis	Indiana University of Pennsylvania Thesis	http://dspace.lib.iup.edu:8080/dspace-oai/request	321
+KSU	K-State Research Exchange	http://krex.k-state.edu/dspace-oai/request	7920
+LAVAL	Université Laval	http://www.theses.ulaval.ca:8080/oaicat/servlet/OAIHandler	4426
+LSU	Louisiana State University	http://etd.lsu.edu/OAI/oai.pl	4543
+MANITOBA	University of Manitoba Canada	http://mspace.lib.umanitoba.ca/dspace-oai/request	96
+METU	Middle East Technical Univ.	http://etd.lib.metu.edu.tr/oai/oai2.php	1
+MONTANA	University of Montana Missoula	http://etd.lib.umt.edu/cgi-bin/oai.pl	810
+MONTSTATE	ETDs: Montana State University	http://etd.lib.montana.edu/etd/view/oai-feed.php	1059
+MSSTATE	Mississippi State University	http://sun.library.msstate.edu/ETD-db/NDLTD-OAI/oai.pl	1719
+NAGOYA	Nagoya University	http://info.nul.nagoya-u.ac.jp/oaipmh/etdms.php	920
+NEU	Northeastern University, Snell Library	http://iris.lib.neu.edu/cgi/oai2.cgi	14
+NSYSU	NSYSU Electronic Thesis and Dissertation Archive	http://etd.lib.nsysu.edu.tw:80/ETD-db/NDLTD-OAI/oai.pl	1700
+NWUBOLOKA1	North-West University	http://dspace.nwu.ac.za/oai/request	2611
+OPEN_AIR	Robert Gordon University, Aberdeen, Scotland	http://openair.rgu.ac.uk/dspace-oai/request	108
+PITT	University of Pittsburgh	http://etd.library.pitt.edu:80/ETD-db/NDLTD-OAI/oai.pl	3759
+Potsdam	Potsdam University	http://opus.kobv.de/ubp/phpoai/oai2.php	4913
+PROQUEST	ProQuest.com	http://pqdtoai.proquest.com/OAIHandler	20
+Quebec	Université du Québec à Chicoutimi	http://sdeir.uqac.ca/metadata/oai.asp	1629
+RICE	Rice University	http://scholarship.rice.edu/dspace-oai/request	6850
+SBTS	Southern Baptist Theological Seminary	http://digital.library.sbts.edu/oai/request	3
+SEDICI	Universidad Nacional de La Plata, Sedici	http://sedici.unlp.edu.ar/phpoai/oai2.php	13606
+TCU	Texas Christian University	http://etd.tcu.edu/ETD-db/NDLTD-OAI/OAI.pl	385
+TORONTO	University of Toronto	http://tspace.library.utoronto.ca/tspace-oai/request	2827
+UBC	University of British Columbia	http://skeena.library.ubc.ca:80/ETD-db/NDLTD-OAI/oai.pl	8
+UBOLOGNA	University of Bologna, Italy	http://amsdottorato.cib.unibo.it/cgi/oai2	2325
+UCF	University of Central Florida	http://digitalcollections.lib.ucf.edu/cgi-bin/oai.exe	2525
+UDLA-Thesis	UDLA-Thesis	http://catarina.udlap.mx/u_dl_a/tales/oai/requestETD.jsp	2775
+UHAWAII	University of Hawaii at Manoa Libraries	https://scholarspace.manoa.hawaii.edu/dspace-oai/request	2633
+UIC	Universitat Internacional de Catalunya	http://www.tdx.cesca.es/TDX_UIC/NDLTD-OAI/oai.pl	29
+UMASS	University of Massachusetts, Amherst	http://scholarworks.umass.edu/cgi/oai2.cgi	877
+UMIAMI	University of Miami	http://etd.library.miami.edu/ETD-db/NDLTD-OAI/oai.pl	753
+UNC_CH	University of North Carolina-Chapel Hill	http://etd.ils.unc.edu/dspace-oai/request	537
+UNESP	Sao Paulo State University, Sao Paulo - Brazil.	http://www.athena.biblioteca.unesp.br/OAI	10981
+UOV	Universidad de Oviedo	http://www.tdr.cesca.es/TDR_UOV/NDLTD-OAI/oai.pl	77
+USASK	University of Saskatchewan Library 	http://library.usask.ca/etd/OAI/oai.pl	3354
+USF	University of South Flordia	http://broker10.fcla.edu/cgi/b/broker20/broker20	221
+UTAHS	Utah State University	http://digitalcommons.usu.edu/cgi/oai2.cgi	852
+UTENN	University of Tennessee Libraries	http://trace.tennessee.edu/cgi/oai2.cgi	921
+UVIC	Universitat de Vic	http://www.tdx.cesca.es/TDX_UVIC/NDLTD-OAI/oai.pl	6
+Vidyanidhi	Vidyanidhi Digital Lib. (India)	http://dspace.vidyanidhi.org.in:8080/dspace-oai/request	5489
+VTETD	Virgina Tech. Theses and Dissertation	http://scholar.lib.vt.edu/theses/OAI2/	18290
+WATERLOO	University of Waterloo Electronic Theses Repository	http://www.uwspace.uwaterloo.ca/dspace-oai/request	783
+WKU	Western Kentucky University Theses	http://digitalcommons.wku.edu/cgi/oai2.cgi	240
+YALE_med	Yale Medical student MD Thesis	http://ymtdl.med.yale.edu/cgi-bin/cgiwrap/ymtdl/NDLTD-OAI2/oai.pl	436

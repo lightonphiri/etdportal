@@ -13,8 +13,8 @@ JFLAGS = -classpath WEB-INF/lib/mysql-connector-java.jar:$(SERVLETAPI)/servlet-a
 
 JAVAC = javac
 
-WEBAPPS = /var/lib/$(TOMCAT)/webapps
-APPNAME = OAI-PMH
+WEBAPPS = /var/lib/$(TOMCAT)/webapps/union
+APPNAME = union.OAI-PMH
 
 # rules
 
@@ -37,6 +37,7 @@ TARGETS = WEB-INF/classes/CheckParams.class \
           WEB-INF/classes/Response.class \
           WEB-INF/classes/ResponseFormatter.class \
           WEB-INF/classes/StorageFormat.class \
+          WEB-INF/classes/Log.class \
 
 all: $(TARGETS)
 
@@ -47,7 +48,7 @@ clean:
 	@echo Finis.
 	
 install:
-#	install -o $(TOMCAT) -v -d $(WEBAPPS)/$(APPNAME)/WEB-INF/config
+	install -o $(TOMCAT) -v -d $(WEBAPPS)/$(APPNAME)/WEB-INF
 	install -o $(TOMCAT) -v -m 644 WEB-INF/web.xml $(WEBAPPS)/$(APPNAME)/WEB-INF/
 #	install -o $(TOMCAT) -v -m 644 WEB-INF/config/config.xml $(WEBAPPS)/$(APPNAME)/WEB-INF/config/
 #	install -o $(TOMCAT) -v -m 644 WEB-INF/config/metadataFormats.xml $(WEBAPPS)/$(APPNAME)/WEB-INF/config/

@@ -1,7 +1,7 @@
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `Archive` (
-  `ID` varchar(64) NOT NULL,
+  `ID` varchar(256) NOT NULL,
   `Date` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   `MetaType` varchar(16) NOT NULL default '',
   `Source` varchar(2048) default NULL,

@@ -71,7 +71,7 @@ public class ListRecords extends Response
             }else
             {
                 //initialize default 'until' date - a few hundred years in the future!                
-                until = "2500-01-01T00:00:00Z";
+                until = "2037-01-01T00:00:00Z";
             }   
             if(!badDates)
             {//actually do the search etc here. Everything up till here was just testing to see if args are ok
@@ -85,11 +85,11 @@ public class ListRecords extends Response
                     //use floating config objects database connection
                     if(set != null && set.length() != 0)
                     {
-                        outputResponse.append(settings.dbCon.listRecords(from, until, metadataPrefix, false, set, 0));
+                        outputResponse.append(settings.dbCon.listRecords(from, until, metadataPrefix, false, set, 0, -1, ""));
                     }
                     else
                     {
-                        outputResponse.append(settings.dbCon.listRecords(from, until, metadataPrefix, false, "", 0));
+                        outputResponse.append(settings.dbCon.listRecords(from, until, metadataPrefix, false, "", 0, -1, ""));
                     }
                 }
                 catch(SQLException e)
@@ -114,7 +114,7 @@ public class ListRecords extends Response
             {
                 //pass the work of decoding the resumptionToken to the DatabaseConnection
                 try{
-                    outputResponse.append(settings.dbCon.listRecords(resumptionToken));
+                    outputResponse.append(settings.dbCon.listRecords(false, resumptionToken));
                 }catch(SQLException e)
                 {
                     outputResponse.append("\t<error>Failed to connect to the database... Perhaps it is under maintainance?\n");

@@ -56,6 +56,15 @@ public class Database {
       }
       return connected;
    }
+   
+   public void disconnect ()
+   {
+      try {
+         conn.close ();
+      } catch (Exception e) {
+         conf.log.add("Error closing database: "+e, "Error closing database: "+e);
+      }   
+   }
 
    /**
     * Given a <code>OAIRecord</code> object, this method will add the said
@@ -64,20 +73,49 @@ public class Database {
     *  
     * @param aRecord the record to be stored in the database
     */
-    public void addToBatch ( OAIRecord aRecord, Repository rep )
+/*    public void addToBatch ( OAIRecord aRecord, Repository rep )
    {
       try {
          String about = aRecord.getAboutField();
          
-         String query = "REPLACE INTO Archive VALUES('" +aRecord.getID() +
+         String query = "REPLACE INTO Archive VALUES('oai:union.ndltd.org:"+
+            aRecord.getSource()+ "/" +aRecord.getID() +
             "', CURRENT_TIMESTAMP, '" + aRecord.getType() + "','" + aRecord.getSource()+
             "','" + aRecord.getXml() + "'," +aRecord.isDeleted() +",'"+about+
             "','"+rep.getID()+"')";
          stm.addBatch(query);
+         conf.log.add ("Storing record: "+aRecord.getID());
       } catch (Exception e){
           conf.log.add("Error adding a record to the batch: "+e);
-         //System.out.println(e);
-         // do nothing, exceptions will be thrown for duplicates
+      }
+   } */
+
+   public String quote ( String data )
+   {
+      String s = data.replace ("\\", "\\\\");
+      s = s.replace ("'", "\\'");
+      return "'"+s+"'";
+   }   
+
+    public void saveRecord ( OAIRecord aRecord, Repository rep )
+   {
+      try {
+         String about = aRecord.getAboutField();         
+         String query = "REPLACE INTO Archive VALUES(" +
+            quote ("oai:union.ndltd.org:"+aRecord.getSource()+ "/" +aRecord.getID()) + "," +
+            "CURRENT_TIMESTAMP," + 
+            quote (aRecord.getType()) + "," + 
+            quote (aRecord.getSource()) + "," + 
+            quote (aRecord.getXml()) + "," +
+            aRecord.isDeleted() + "," +
+            quote(about) + "," +
+            quote(rep.getID()) + ")";
+         stm.execute (query);
+         stm.close ();
+         stm = conn.createStatement ();
+         conf.log.add ("Storing record: "+aRecord.getID());
+      } catch (Exception e){
+          conf.log.add("Error saving record: "+e);
       }
    }
 
@@ -91,8 +129,7 @@ public class Database {
          stm.close ();
          conn.close ();
       } catch(Exception e) {
-          conf.log.add("Error occured while storing batch of records: \n"+e, "Error occured while storing batch of records: \n"+e);
-         
+          conf.log.add("Error occured while storing batch of records: \n"+e, "Error occured while storing batch of records: \n"+e);         
       }
    }
    
@@ -115,8 +152,10 @@ public class Database {
             rep.setSetSpec (rs.getString ("setSpec"));
             rep.setDateFrom (rs.getString ("dateFrom"));
             rep.setHarvestInterval (rs.getInt ("harvestInterval"));
+            rep.setTimeout (rs.getInt ("timeout"));
             rep.setRunning (rs.getInt ("isRunning"));
             rep.setHarvestStatus (rs.getString ("harvestStatus"));
+            rep.setResumptionToken (rs.getString ("resumptionToken"));
          }
          
          rs.close ();
@@ -138,16 +177,18 @@ public class Database {
    public boolean saveRepository ( Repository rep )
    {
       try {
-         stm.executeUpdate ("replace into Repositories (ID, name, baseURL, metadataFormat, setSpec, dateFrom, harvestInterval, harvestStatus, isRunning) values ("+
-                            "'" + rep.getID () + "', " +
-                            "'" + rep.getName () + "', " +
-                            "'" + rep.getBaseURL () + "', " +
-                            "'" + rep.getMetadataFormat () + "', " +
-                            "'" + rep.getSetSpec () + "', " +
-                            "'" + rep.getDateFrom () + "', " +
-                            "'" + rep.getHarvestInterval () + "', " +
-                            "'" + rep.getHarvestStatus () + "', " +
-                            "'" + rep.getRunning () + "')");
+         stm.executeUpdate ("replace into Repositories (ID, name, baseURL, metadataFormat, setSpec, dateFrom, harvestInterval, timeout, harvestStatus, isRunning, resumptionToken) values (" +
+                            quote (rep.getID ()) + ", " +
+                            quote (rep.getName ()) + ", " +
+                            quote (rep.getBaseURL ()) + ", " +
+                            quote (rep.getMetadataFormat ()) + ", " +
+                            quote (rep.getSetSpec ()) + ", " +
+                            quote (rep.getDateFrom ()) + ", " +
+                            rep.getHarvestInterval () + ", " +
+                            rep.getTimeout () + ", " +
+                            quote (rep.getHarvestStatus ()) + ", " +
+                            rep.getRunning () + ", " +
+                            quote (rep.getResumptionToken ()) + ")");
          stm.close ();
          conn.close ();
       } catch ( Exception e ) {
@@ -157,15 +198,79 @@ public class Database {
    }  
 
    /**
+    * update pre-calaculated row count in repository
+    */
+   public boolean updateCounts ( Repository rep )
+   {
+      try {
+         stm.executeUpdate ("replace into Counter (setSpec, count) select Source,count(distinct ID) from "+
+                            "Archive where Source='"+rep.getID ()+"'");
+         stm.close ();
+         conn.close ();
+      } catch ( Exception e ) {
+         return false;
+      }
+      return true;
+   }  
+
+   public boolean updateRunning ( Repository rep )
+   {
+      try {
+         stm.executeUpdate ("update Repositories set isRunning='"+rep.getRunning ()+"' where ID="+quote (rep.getID ()));
+         stm.close ();
+         conn.close ();
+      } catch ( Exception e ) {
+         return false;
+      }
+      return true;
+   }  
+
+   public boolean updateHarvestStatus ( Repository rep )
+   {
+      try {
+         stm.executeUpdate ("update Repositories set harvestStatus="+quote (rep.getHarvestStatus ())+" where ID="+quote (rep.getID ()));
+         stm.close ();
+         conn.close ();
+      } catch ( Exception e ) {
+         return false;
+      }
+      return true;
+   }
+
+   public boolean updateDateFrom ( Repository rep )
+   {
+      try {
+         stm.executeUpdate ("update Repositories set dateFrom="+quote (rep.getDateFrom ())+" where ID="+quote (rep.getID ()));
+         stm.close ();
+         conn.close ();
+      } catch ( Exception e ) {
+         return false;
+      }
+      return true;
+   }  
+   
+   public boolean updateResumptionToken ( Repository rep )
+   {
+      try {
+         stm.executeUpdate ("update Repositories set resumptionToken="+quote (rep.getResumptionToken ())+" where ID="+quote (rep.getID ()));
+         stm.close ();
+         conn.close ();
+      } catch ( Exception e ) {
+         return false;
+      }
+      return true;
+   }
+
+   /**
     * delete repository from database
     */
    public boolean deleteRepository ( Repository rep )
    {
       try {
-         stm.executeUpdate ("delete from Repositories where ID=\'"+rep.getID ()+"\'");
+         stm.executeUpdate ("delete from Repositories where ID="+quote (rep.getID ()));
          stm.close ();
          stm = conn.createStatement ();
-         stm.executeUpdate ("update Archive set Deleted=\'1\' where Source=\'"+rep.getID ()+"\'");
+         stm.executeUpdate ("update Archive set Deleted=\'1\' where Source="+quote (rep.getID ()));
          stm.close ();
          conn.close ();
       } catch ( Exception e ) {
@@ -214,24 +319,28 @@ public class Database {
 
       // get entries from database
       try {
-         stm.executeQuery ("select * from Repositories");
+         stm.executeQuery ("select * from Repositories order by name");
          ResultSet rs = stm.getResultSet ();
          while (rs.next ())
             repoList.add (new Repository (conf, rs.getString ("ID"), rs.getString ("name"), rs.getString ("baseURL"), 
                                           rs.getString ("metadataFormat"), rs.getString ("setSpec"), 
-                                          rs.getString ("dateFrom"), rs.getInt ("harvestInterval"), 
-                                          rs.getInt ("isRunning"), rs.getString ("harvestStatus")));
+                                          rs.getString ("dateFrom"), rs.getInt ("harvestInterval"),
+                                          rs.getInt ("timeout"), 
+                                          rs.getInt ("isRunning"), rs.getString ("harvestStatus"), rs.getString ("resumptionToken")));
          rs.close ();
          stm.close ();
          
          Statement stm2 = conn.createStatement ();
-         stm2.executeQuery ("select source,count(source) from Archive group by source");
+         //stm2.executeQuery ("select source,count(source) from Archive group by source");
+         stm2.executeQuery ("select SetSpec,count from Counter");
          ResultSet rs2 = stm2.getResultSet ();
          while (rs2.next ())
          {
             for ( int i=0; i<repoList.size(); i++ )
-               if (repoList.get (i).getID ().equals (rs2.getString ("source")))
-                  repoList.get (i).setNumberOfRecords (rs2.getInt ("count(source)"));
+               if (repoList.get (i).getID ().equals (rs2.getString ("SetSpec")))
+                  repoList.get (i).setNumberOfRecords (rs2.getInt ("count"));
+               //if (repoList.get (i).getID ().equals (rs2.getString ("source")))
+               //   repoList.get (i).setNumberOfRecords (rs2.getInt ("count(source)"));
          }
          rs2.close ();
          stm2.close ();  

@@ -1,8 +1,7 @@
-import java.io.BufferedInputStream;
-import java.io.OutputStreamWriter;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import javax.xml.transform.stream.StreamSource;
@@ -25,6 +24,7 @@ public class OAIRequest
    Repository rep; 
    /** Database configuration */
    Config conf;
+//   OutputStreamWriter wr;
 
    /**
     * Starts the harvest by calling its internal <code>doHarvest</code> method.
@@ -66,7 +66,14 @@ public class OAIRequest
         }
         else
         {
-            request += "&resumptionToken=" + rtoken;
+            String rt;
+            try {
+               rt = URLEncoder.encode (rtoken, "UTF-8");
+            } catch ( UnsupportedEncodingException e ) {
+               rt = rtoken;
+            }
+            request += "&resumptionToken=" + rt;
+               
         }
 
         return request;
@@ -82,12 +89,12 @@ public class OAIRequest
         //update harvest status
         try
         {
-            String rtoken = ""; // at first there is no resumption token
+            String rtoken = rep.getResumptionToken (); // at first there is no resumption token
             do {
                 String request = generateRequest(rtoken);
                 conf.log.add("OAI request: " + rep.getBaseURL () + "?" + request);
-                BufferedInputStream response = sendRequest(request);
-
+//                BufferedInputStream response = sendRequest(request, rep.getTimeout());
+                String response = sendRequest(request, rep.getTimeout());
                 updateHarvestStatus();
                 OAIResponseHandler handler = new OAIResponseHandler (conf, response, rep); // create a response handler to parse and store the response
                 conf.log.add("Storing the responses...");
@@ -98,6 +105,8 @@ public class OAIRequest
                 rtoken = handler.getResumptionToken(); // get the resumption token from the response
                 if (! rtoken.equals (""))
                    conf.log.add ("resumptionToken: " + rtoken);
+                //wr.close();
+                //response.close();
             } while (!rtoken.equals("")); // if there is no resumption token, end the harvest
             //Harvest completed, so we know the list size
             rep.completeListSize = rep.cursor;
@@ -126,6 +135,8 @@ public class OAIRequest
         else
         {
             rep.updateHarvestStatus ("Harvested "+rep.cursor+" records");
+            //if (rep.cursor > 0)
+            //   rep.updateDateFrom ();
         }
     }
 
@@ -135,33 +146,90 @@ public class OAIRequest
      * @param request the request to be sent to the server
      * @return the response from the server
      */
-    private BufferedInputStream sendRequest(String request) throws Exception
+    private String sendRequest ( String request, long timeout ) throws Exception
+//    private BufferedInputStream sendRequest ( String request, long timeout ) throws Exception
     {
-        try
+        URL url = null;
+        URLConnection connection = null;
+        //BufferedInputStream response = null;
+        String response = null;
+        int state = 0;
+        int maxretries = 3;
+        while (state < maxretries)
         {
-            URL url = new URL (rep.getBaseURL()); // create URL with the base url of the server to harvest from
-            URLConnection connection = url.openConnection();
-            connection.setDoOutput(true); // do output is true
-            OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream());
+           if (state > 0)
+              conf.log.add ("Retry request number: "+state);
+           try
+           {
+              url = new URL (rep.getBaseURL() + "?" + request); // create URL with the base url of the server to harvest from
+              connection = url.openConnection ();
+              connection.setDoOutput(true); // do output is true
+              connection.setReadTimeout ((int)timeout);
+              connection.setRequestProperty("Connection", "close");
 
-            wr.write(request);
-            wr.flush();
-
-            BufferedInputStream response = new BufferedInputStream(connection.getInputStream()); // create a buffered stream to read from
-            /* this is so we can use the same stream twice, once to validate, and once to retrieve the data */
-
-            response.mark(2147483647); // sets the max amount of readable bytes, with the maximum amount that can be read from a stream
-
-            return response;
-
+//                response = new BufferedInputStream(connection.getInputStream()); // create a buffered stream to read from
+//                response.mark(2147483647); // sets the max amount of readable bytes, with the maximum amount that can be read from a stream
+//                return response;
+                                                
+              BufferedReader input = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8")); 
+              StringBuilder strB = new StringBuilder();
+              String str;
+              while (null != (str = input.readLine()))
+                 strB.append(str).append("\n"); 
+              input.close();
+              
+              response = new String (strB);
+              
+              if (response.matches ("(?sm).*OAI-PMH\\s*>\\s*$"))
+                 return response;
+              else
+              {
+                 conf.log.add("Partial response received: "+response.length ()+" bytes. Retrying...");
+                 state++;
+              }
+           }
+           catch (Exception e)
+           {
+              String eString = e.toString ();
+              if (eString.indexOf ("java.io.IOException: Server returned HTTP response code: 503") != -1)
+              {
+                 String sleepString = connection.getHeaderField ("Retry-After");
+                 int sleep;
+                 try {
+                    sleep = Integer.parseInt (sleepString, 10);
+                 } catch (Exception e2) {
+                    sleep = 0;
+                 }
+                 if ((sleep <= 0) || (sleep > 86400))
+                 { state++; }
+                 else
+                 {
+                    conf.log.add ("Sleeping for "+sleep+" seconds");
+                    Thread.sleep (sleep * 1000);
+                 }
+              }
+              else if (eString.indexOf ("java.io.IOException: Server returned HTTP response code: 407") != -1)
+              {
+                 Thread.sleep (2000);
+                 conf.log.add ("Proxy authentication error received : HTTP 407");
+              }
+              else
+              { state++; }
+                
+              if (state >= maxretries)
+              {
+                 conf.log.add("Error sending request to remote repository: "+e,
+                              "Error sending request to remote repository: "+e);
+                 throw new Exception("Failed to communicate with remote server");
+              }
+              //else
+              //   connection = url.openConnection();
+           }
         }
-        catch (Exception e)
-        {
-            conf.log.add("Error sending request to remote repository: "+e,
-                    "Error sending request to remote repository: "+e);
-            throw new Exception("Failed to communicate with remote server");
-        }
+        
+        throw new Exception("Failed to get complete response from server");
 
+//        return response;    
     }
 
     /**

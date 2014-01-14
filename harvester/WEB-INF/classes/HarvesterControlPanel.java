@@ -59,13 +59,16 @@ public class HarvesterControlPanel extends HttpServlet
       {
          String ID = request.getParameter ("id");
          
-         Repository rep = new Repository (conf, ID);
+         Repository rep = new Repository (conf);
+         rep.setID (ID);
          rep.setName (request.getParameter ("name"));
          rep.setBaseURL (request.getParameter ("baseURL"));
          rep.setMetadataFormat (request.getParameter ("metadataFormat"));
          rep.setSetSpec (request.getParameter ("setSpec"));
          rep.setHarvestInterval (Integer.parseInt (request.getParameter ("harvestInterval")));
+         rep.setTimeout (Integer.parseInt (request.getParameter ("timeout")));
          rep.setDateFrom (request.getParameter ("dateFrom"));
+         rep.setResumptionToken (request.getParameter ("resumptionToken"));
          
          rep.save ();
       } 
@@ -105,7 +108,9 @@ public class HarvesterControlPanel extends HttpServlet
                       "<tr><th>metdataPrefix</th><td><input type=\"text\" name=\"metadataFormat\" size=\"40\" value=\""+rep.getMetadataFormat ()+"\"/></td></tr>" +
                       "<tr><th>setSpec</th><td><input type=\"text\" name=\"setSpec\" size=\"40\" value=\""+rep.getSetSpec ()+"\"/></td></tr>" +
                       "<tr><th>harvest interval</th><td><input type=\"text\" name=\"harvestInterval\" size=\"40\" value=\""+rep.getHarvestInterval ()+"\"/></td></tr>" +
+                      "<tr><th>timeout</th><td><input type=\"text\" name=\"timeout\" size=\"40\" value=\""+rep.getTimeout ()+"\"/></td></tr>" +
                       "<tr><th>last harvest</th><td><input type=\"text\" name=\"dateFrom\" size=\"40\" value=\""+rep.getDateFrom ()+"\"/></td></tr>" +
+                      "<tr><th>resumptionToken</th><td><input type=\"text\" name=\"resumptionToken\" size=\"40\" value=\""+rep.getResumptionToken ()+"\"/></td></tr>" +
                       "</table>" +
                       "<input type=\"submit\" value=\"save\"></form>");
 

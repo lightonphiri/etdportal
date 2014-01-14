@@ -1,6 +1,3 @@
-
-
-
 import java.sql.SQLException;
 import javax.servlet.http.HttpServletRequest;
 
@@ -76,7 +73,7 @@ public class ListIdentifiers extends Response
             }else
             {
                 //initialize default 'until' date - a few hundred years in the future!                
-                until = "2500-01-01T00:00:00Z";
+                until = "2037-01-01T00:00:00Z";
             }                        
                 
             if(!badDates)
@@ -91,12 +88,12 @@ public class ListIdentifiers extends Response
                 {
                     if(set != null && set.length() != 0) //if we have a set we need to search in
                     {
-                         outputResponse.append(settings.dbCon.listRecords(from, until, metadataPrefix, true, set, 0));
+                         outputResponse.append(settings.dbCon.listRecords(from, until, metadataPrefix, true, set, 0, -1, ""));
                     }
                     else
                     { //otherwise we have no sets to search in
                         //use DatabaseConnection in the floating Config object to get
-                        outputResponse.append(settings.dbCon.listRecords(from, until, metadataPrefix, true, "", 0));
+                        outputResponse.append(settings.dbCon.listRecords(from, until, metadataPrefix, true, "", 0, -1, ""));
                     }
                 }
                 catch(SQLException e)
@@ -120,7 +117,7 @@ public class ListIdentifiers extends Response
             {
                 //pass the work of decoding the resumptionToken to the DatabaseConnection
                 try{
-                    outputResponse.append(settings.dbCon.listRecords(resumptionToken));
+                    outputResponse.append(settings.dbCon.listRecords(true, resumptionToken));
                 }catch(SQLException e)
                 {
                     outputResponse.append("\t<error>Failed to connect to the database... Perhaps it is under maintainance?\n");

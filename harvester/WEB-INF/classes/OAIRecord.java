@@ -35,7 +35,9 @@ public class OAIRecord {
     /** the xml namespace of this records type */
     private String nameSpace;
     /** whether the record is flagged as deleted or not */
-	private boolean deleted;
+    private boolean deleted;
+    /** original originDescription entry */
+    private String origin;
 
     /**
      * Constructor to create a record object out of the constituent variables
@@ -46,7 +48,7 @@ public class OAIRecord {
      * @param contents the actual metadata content
      * @param isDeleted whether or not the record is deleted or not.
      */
-	public OAIRecord (String id, String Source, String baseURL, String metadata, String contents, String datestamp, String nameSpace, boolean isDeleted){
+	public OAIRecord (String id, String Source, String baseURL, String metadata, String contents, String datestamp, String nameSpace, boolean isDeleted, String origin ){
 		ID = id;
 		source = Source;
 		this.baseURL = baseURL;
@@ -55,7 +57,7 @@ public class OAIRecord {
 		deleted = isDeleted;
 		dateStamp = datestamp;
 		this.nameSpace = nameSpace;
-		
+		this.origin = origin;
 	}
 
 	// getters and setters
@@ -117,6 +119,7 @@ public class OAIRecord {
 		data.append("  <identifier>"+ID+"</identifier>\n");
 		data.append("  <datestamp>"+dateStamp+"</datestamp>\n");
 		data.append("  <metadataNamespace>"+nameSpace+"</metadataNamespace>\n");
+		data.append (origin);
 		data.append(" </originDescription>\n");
 		data.append("</provenance>\n");
 		
@@ -137,7 +140,13 @@ public class OAIRecord {
      * @return the xml metadata stored in this record
      */
 	public String getXml() {
-		StringBuffer out;
+	
+//           String s = xml.replace ("\\", "\\\\");
+//           s = s.replace ("'", "\\'");
+//	   return s;
+           return xml;
+	
+	/*	StringBuffer out;
         String temp;
 		out = new StringBuffer("");
 		temp =  xml;
@@ -148,6 +157,7 @@ public class OAIRecord {
 		}
 		out.append(temp);
 		return out.toString();
+		*/
 	}
 
     /**

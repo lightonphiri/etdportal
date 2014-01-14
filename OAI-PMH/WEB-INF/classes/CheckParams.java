@@ -1,9 +1,7 @@
-
-
-
 import java.util.Enumeration;
 import java.util.Scanner;
 import javax.servlet.http.HttpServletRequest;
+import java.util.regex.*;
 
 /**
  * Date: 20th April 2009
@@ -224,7 +222,15 @@ public class CheckParams
          * OR
          * LRS!2002-06-01T23:20:00Z!2004-08-03T21:20:00Z!oai_dc!100
          */
-        
+         
+         /* new format:
+           requestType!fromDate!untilDate!set!metadataPrefix!identifier
+         */
+         Pattern p = Pattern.compile ("([12][0-9]{3}-[01][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]Z)!([12][0-9]{3}-[01][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]Z)!([^!]*)!([^!]+)!([0-9]+)!(.*)");
+         Matcher m = p.matcher (RT);
+         return m.matches ();
+           
+/*                    
          //first check if the request type is correct
         if(!(RT.substring(0, 2).equals("LR")) & !(RT.substring(0, 2).equals("LI")))
         {            
@@ -387,6 +393,7 @@ public class CheckParams
             }            
             return true;
         }
+*/
     }
    
 }

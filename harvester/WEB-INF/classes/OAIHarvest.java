@@ -50,10 +50,7 @@ public class OAIHarvest
    {
       conf = aConf;
       for ( int i=0; i<args.length; i++ )
-      {
-         conf.log.add("Checking "+args[i]+" to see if it needs harvesting....");
          doHarvest (args[i]);
-      }
    }
 
    /**
@@ -66,6 +63,9 @@ public class OAIHarvest
     */
    public void doHarvest ( String repositoryName )
    {
+      conf.openLogFile ("."+repositoryName);
+      conf.log.add("Checking "+repositoryName+" to see if it needs harvesting....");
+
       Repository rep = new Repository (conf, repositoryName);
    
       /* decide whether to run the harvest */
@@ -83,7 +83,7 @@ public class OAIHarvest
             lastDate = new Timestamp (0);
          Timestamp currentDate = new Timestamp( ( new Date() ).getTime() );
 
-         if ( ((isRunning == 0) && ( ( currentDate.getTime() - lastDate.getTime() > (harvestInterval*1000) ) || ("Update forced".equals(status) ) ) ))
+         if ( ((isRunning == 0) && (! rep.getBaseURL ().equals ("")) && ( ( currentDate.getTime() - lastDate.getTime() > (harvestInterval*1000) ) || ("Update forced".equals(status) ) ) ))
          { // if the harvest should be done
             /* we now start with a harvest */
             conf.log.add("Harvesting: " + repositoryName + " @ " + rep.getBaseURL ());
@@ -101,8 +101,9 @@ public class OAIHarvest
                StringTokenizer m_st = new StringTokenizer (rep.getMetadataFormat (), ", ");
                while (m_st.hasMoreTokens ())
                   metadataPrefixes.add (m_st.nextToken ());
-               if (metadataPrefixes.size () == 0)
-                  metadataPrefixes.add ("");
+               // no idea why this was here in the first place!
+               //if (metadataPrefixes.size () == 0)
+               //   metadataPrefixes.add ("");
 
                /* creates list of sets */
                ArrayList<String> sets = new ArrayList<String>();
@@ -119,7 +120,7 @@ public class OAIHarvest
                      rep.setMetadataFormat (metadataPrefixes.get (m));
                      rep.setSetSpec (sets.get (s));
                      OAIRequest request = new OAIRequest (conf, rep);
-                  }   
+                  }
                   
                //Now restore the original properties we had
                rep.setMetadataFormat(metadataFormat);
@@ -127,12 +128,17 @@ public class OAIHarvest
 
                rep.updateDateFrom(); // update the dateFrom in the harvest file
                conf.log.add("Harvest completed on "+repositoryName);
+               
+               //remove the temp resumptionToken
+               if (! ("".equals (rep.getResumptionToken ())))
+                  rep.updateResumptionToken ("");
             } catch(Exception e) {
                rep.updateHarvestStatus ("Failed connecting to baseURL");
                conf.log.add("Error caught during harvest on "+repositoryName+": "+e,
                        "Error caught during harvest on "+repositoryName+": "+e);
             } finally {
                rep.updateRunning(0); // the harvest has finished
+               rep.updateCounts();
             }
          }
          else

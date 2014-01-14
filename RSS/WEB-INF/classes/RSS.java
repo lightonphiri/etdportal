@@ -67,13 +67,15 @@ public class RSS extends HttpServlet
      throws ServletException
     {
         super.init (config);
+        
+        System.setProperty ("file.encoding", "UTF-8");
         //This is where we read in our config file and assign variables
         try
         {   
             //read in the xml config file
             DocumentBuilderFactory docBuilderFac = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docBuilderFac.newDocumentBuilder();
-            Document doc = docBuilder.parse("/etc/etdportal/config.xml");
+            Document doc = docBuilder.parse("/etc/etdportal/union/config.xml");
             
             //normalize text representation
             doc.getDocumentElement().normalize();
@@ -130,6 +132,8 @@ public class RSS extends HttpServlet
     @Override
      public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException
      {
+        response.setContentType ("text/xml");
+        response.setCharacterEncoding("UTF-8");
         //get the printWriter object with which we will print out data
         PrintWriter out = response.getWriter();
         
@@ -162,8 +166,9 @@ public class RSS extends HttpServlet
             finalResponse.append("      <webMaster>"+adminEmail+"</webMaster>\n");
 
             //set the default values, should the db transactions fail
-            String title = "No Title Found";
-            String description = "No description Found";
+            String title = "";
+            String description = "";
+            String identifier = "";
 
             //database transactions
             try
@@ -176,10 +181,12 @@ public class RSS extends HttpServlet
 
                 //create a statement and execute our query
                 Statement stm = con.createStatement();
-                ResultSet rs = stm.executeQuery("SELECT DISTINCT * FROM Archive where Deleted=\'0\' ORDER BY Date desc LIMIT 5;");
+                ResultSet rs = stm.executeQuery("SELECT DISTINCT ID,Metadata,Date FROM Archive where Deleted=\'0\' ORDER BY Date desc LIMIT 15;");
 
                 //list our most recent 5 records
-                while(rs.next())
+                int count = 0;
+                String previousID = " ";
+                while(rs.next() && (count<5))
                 {
                     //use xml parsing on the metadata in order to extract neccesary details
                     //NOTE, WE ARE NOT VALIDATING THE XML, JUST READING IT.
@@ -188,8 +195,9 @@ public class RSS extends HttpServlet
                     try
                     {
                         //set protocal and put it in a string buffer
-                        StringBuffer xml = new StringBuffer("<?xml version=\"1.0\"?>");
-                        xml.append(rs.getString("MetaData"));
+                        StringBuffer xml = new StringBuffer("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                        //xml.append(rs.getString("MetaData"));
+                        xml.append (new String (rs.getBytes("Metadata"), "UTF-8"));
 
                         //now use a StringReader to convert it into a InputStream
                         //(we need to do this, so that we can use a string instead of a file with the docBuilder)
@@ -206,6 +214,11 @@ public class RSS extends HttpServlet
 
                         //normalize text representation
                         doc.getDocumentElement().normalize();
+                        
+                        //set the default values, should the db transactions fail
+                        title = "No title found";
+                        description = "No description found";
+                        identifier = "No identifier found";
 
                         //get title
                         NodeList titleList = doc.getElementsByTagNameNS("*", "title");
@@ -227,6 +240,16 @@ public class RSS extends HttpServlet
                               description = ((Node)textDescList.item(0)).getNodeValue().trim();
                         }   
 
+                        //get identifier
+                        NodeList idList = doc.getElementsByTagNameNS("*","identifier");
+                        if (idList.getLength () > 0)
+                        {
+                           Element idElement = (Element)idList.item(0);
+                           NodeList textIDList = idElement.getChildNodes();
+                           if (textIDList.getLength () > 0)
+                              identifier = ((Node)textIDList.item(0)).getNodeValue().trim();
+                        }   
+
                         //shorten description if its too long
                         if(description.length() > 384)
                         {
@@ -239,9 +262,12 @@ public class RSS extends HttpServlet
                         title = title.replaceAll ("&", "&amp;");
                         title = title.replaceAll ("<", "&lt;");
                         title = title.replaceAll (">", "&gt;");
-                        description = title.replaceAll ("&", "&amp;");
-                        description = title.replaceAll ("<", "&lt;");
-                        description = title.replaceAll (">", "&gt;");
+                        description = description.replaceAll ("&", "&amp;");
+                        description = description.replaceAll ("<", "&lt;");
+                        description = description.replaceAll (">", "&gt;");
+                        identifier = identifier.replaceAll ("&", "&amp;");
+                        identifier = identifier.replaceAll ("<", "&lt;");
+                        identifier = identifier.replaceAll (">", "&gt;");
 
                         //catch throwable errors
                     }catch(ParserConfigurationException e)
@@ -258,13 +284,19 @@ public class RSS extends HttpServlet
                     UTCDateFormatter.setTimeZone(tz);
 
                     //and finally we get to writting our RSS item
-                    finalResponse.append("       <item>\n");
-                    finalResponse.append("        <title>"+title+"</title>\n");
-                    finalResponse.append("        <link>"+repositoryURL+"</link>\n");
-                    finalResponse.append("        <description>"+description+"</description>\n");
-                    finalResponse.append("        <pubDate>"+UTCDateFormatter.format(rs.getTimestamp("Date"))+"</pubDate>\n");
-                    finalResponse.append("        <guid>"+rs.getString("ID")+"</guid>\n");
-                    finalResponse.append("       </item>\n");
+                    String ID = rs.getString ("ID");
+                    if (! ID.equals (previousID))
+                    {
+                       finalResponse.append("       <item>\n");
+                       finalResponse.append("        <title>"+title+"</title>\n");
+                       finalResponse.append("        <link>"+identifier+"</link>\n");
+                       finalResponse.append("        <description>"+description+"</description>\n");
+                       finalResponse.append("        <pubDate>"+UTCDateFormatter.format(rs.getTimestamp("Date"))+"</pubDate>\n");
+                       finalResponse.append("        <guid>"+ID+"</guid>\n");
+                       finalResponse.append("       </item>\n");
+                       count++;
+                       previousID = ID;
+                    }
                 }
 
             }catch(ClassNotFoundException e)

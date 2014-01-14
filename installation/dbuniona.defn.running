@@ -1,0 +1,151 @@
+-- MySQL dump 10.13  Distrib 5.1.72, for debian-linux-gnu (x86_64)
+--
+-- Host: localhost    Database: dbuniona
+-- ------------------------------------------------------
+-- Server version	5.1.72-0ubuntu0.10.04.1
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `Archive`
+--
+
+DROP TABLE IF EXISTS `Archive`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Archive` (
+  `ID` varchar(200) NOT NULL DEFAULT '',
+  `Date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `MetaType` varchar(16) NOT NULL DEFAULT '',
+  `Source` varchar(2048) DEFAULT NULL,
+  `MetaData` mediumblob,
+  `Deleted` tinyint(1) NOT NULL DEFAULT '0',
+  `About` blob NOT NULL,
+  `SetSpec` varchar(64) NOT NULL DEFAULT 'None',
+  PRIMARY KEY (`ID`,`MetaType`),
+  KEY `IDX_DATE` (`Date`),
+  KEY `IDX_METATYPE` (`MetaType`),
+  KEY `SourceID` (`Source`(128),`ID`(128)),
+  KEY `SourceDeletedID` (`Source`(128),`Deleted`,`ID`(128)),
+  KEY `Source_idx` (`Source`(333)),
+  KEY `MetaTypeDate` (`MetaType`,`Date`),
+  KEY `DateMetaType` (`Date`,`MetaType`),
+  KEY `MetaTypeDateID` (`MetaType`,`Date`,`ID`),
+  KEY `MetaTypesetSpecDateID` (`MetaType`,`SetSpec`,`Date`,`ID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `Archive2`
+--
+
+DROP TABLE IF EXISTS `Archive2`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Archive2` (
+  `identifier` char(255) NOT NULL,
+  `dateStamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `metadataPrefix` char(16) NOT NULL,
+  `setSpec` char(64) DEFAULT NULL,
+  `deleted` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`identifier`,`metadataPrefix`),
+  KEY `setSpecdeletedidentifier` (`setSpec`,`deleted`,`identifier`),
+  KEY `metadataPrefixdatestamp` (`metadataPrefix`,`dateStamp`),
+  KEY `dateStampmetadataPrefix` (`dateStamp`,`metadataPrefix`),
+  KEY `metadataPrefixdateStampidentifier` (`metadataPrefix`,`dateStamp`,`identifier`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `Archive_Errors`
+--
+
+DROP TABLE IF EXISTS `Archive_Errors`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Archive_Errors` (
+  `ID` varchar(256) DEFAULT NULL,
+  `Date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `MetaType` varchar(16) DEFAULT NULL,
+  `Source` varchar(2048) DEFAULT NULL,
+  `MetaData` blob,
+  `Deleted` tinyint(1) DEFAULT NULL,
+  `About` blob,
+  `SetSpec` varchar(64) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `Counter`
+--
+
+DROP TABLE IF EXISTS `Counter`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Counter` (
+  `setSpec` varchar(64) NOT NULL,
+  `count` int(11) DEFAULT NULL,
+  PRIMARY KEY (`setSpec`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `Repositories`
+--
+
+DROP TABLE IF EXISTS `Repositories`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Repositories` (
+  `ID` varchar(64) NOT NULL,
+  `name` varchar(128) NOT NULL,
+  `isRunning` tinyint(1) NOT NULL DEFAULT '0',
+  `harvestStatus` varchar(256) NOT NULL DEFAULT '',
+  `baseURL` varchar(2048) NOT NULL,
+  `metadataFormat` varchar(1024) NOT NULL DEFAULT 'oai_dc',
+  `setSpec` varchar(16384) NOT NULL DEFAULT '',
+  `dateFrom` varchar(64) NOT NULL DEFAULT '',
+  `harvestInterval` int(11) NOT NULL DEFAULT '3000',
+  `timeout` int(11) DEFAULT '180000',
+  `resumptionToken` varchar(1024) DEFAULT NULL,
+  PRIMARY KEY (`ID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `countcache`
+--
+
+DROP TABLE IF EXISTS `countcache`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `countcache` (
+  `Date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `MetaType` varchar(16) NOT NULL DEFAULT '',
+  `fromdate` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `untildate` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `SetSpec` varchar(64) NOT NULL DEFAULT '',
+  `count` int(11) DEFAULT NULL,
+  PRIMARY KEY (`MetaType`,`fromdate`,`untildate`,`SetSpec`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2013-12-13 17:34:08

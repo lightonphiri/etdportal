@@ -14,8 +14,8 @@ JFLAGS = -classpath WEB-INF/lib/mysql-connector-java.jar:WEB-INF/lib/servlet-api
 JAVAC = javac
 
 WEBAPPS = /var/lib/$(TOMCAT)/webapps
-APPNAME = portal
-INDEXDIR = /var/db
+APPNAME = union.portal
+INDEXDIR = /var/db/union
 
 # rules
 
@@ -68,11 +68,11 @@ install:
 	install -o $(TOMCAT) -v -m 644 images/header.png $(WEBAPPS)/$(APPNAME)/images/
 	install -o $(TOMCAT) -v -m 644 images/footer.png $(WEBAPPS)/$(APPNAME)/images/
 
-	install -o $(TOMCAT) -v -d /etc/etdportal/portal
+	install -o $(TOMCAT) -v -d /etc/etdportal/union/portal
 	install -o $(TOMCAT) -v -d $(WEBAPPS)/$(APPNAME)/WEB-INF
 	install -o $(TOMCAT) -v -m 644 WEB-INF/web.xml $(WEBAPPS)/$(APPNAME)/WEB-INF/
 	for comp in $(CONFIGFILES); do \
-	   install -o $(TOMCAT) -v -m 644 WEB-INF/xsl/$$comp /etc/etdportal/portal/; \
+	   install -o $(TOMCAT) -v -m 644 WEB-INF/xsl/$$comp /etc/etdportal/union/portal/; \
 	done
 
 	install -o $(TOMCAT) -v -d $(WEBAPPS)/$(APPNAME)/WEB-INF/lib

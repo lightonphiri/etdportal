@@ -13,7 +13,7 @@ TOMCAT = tomcat6
 
 # targets
 
-COMPONENTS = harvester portal RSS OAI-PMH summary
+COMPONENTS = harvester RSS OAI-PMH summary portal
 	
 all:
 	for comp in $(COMPONENTS); do \
@@ -31,12 +31,14 @@ install:
 	for comp in $(COMPONENTS); do \
 	   $(MAKE) -C $$comp install; \
 	done
-	
-	install -o $(TOMCAT) -v -m 755 installation/Harvest.sh /var/lib/$(TOMCAT)/webapps
+
+	install -o $(TOMCAT) -v -m 755 -d /var/lib/$(TOMCAT)/webapps/union
+	install -o $(TOMCAT) -v -m 755 installation/Harvest.sh /var/lib/$(TOMCAT)/webapps/union/
 	install -o $(TOMCAT) -v -m 644 installation/etc_apache2_sites-available_etd /etc/apache2/sites-available/etd
 	install -o $(TOMCAT) -v -m 644 installation/etc_tomcat5.5_policy.d_04webapps.policy /etc/$(TOMCAT)/policy.d/04webapps.policy
        
-	install -o $(TOMCAT) -v -m 644 -d /etc/etdportal
-	install -o $(TOMCAT) -v -m 644 installation/etc_etdportal_config.xml.orig /etc/etdportal/config.xml.orig
+	install -o $(TOMCAT) -v -m 755 -d /etc/etdportal/union
+	install -o $(TOMCAT) -v -m 755 -d /var/log/etdportal/union
+	install -o $(TOMCAT) -v -m 644 installation/etc_etdportal_config.xml.orig /etc/etdportal/union/config.xml.orig
 	
 	@echo Finished.

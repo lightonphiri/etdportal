@@ -38,6 +38,8 @@ public class Repository
   private String setSpec;
   /** the time between harvests (milliseconds)*/
   private long harvestInterval;
+  /** the timeout for requests  (milliseconds)*/
+  private long timeout;
   /** whether the harvest is currently running */
   private int running;
   /** The current position in the harvest */
@@ -48,6 +50,9 @@ public class Repository
    * True if all is good and you may use it. False if there is some erro and you should abort*/
   public boolean isLoaded;
   private int numberOfRecords;
+  private Timestamp startDate;
+  private String resumptionToken;
+  
 
   /**
    * Constructor to set up the instance variables and load up the harvest and database
@@ -67,10 +72,15 @@ public class Repository
       setSpec = "";
       dateFrom = "";
       harvestInterval = 3000;
+      timeout = 180000;
       running = 0;
       harvestStatus = "";
+      resumptionToken = "";
 
       conf = aConf;
+      
+      startDate = new Timestamp( ( new Date() ).getTime() ); // get the current timestamp
+      
       load (); // load the repository properties
    }
    
@@ -84,9 +94,13 @@ public class Repository
       setSpec = "";
       dateFrom = "";
       harvestInterval = 3000;
+      timeout = 180000;
       running = 0;
       harvestStatus = "";
+      resumptionToken = "";
       
+      startDate = new Timestamp( ( new Date() ).getTime() ); // get the current timestamp
+
       conf = aConf;
    }
 
@@ -100,16 +114,19 @@ public class Repository
       setSpec = rep.setSpec;
       dateFrom = rep.dateFrom;
       harvestInterval = rep.harvestInterval;
+      timeout = rep.timeout;
       running = rep.running;
-      harvestStatus = rep.harvestStatus;
+      harvestStatus = rep.harvestStatus;      
+      startDate = rep.startDate;
+      resumptionToken = rep.resumptionToken;
       
       conf = rep.conf;
    }
    
    // Constructor for new harvest entry
    public Repository ( Config aConf, String anID, String aName, String aBaseURL, String aMetadataFormat, 
-                       String aSetSpec, String aDateFrom, long aHarvestInterval, int aRunning, 
-                       String aHarvestStatus )
+                       String aSetSpec, String aDateFrom, long aHarvestInterval, long aTimeout, int aRunning, 
+                       String aHarvestStatus, String aResumptionToken )
    {
       ID = anID;
       name = aName;
@@ -118,9 +135,13 @@ public class Repository
       setSpec = aSetSpec;
       dateFrom = aDateFrom;
       harvestInterval = aHarvestInterval;
+      timeout = aTimeout;
       running = aRunning;
       harvestStatus = aHarvestStatus;
+      resumptionToken = aResumptionToken;
       
+      startDate = new Timestamp( ( new Date() ).getTime() ); // get the current timestamp
+
       cursor = 0;
       completeListSize = -1;
       conf = aConf;
@@ -290,9 +311,18 @@ public class Repository
     */
    public void updateDateFrom ()
    {
-      Timestamp currentDate = new Timestamp( ( new Date() ).getTime() ); // get the current timestamp
-      dateFrom = currentDate.toString();	// convert to a string
-      save (); // save this to the file
+      if (cursor == 0)  // do not update date if there were no records
+         return;
+//      Timestamp currentDate = new Timestamp( ( new Date() ).getTime() ); // get the current timestamp
+      dateFrom = startDate.toString();	// convert to a string
+//      save (); // save this to the file
+      Database db = new Database (conf);
+      if (db.connect ())
+      {
+         db.updateDateFrom (this);
+      }
+      else
+         conf.log.add("Cannot load database","Cannot load database");
    }
 
    /**
@@ -310,6 +340,23 @@ public class Repository
    public void setHarvestInterval ( long aHarvestInterval )
    {
       harvestInterval = aHarvestInterval;
+   }
+
+   /**
+    * Gets the timeout value.
+    * @return the timeout value.
+    */
+   public long getTimeout ()
+   {
+      return timeout;
+   }
+   /**
+    * Sets the timeout value.
+    * @return the timeout value.
+    */
+   public void setTimeout ( long aTimeout )
+   {
+      timeout = aTimeout;
    }
    
    /**
@@ -338,7 +385,14 @@ public class Repository
    public void updateHarvestStatus ( String aHarvestStatus )
    {
       setHarvestStatus (aHarvestStatus);
-      save (); // saves the configuration to the config file
+//      save (); // saves the configuration to the config file
+      Database db = new Database (conf);
+      if (db.connect ())
+      {
+         db.updateHarvestStatus (this);
+      }
+      else
+         conf.log.add("Cannot load database","Cannot load database");
    }
 
    /**
@@ -364,9 +418,30 @@ public class Repository
    public void updateRunning ( int aRunning )
    {
       setRunning (aRunning);
-      save ();
+//      save ();
+      Database db = new Database (conf);
+      if (db.connect ())
+      {
+         db.updateRunning (this);
+      }
+      else
+         conf.log.add("Cannot load database","Cannot load database");
    }
 
+   /**
+    * Update pre-calculated row count
+    */
+   public void updateCounts ()
+   {
+      Database db = new Database (conf);
+      if (db.connect ())
+      {
+         db.updateCounts (this);
+      }
+      else
+         conf.log.add("Cannot load database","Cannot load database");
+   }
+   
    public int getNumberOfRecords ()
    {
       return numberOfRecords;
@@ -375,4 +450,25 @@ public class Repository
    {
       numberOfRecords = numOfRecords;
    }
+   
+   public String getResumptionToken ()
+   {
+      return resumptionToken;
+   }
+   public void setResumptionToken ( String res )
+   {
+      resumptionToken = res;
+   }
+   public void updateResumptionToken ( String res )
+   {
+      setResumptionToken (res);
+      Database db = new Database (conf);
+      if (db.connect ())
+      {
+         db.updateResumptionToken (this);
+      }
+      else
+         conf.log.add("Cannot load database","Cannot load database");
+   }
 }
+

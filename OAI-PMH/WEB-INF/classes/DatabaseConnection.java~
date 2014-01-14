@@ -3,6 +3,7 @@ import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.Scanner;
 import java.util.TimeZone;
+import java.util.regex.*;
 
 /**
  * Date: 9 April 2009
@@ -39,12 +40,19 @@ public class DatabaseConnection
         con = DriverManager.getConnection (url, username, password);  
     }
     
+   public String quote ( String data )
+   {
+      String s = data.replace ("\\", "\\\\");
+      s = s.replace ("'", "\\'");
+      return "'"+s+"'";
+   }   
+
     public StringBuffer getRecord(String ID, String metaType) throws SQLException
     {
         connect();
         //create statement and query the database
         Statement stm = con.createStatement();
-        ResultSet rs = stm.executeQuery("SELECT * FROM Archive WHERE ID = '"+ID+"';");
+        ResultSet rs = stm.executeQuery("SELECT * FROM Archive WHERE ID = "+ quote (ID)+";");
         
         //boolean variables to keep track of whether the record with the ID exists,
         // or has been found but doesnt match the dissemination type specified
@@ -79,6 +87,10 @@ public class DatabaseConnection
                    sqlResponse.append("<datestamp>");
                    sqlResponse.append(UTCDateFormatter.format(rs.getTimestamp("Date")));
                    sqlResponse.append("</datestamp>\n");
+                    //sets
+                    sqlResponse.append("<setSpec>");
+                    sqlResponse.append(rs.getString("SetSpec"));
+                    sqlResponse.append("</setSpec>\n");
                    sqlResponse.append("</header>\n");
                }
                else//if its not deleted print out metadata
@@ -90,18 +102,31 @@ public class DatabaseConnection
                    sqlResponse.append("<datestamp>");
                    sqlResponse.append(UTCDateFormatter.format(rs.getTimestamp("Date")));
                    sqlResponse.append("</datestamp>\n");
+                    //sets
+                    sqlResponse.append("<setSpec>");
+                    sqlResponse.append(rs.getString("SetSpec"));
+                    sqlResponse.append("</setSpec>\n");
                    sqlResponse.append("</header>\n");
-                   //sqlResponse.append("<metadata>\n");
-                   sqlResponse.append(rs.getString("MetaData"));
+                   sqlResponse.append("<metadata>\n");
+                   //sqlResponse.append(rs.getString("MetaData"));
+                   try {
+                      sqlResponse.append(new String (rs.getBytes("MetaData"), "UTF-8"));
+                   } catch ( Exception e ) {
+                      e.printStackTrace();
+                   }   
                    sqlResponse.append("\n");
-                   //sqlResponse.append("</metadata>\n");
+                   sqlResponse.append("</metadata>\n");
                    //check for about section.
                    if(rs.getString("About")!= null && rs.getString("About").length() != 0)
                    {
-                       //sqlResponse.append("<about>\n");
-                       //sqlResponse.append(rs.getString("About"));
-                       //sqlResponse.append("\n");
-                       //sqlResponse.append("</about>");
+                       sqlResponse.append("<about>\n");
+                       try {
+                          sqlResponse.append(new String (rs.getBytes ("About"), "UTF-8"));
+                       } catch ( Exception e ) {
+                          e.printStackTrace();
+                       }    
+                       sqlResponse.append("\n");
+                       sqlResponse.append("</about>");
                    }
                }
                        
@@ -169,7 +194,7 @@ public class DatabaseConnection
         connect();
         //create statement and execute sql query            
         Statement stm = con.createStatement();
-        ResultSet rs = stm.executeQuery("SELECT MetaType FROM Archive WHERE ID='"+ID+"';");
+        ResultSet rs = stm.executeQuery("SELECT MetaType FROM Archive WHERE ID="+quote (ID)+";");
         
         //check if any records with this MetaType exists
         boolean found = false;
@@ -218,7 +243,7 @@ public class DatabaseConnection
     
     //if a resumption token is received as a request, it comes here to continue the 
     //request
-    public StringBuffer listRecords(String ResumptionToken) throws SQLException
+    public StringBuffer listRecords ( boolean headersOnly, String ResumptionToken ) throws SQLException
     {
         connect();
         //example of the token below
@@ -232,7 +257,7 @@ public class DatabaseConnection
         //delimiter is !     
         
         //Start by creating a scanner on the token and setting its delimeter to !
-        Scanner resump = new Scanner(ResumptionToken);
+/*        Scanner resump = new Scanner(ResumptionToken);
         resump.useDelimiter("!");
         
         //check to see what type of request it is 
@@ -278,10 +303,90 @@ public class DatabaseConnection
         
         //get current cursor position
         int cursor = resump.nextInt();
-                
+
         return listRecords(from, until, metadataFormat, headersOnly, sets, cursor);
+*/                
+
+      
+      String from="", until="", metadataPrefix="oai_dc", set="", identifier="";
+      int cursor = 0, totalRecords = -1;
+      Pattern p = Pattern.compile ("([12][0-9]{3}-[01][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]Z)!([12][0-9]{3}-[01][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]Z)!([^!]*)!([^!]+)!([0-9]+)!([0-9]+)!(.*)");
+      Matcher m = p.matcher (ResumptionToken);
+      if (m.matches ())
+      {
+         from = m.group (1);
+         until = m.group (2);
+         set = m.group (3);
+         metadataPrefix = m.group (4);
+         String cursorStr = m.group (5);
+         try {
+            cursor = Integer.parseInt (cursorStr);
+         } catch (Exception e) {  
+         }
+         String totalRecordsStr = m.group (6);
+         try {
+            totalRecords = Integer.parseInt (totalRecordsStr);
+         } catch (Exception e) {  
+         }
+         identifier = m.group (7);         
+      }
+      
+      return listRecords(from, until, metadataPrefix, headersOnly, set, cursor, totalRecords, identifier);        
+    }
+    
+    
+    public String makeTimestampDate ( String aDate, int fromUntil )
+    {
+/*
+        String fullDate = aDate;
+
+        if (fullDate.length () == 20)
+           fullDate = aDate.substring (0, 10) + " " + aDate.substring (11, 19);
+        else
+        {
+           if (fromUntil == 0)
+              fullDate = aDate + " 00:00:00";
+           else
+              fullDate = aDate + " 23:59:59";   
+        }   
+
+        String yearStr = fullDate.substring (0, 4);
+        int year = Integer.parseInt (yearStr);
+        if (year < 1980)
+           fullDate = "1980-01-01 00:00:01";
+    
+        return fullDate;
+
+*/
+        String fullDate = aDate;
+
+        if (fullDate.length () == 10)
+        {
+           if (fromUntil == 0)
+              fullDate = aDate + "T00:00:00Z";
+           else
+              fullDate = aDate + "T23:59:59Z";
+        }
+
+        String yearStr = fullDate.substring (0, 4);
+        int year = Integer.parseInt (yearStr);
+        if (year < 1980)
+           fullDate = "1980-01-01T00:00:01Z";
+
+        //set up date formatters and timezones
+        SimpleDateFormat UTCDateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'Z'");
+        TimeZone tz1 = TimeZone.getTimeZone("UTC");
+        UTCDateFormatter.setTimeZone(tz1);
+        SimpleDateFormat LocalDateFormatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        TimeZone tz2 = TimeZone.getTimeZone("GMT+2");
+        LocalDateFormatter.setTimeZone(tz2);
         
-    }   
+        try {
+           return ((LocalDateFormatter.format(UTCDateFormatter.parse (fullDate))));
+        } catch (Exception e) {
+           return "1980-01-01 00:00:00";
+        }
+    }
     
     
     /**
@@ -297,8 +402,10 @@ public class DatabaseConnection
      * @return A stringbuffer with the correctly formatted results.
      * @throws SQLException If the method fails to correctly access the database
      */
-    public StringBuffer listRecords(String from, String until, String metaType, boolean headersOnly, String set , int cursor) throws SQLException
+    public StringBuffer listRecords(String from, String until, String metaType, boolean headersOnly, String set , int cursor, int totalRecords, String identifier) throws SQLException
     {
+        int epochSize = 1000;
+    
         connect();
         //variable tracking whether a resumption token is needed
         boolean resume = false;
@@ -311,30 +418,55 @@ public class DatabaseConnection
         }
         
         //if our current cursor position is non zero, obviously we are resuming
-        if(cursor != 0)
-        {
-            resume = true;
-        }
+        //if(cursor != 0)
+        //{
+        //    resume = true;
+        //}
         
         //create statement
         Statement stm = con.createStatement();
         
         //lets get the total number of records we are going to need
+        // use countcache to speed up counting of rows
+//        int totalRecords = 0;
         ResultSet rs;
-        if(sets)
+
+        String fullfrom = makeTimestampDate (from, 0);
+        String fulluntil = makeTimestampDate (until, 1);
+        
+        if (totalRecords == -1)
         {
-            rs= stm.executeQuery("SELECT COUNT(*) FROM Archive WHERE MetaType = '"+metaType+"' " + "AND SetSpec = '"+set+"' AND Date BETWEEN '"+from+"' AND '"+until+"';");
+           if(sets)
+              rs=stm.executeQuery("SELECT COUNT(*) FROM Archive use index (MetaTypeSetSpecDateID) WHERE MetaType="+quote (metaType)+" AND SetSpec="+quote (set)+" AND Date BETWEEN "+quote (fullfrom)+" AND "+quote (fulluntil)+";");
+           else
+              rs=stm.executeQuery("SELECT COUNT(*) FROM Archive use index (MetaTypeDateID) WHERE MetaType="+quote (metaType)+" AND Date BETWEEN "+quote (fullfrom)+" AND "+quote (fulluntil)+";");
+           rs.next();
+           totalRecords = rs.getInt("COUNT(*)");
+        }
+
+/*        rs = stm.executeQuery ("select count from countcache where MetaType="+quote (metaType)+" AND SetSpec="+quote (set)+" AND fromdate="+quote (fullfrom)+" AND untildate="+quote (fulluntil)+" AND NOW()-Date<3600;");
+        if (rs.next())
+        {
+           totalRecords = rs.getInt ("count");
         }
         else
         {
-            rs= stm.executeQuery("SELECT COUNT(*) FROM Archive WHERE MetaType = '"+metaType+"' AND Date BETWEEN '"+from+"' AND '"+until+"';");
+           if(sets)
+           {
+              rs= stm.executeQuery("SELECT COUNT(*) FROM Archive use index (MetaTypeSetSpecDateID) WHERE MetaType="+quote (metaType)+" AND SetSpec="+quote (set)+" AND Date BETWEEN "+quote (fullfrom)+" AND "+quote (fulluntil)+";");
+           }
+           else
+           {
+              rs= stm.executeQuery("SELECT COUNT(*) FROM Archive use index (MetaTypeDateID) WHERE MetaType="+quote (metaType)+" AND Date BETWEEN "+quote (fullfrom)+" AND "+quote (fulluntil)+";");
+           }
+           rs.next();
+           totalRecords = rs.getInt("COUNT(*)");
+           rs = stm.executeQuery ("replace into countcache values (null, "+quote (metaType)+", "+quote (fullfrom)+", "+quote (fulluntil)+", "+quote (set)+", "+totalRecords+");");
         }
-        rs.next();
-        int totalRecords = rs.getInt("COUNT(*)");
-        
+*/        
         //if there are more than 100 records, we are going to use flow control,
         //so we set resume to true
-        if(totalRecords > 100)
+        if(totalRecords > cursor + epochSize)
         {
             resume = true;
         }
@@ -366,16 +498,35 @@ public class DatabaseConnection
         }
         if(formatAccepted)
         {
+            String identifierClause = "";
+            if (identifier.length ()>0)
+               identifierClause = "(Date="+quote(fullfrom)+" AND ID>"+quote (identifier)+") OR ";
+            else   
+               identifierClause = "(Date="+quote(fullfrom)+") OR ";
+            
             //now make the query for records that match the specified MetaType
             if(sets)
             {
-                rs = stm.executeQuery("SELECT * FROM Archive WHERE MetaType = '"+metaType+"' " +
-                        "AND SetSpec = '"+set+"' AND Date BETWEEN '"+from+"' AND '"+until+"' ORDER BY Date LIMIT 100 OFFSET "+cursor+";");
+                rs = stm.executeQuery("SELECT * FROM Archive force index (MetaTypeSetSpecDateID) WHERE"+
+                                      " MetaType="+quote (metaType)+
+                                      " AND SetSpec="+quote (set)+
+                                      " AND ("+
+                                             identifierClause+
+                                            "(Date>"+quote (fullfrom)+" AND Date<="+quote (fulluntil)+")"+
+                                           ")"+
+                                      " ORDER BY MetaType,SetSpec,Date,ID"+
+                                      " LIMIT "+epochSize+";");
             }
             else
             {
-                rs = stm.executeQuery("SELECT * FROM Archive WHERE MetaType = '"+metaType+"' " +
-                        "AND Date BETWEEN '"+from+"' AND '"+until+"' ORDER BY Date LIMIT 100 OFFSET "+cursor+";");
+                rs = stm.executeQuery("SELECT * FROM Archive force index (MetaTypeDateID) WHERE"+
+                                      " MetaType="+quote (metaType)+
+                                      " AND ("+
+                                             identifierClause+
+                                            "(Date>"+quote (fullfrom)+" AND Date<="+quote (fulluntil)+")"+
+                                           ")"+
+                                      " ORDER BY MetaType,Date,ID"+
+                                      " LIMIT "+epochSize+";");
             }
             
             //add correct tag information depending on headersOnly
@@ -389,16 +540,23 @@ public class DatabaseConnection
 
             //boolean variable to see if at least one record matches the criteria
             boolean recExists = false;
+            
+            // get identifier and dateStamp of last record
+            String lastIdentifier = "";
+            String lastDatestamp = from;
 
             //set up date formatter and timezone
             SimpleDateFormat UTCDateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'Z'");
             TimeZone tz = TimeZone.getTimeZone("UTC");
             UTCDateFormatter.setTimeZone(tz);
 
+            int seenRecords = 0;
+            
             //iterate through records
-            while(rs.next())
+            while( (seenRecords + cursor)<totalRecords && rs.next())
             {
                 recExists = true;
+                seenRecords++;
                 if(!headersOnly)
                 {
                     sqlResponse.append("  <record>\n");
@@ -407,44 +565,79 @@ public class DatabaseConnection
                 {
                     sqlResponse.append("<header status=\"deleted\">\n");
                     sqlResponse.append("<identifier>");
-                    sqlResponse.append(rs.getString("ID"));
+                    try {
+                       lastIdentifier = new String (rs.getBytes ("ID"), "UTF-8");
+                    } catch (Exception e) {
+                       e.printStackTrace ();
+                    }   
+                    sqlResponse.append(lastIdentifier);
                     sqlResponse.append("</identifier>\n");
                     sqlResponse.append("<datestamp>");
-                    sqlResponse.append(UTCDateFormatter.format(rs.getTimestamp("Date")));
+                    lastDatestamp = UTCDateFormatter.format(rs.getTimestamp("Date"));  
+                    sqlResponse.append(lastDatestamp);
                     sqlResponse.append("</datestamp>\n");
                     //sets
-                    sqlResponse.append("<setSpec>\n");
-                    sqlResponse.append(rs.getString("SetSpec"));
+                    sqlResponse.append("<setSpec>");
+                    try {
+                       sqlResponse.append(new String (rs.getBytes ("SetSpec"), "UTF-8"));
+                    } catch (Exception e) {
+                       e.printStackTrace ();
+                    }   
                     sqlResponse.append("</setSpec>\n");
                     
                     sqlResponse.append("</header>\n");
                 }else
                 {
                     sqlResponse.append("<header>\n");
-                    sqlResponse.append("<identifier>"+rs.getString("ID")+"</identifier>\n");
+                    try {
+                       lastIdentifier = new String (rs.getBytes ("ID"), "UTF-8");
+                    } catch (Exception e) {
+                       e.printStackTrace ();
+                    }   
+                    sqlResponse.append("<identifier>"+lastIdentifier+"</identifier>\n");
                     sqlResponse.append("<datestamp>");
-                    sqlResponse.append(UTCDateFormatter.format(rs.getTimestamp("Date")));
+                    lastDatestamp = UTCDateFormatter.format(rs.getTimestamp("Date"));
+                    sqlResponse.append(lastDatestamp);
                     sqlResponse.append("</datestamp>\n");
                     //sets                      
-                    sqlResponse.append("<setSpec>\n");
-                    sqlResponse.append(rs.getString("SetSpec"));
+                    sqlResponse.append("<setSpec>");
+                    try {
+                       sqlResponse.append(new String (rs.getBytes ("SetSpec"), "UTF-8"));
+                    } catch (Exception e) {
+                       e.printStackTrace ();
+                    }
                     sqlResponse.append("</setSpec>\n");
                     
                     sqlResponse.append("</header>\n");
                     if(!headersOnly)
                     {                    
-                        //sqlResponse.append("<metadata>\n");
-                        sqlResponse.append(rs.getString("MetaData"));
-                        sqlResponse.append("\n");
-                        //sqlResponse.append("</metadata>\n");
+                        String metadata = "";
+                        try {
+                           metadata = new String (rs.getBytes ("Metadata"), "UTF-8");
+                        } catch ( Exception e ) {
+                           e.printStackTrace();
+                        }
+                        if (metadata.matches ("(?sm)\\s*<\\s*metadata\\s*>.*<\\s*\\/\\s*metadata\\s*>\\s*"))
+                           sqlResponse.append (metadata);
+                        else
+                        {   
+                           sqlResponse.append ("<metadata>\n");
+                           sqlResponse.append(metadata);
+                           sqlResponse.append("\n");
+                           sqlResponse.append("</metadata>\n");
+                        }   
 
                         //check for an about section
                         if(rs.getString("About")!= null && rs.getString("About").length() != 0)
                        {
-                           //sqlResponse.append("<about>\n");
-                           //sqlResponse.append(rs.getString("About"));
-                           //sqlResponse.append("\n");
-                           //sqlResponse.append("</about>");
+                           sqlResponse.append("<about>\n");
+                           try {
+                              sqlResponse.append(new String (rs.getBytes ("About"), "UTF-8"));
+                           } catch ( Exception e ) {
+                              e.printStackTrace();
+                           }    
+                           sqlResponse.append("\n");
+                           sqlResponse.append("</about>");
                        }
                     }
                 }
@@ -461,38 +654,43 @@ public class DatabaseConnection
                 sqlResponse.append("\" cursor=\"");
                 sqlResponse.append(cursor);
                 sqlResponse.append("\"");
-                if((cursor + 100) < totalRecords)
+                if((cursor + epochSize) < totalRecords)
                 {
                     sqlResponse.append(">");
-                    if(headersOnly)
-                    {
-                        if(sets)
-                        {
-                            sqlResponse.append("LIS!");
-                        }
-                        else
-                            sqlResponse.append("LI!");
-                    }else
-                    {
-                        if(sets)
-                        {
-                            sqlResponse.append("LRS!");
-                        }
-                        else
-                            sqlResponse.append("LR!");
-                    }
-                    sqlResponse.append(from);
+//                    if(headersOnly)
+//                    {
+//                        if(sets)
+//                        {
+//                            sqlResponse.append("LIS!");
+//                        }
+//                        else
+//                            sqlResponse.append("LI!");
+//                    }else
+//                    {
+//                        if(sets)
+//                        {
+//                            sqlResponse.append("LRS!");
+//                        }
+//                        else
+//                            sqlResponse.append("LR!");
+//                    }
+                    sqlResponse.append(lastDatestamp);
                     sqlResponse.append("!");
                     sqlResponse.append(until);
                     sqlResponse.append("!");
                     if(sets)
-                    {
-                        sqlResponse.append(set);
-                        sqlResponse.append("!");
-                    }
+//                    {
+                       sqlResponse.append(set);
+                    sqlResponse.append("!");
+//                    }
                     sqlResponse.append(metaType);
                     sqlResponse.append("!");
-                    sqlResponse.append(cursor+100);
+                    sqlResponse.append(cursor+epochSize);
+                    sqlResponse.append("!");
+                    sqlResponse.append(totalRecords);
+                    sqlResponse.append("!");
+                    // remember that we did not XML-escape lastIdentifier!!!
+                    sqlResponse.append(lastIdentifier);
                     sqlResponse.append("</resumptionToken>");
                 }
                 else
@@ -555,16 +753,29 @@ public class DatabaseConnection
         StringBuffer sqlResponse = new StringBuffer();
         //Create statement so we can execute a query
         Statement stm = con.createStatement();
+        
         //Exectute our query and get the result from the database.
         ResultSet rs = stm.executeQuery("SELECT DISTINCT SetSpec FROM Archive;");
+
 
         sqlResponse.append("<ListSets>\n");
         //Iterate through all the results, adding them to the response
         while(rs.next())
         {
             sqlResponse.append("<set>\n");
-            sqlResponse.append("<setSpec>"+rs.getString("SetSpec")+"</setSpec>\n");
-            sqlResponse.append("<setName>"+rs.getString("SetSpec")+"</setName>\n");
+            
+            String setSpec = rs.getString("SetSpec");
+            sqlResponse.append("<setSpec>"+setSpec+"</setSpec>\n");            
+            
+            Statement stmName = con.createStatement();
+            ResultSet rsName = stmName.executeQuery("SELECT name FROM Repositories WHERE ID="+quote (setSpec)+";");
+            String setName = "";
+            while(rsName.next())
+               setName = rsName.getString("name");
+            if (setName.equals (""))
+               setName = setSpec;
+            sqlResponse.append("<setName>"+setName+"</setName>\n");
+                           
             sqlResponse.append("</set>\n");
         }
 

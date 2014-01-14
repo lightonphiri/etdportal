@@ -1,0 +1,3 @@
+            SimpleDateFormat UTCDateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'Z'");
+            TimeZone tz = TimeZone.getTimeZone("UTC");
+            UTCDateFormatter.setTimeZone(tz);
