@@ -1,74 +1,139 @@
-drop table Title;
-drop table Creator;
-drop table Subject;
-drop table Description;
-drop table RecordDate;
-drop table RecordXML;
-drop table RecordTitle;
-drop table Type;
-drop table Format;
+DROP TABLE Title;
+DROP TABLE Creator;
+DROP TABLE Subject;
+DROP TABLE Description;
+DROP TABLE RecordDate;
+DROP TABLE RecordXML;
+DROP TABLE RecordTitle;
+DROP TABLE RecordLastHarvestDate;
+DROP TABLE RecordAffiliation;
+DROP TABLE Type;
+DROP TABLE Format;
+DROP TABLE Properties;
 
-create table	Title
-(title_etd varchar(255),
- oai_identifier varchar(255),
- primary key (oai_identifier)
- 	
+
+--
+-- Table structure for table `Creator`
+--
+
+CREATE TABLE `Creator` (
+  `creator_etd` varchar(255) NOT NULL DEFAULT '',
+  `oai_identifier` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`oai_identifier`,`creator_etd`)
 );
 
-create table Creator
-(creator_etd varchar(255),
- oai_identifier varchar(255),
- constraint author_oai_identifier foreign key (oai_identifier) references Title(oai_identifier),
- primary key (oai_identifier,creator_etd)
- );
+--
+-- Table structure for table `Description`
+--
 
-create table Subject
-(subject_etd varchar(255),
- oai_identifier varchar(255),
- title_etd varchar(255),
- constraint subject_title_etd foreign key (title_etd) references Title(title_etd),
- constraint subject_oai_identifier foreign key (oai_identifier) references Title(oai_identifier),
- primary key (oai_identifier,title_etd,subject_etd)
- );
- 
-create table Description
-(description_etd BLOB,
- oai_identifier varchar(255),
- constraint description_oai_identifier foreign key (oai_identifier) references Title(oai_identifier),
- primary key (oai_identifier)
- );
-
-create table Type
-(type_etd varchar(255),
- oai_identifier varchar(255),
- constraint type_oai_identifier foreign key (oai_identifier) references Title(oai_identifier),
- primary key (oai_identifier,type_etd)
+CREATE TABLE `Description` (
+  `description_etd` blob,
+  `oai_identifier` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`oai_identifier`)
 );
 
-create table Format
-(format_etd varchar(255),
- oai_identifier varchar(255),
- constraint format_oai_identifier foreign key (oai_identifier) references Title(oai_identifier),
- primary key (oai_identifier,format_etd)
+--
+-- Table structure for table `Format`
+--
+
+CREATE TABLE `Format` (
+  `format_etd` varchar(255) NOT NULL DEFAULT '',
+  `oai_identifier` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`oai_identifier`,`format_etd`)
 );
 
-create table RecordTitle
-(title_etd varchar(255),
- identifier_etd varchar(255),
- primary key (identifier_etd)
- 	
-);
- 
-create table RecordDate
-(date_etd date,
- identifier_etd varchar(255),
- constraint date_identifier_etd foreign key (identifier_etd) references Title(identifier_etd),
- primary key (identifier_etd,date_etd)
- );
+--
+-- Table structure for table `Properties`
+--
 
-create table RecordXML
-(description_etd BLOB,
- identifier_etd varchar(255),
- constraint recordXML_identifier_etd foreign key (identifier_etd) references Title(identifier_etd),
- primary key (identifier_etd)
- );
+CREATE TABLE `Properties` (
+  `name` varchar(255) NOT NULL DEFAULT '',
+  `value` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`name`)
+);
+
+--
+-- Table structure for table `RecordAffiliation`
+--
+
+CREATE TABLE `RecordAffiliation` (
+  `affiliation_etd` varchar(255) DEFAULT NULL,
+  `identifier_etd` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`identifier_etd`)
+);
+
+--
+-- Table structure for table `RecordDate`
+--
+
+DROP TABLE IF EXISTS `RecordDate`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `RecordDate` (
+  `date_etd` date NOT NULL DEFAULT '0000-00-00',
+  `identifier_etd` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`identifier_etd`,`date_etd`)
+);
+
+--
+-- Table structure for table `RecordLastHarvestDate`
+--
+
+CREATE TABLE `RecordLastHarvestDate` (
+  `harvest_etd` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `identifier_etd` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`identifier_etd`)
+);
+
+--
+-- Table structure for table `RecordTitle`
+--
+
+CREATE TABLE `RecordTitle` (
+  `title_etd` varchar(255) DEFAULT NULL,
+  `title_etd_browse` varchar(255) DEFAULT NULL,
+  `identifier_etd` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`identifier_etd`)
+);
+
+--
+-- Table structure for table `RecordXML`
+--
+
+CREATE TABLE `RecordXML` (
+  `description_etd` blob,
+  `identifier_etd` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`identifier_etd`)
+);
+
+--
+-- Table structure for table `Subject`
+--
+
+CREATE TABLE `Subject` (
+  `subject_etd` varchar(255) NOT NULL DEFAULT '',
+  `oai_identifier` varchar(255) NOT NULL DEFAULT '',
+  `title_etd` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`oai_identifier`,`title_etd`,`subject_etd`),
+  KEY `subject_title_etd` (`title_etd`)
+);
+
+--
+-- Table structure for table `Title`
+--
+
+CREATE TABLE `Title` (
+  `title_etd` varchar(255) DEFAULT NULL,
+  `oai_identifier` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`oai_identifier`)
+);
+
+--
+-- Table structure for table `Type`
+--
+
+CREATE TABLE `Type` (
+  `type_etd` varchar(255) NOT NULL DEFAULT '',
+  `oai_identifier` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`oai_identifier`,`type_etd`)
+);
