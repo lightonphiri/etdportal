@@ -4,7 +4,7 @@
 
 # variables
 
-TOMCAT = tomcat6
+TOMCAT = tomcat7
 
 # rules
 
