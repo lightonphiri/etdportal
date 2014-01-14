@@ -265,7 +265,7 @@
          else if ("admin".equals (request.getParameter ("action")))
          {
             content = "<div id=\"contentarea\">"+
-                   "<iframe src=\"http://union.ndltd.org/harvester/?loc=list\" width=\"600\" height=\"400\" frameborder=\"0\">admin</iframe>"+
+                   "<iframe src=\"/union%2Eharvester/?loc=list\" width=\"600\" height=\"400\" frameborder=\"0\">admin</iframe>"+
                    "</div>";
          }
          else if ("about".equals (request.getParameter ("action")) || "submit".equals (request.getParameter ("action")))
