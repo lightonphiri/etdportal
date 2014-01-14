@@ -1,3 +1,3 @@
-DELETE * from `Archive`;
-DELETE * from `Repositories`;
+DELETE FROM `Archive`;
+DELETE FROM `Repositories`;
                     
