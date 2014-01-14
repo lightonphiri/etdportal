@@ -78,10 +78,10 @@
                    "<div id=\"sidebar\">"+
                    "<div id=\"sidebarnav\">"+
                      "<a "+(highlight==1?"class=\"active\" ":"")+"href=\"?\">Home</a>"+
-//            			 getBrowsingLinks()+
-//                     "<p class=\"menusep\">Search</p>"+
-//                         "<form method=\"get\"><input class=\"searchtext\" type=\"text\" name=\"query\" value=\""+query+"\"/><input type=\"hidden\" name=\"action\" value=\"search\"/><input type=\"submit\" value=\"go\"/></form>"+
-//            			"<a "+(highlight==10?"class=\"active\" ":"")+"href=\"?action=advancedsearchpage\">Advanced Search</a>"+		
+            			 getBrowsingLinks()+
+                     "<p class=\"menusep\">Search</p>"+
+                         "<form method=\"get\"><input class=\"searchtext\" type=\"text\" name=\"query\" value=\""+query+"\"/><input type=\"hidden\" name=\"action\" value=\"search\"/><input type=\"submit\" value=\"go\"/></form>"+
+            			"<a "+(highlight==10?"class=\"active\" ":"")+"href=\"?action=advancedsearchpage\">Advanced Search</a>"+		
                      "<p class=\"menusep\">Information</p>"+
                      "<a "+(highlight==7?"class=\"active\" ":"")+"href=\"?action=submit\">Submit your site</a>"+
                      "<a "+(highlight==8?"class=\"active\" ":"")+"href=\"?action=about\">About</a>"+
