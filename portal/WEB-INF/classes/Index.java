@@ -226,7 +226,7 @@
             applicationSettings.configureApplication(false);
             applicationSettings.createDatabaseConnection();
             
-            String configPath = "/etc/etdportal/portal/";
+            String configPath = "/etc/etdportal/union/portal/";
          
             if(applicationSettings.getDatabaseConnection()==null)
                out.println("no connection");					
@@ -319,9 +319,9 @@
                    (item.getElementsByTagName ("guid").item(0).hasChildNodes ()))
                   guid = item.getElementsByTagName ("guid").item(0).getFirstChild().getNodeValue();
                recentEntries += "<li>"+
-                                //"<a href=\"?action=view&identifier="+guid+"\">"+
+                                "<a href=\"?action=view&identifier="+guid+"\">"+
                                 "<span class=\"snippet_title\">"+title+"</span>"+
-                                //"</a>"+
+                                "</a>"+
                                 "<br/>"+
                              "<span class=\"snippet_citation\">"+pubDate+"</span></li>";
             }
