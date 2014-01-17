@@ -81,7 +81,7 @@ public class Config
             //read in the xml config file
             DocumentBuilderFactory docBuilderFac = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docBuilderFac.newDocumentBuilder();
-            Document doc = docBuilder.parse("/etc/etdportal/union/config.xml");
+            Document doc = docBuilder.parse("/etc/etdportal/config.xml");
             
 
             

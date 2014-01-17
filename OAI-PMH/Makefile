@@ -14,7 +14,7 @@ JFLAGS = -classpath WEB-INF/lib/mysql-connector-java.jar:$(SERVLETAPI)/servlet-a
 JAVAC = javac
 
 WEBAPPS = /var/lib/$(TOMCAT)/webapps
-APPNAME = union.OAI-PMH
+APPNAME = OAI-PMH
 
 # rules
 

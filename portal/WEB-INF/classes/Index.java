@@ -100,7 +100,7 @@
             if (request.getParameter ("maxresults") != null)
                maxResults = request.getParameter ("maxresults");
             
-            SearchEngine engine = new SearchEngine("/etc/etdportal/union/portal/");
+            SearchEngine engine = new SearchEngine("/etc/etdportal/portal/");
             engine.search (query, start, maxResults);
          
             content = "<div id=\"contentarea\">"+
@@ -176,7 +176,7 @@
             if (request.getParameter ("maxresults") != null)
                maxResults = request.getParameter ("maxresults");
             
-            SearchEngine engine = new SearchEngine("/etc/etdportal/union/portal/");
+            SearchEngine engine = new SearchEngine("/etc/etdportal/portal/");
             engine.search (advancedQuery, start, maxResults);
          
             content = "<div id=\"contentarea\">"+
@@ -210,7 +210,7 @@
                     ConfigurationManager.log.add("Error: \n"+e.toString());
                }
          
-            String record=(new ResultFormat()).viewRecord(record_to_transform,"/etc/etdportal/union/portal/viewfull.xsl","/etc/etdportal/union/portal/");
+            String record=(new ResultFormat()).viewRecord(record_to_transform,"/etc/etdportal/portal/viewfull.xsl","/etc/etdportal/portal/");
          
             content = "<div id=\"contentarea\">"+
                        "<h2>View Record</h2>"+
@@ -226,7 +226,7 @@
             applicationSettings.configureApplication(false);
             applicationSettings.createDatabaseConnection();
             
-            String configPath = "/etc/etdportal/union/portal/";
+            String configPath = "/etc/etdportal/portal/";
          
             if(applicationSettings.getDatabaseConnection()==null)
                out.println("no connection");					
@@ -265,7 +265,7 @@
          else if ("admin".equals (request.getParameter ("action")))
          {
             content = "<div id=\"contentarea\">"+
-                   "<iframe src=\"/union%2Eharvester/?loc=list\" width=\"600\" height=\"400\" frameborder=\"0\">admin</iframe>"+
+                   "<iframe src=\"/harvester/?loc=list\" width=\"600\" height=\"400\" frameborder=\"0\">admin</iframe>"+
                    "</div>";
          }
          else if ("about".equals (request.getParameter ("action")) || "submit".equals (request.getParameter ("action")))
@@ -285,7 +285,7 @@
          }
          else
          {
-            Document summary = getDocument ("http://localhost:8080/union.summary/");
+            Document summary = getDocument ("http://localhost:8080/summary/");
          
             String collectionStatistics = "";
             int counter = 0;
@@ -299,7 +299,7 @@
                counter += Integer.parseInt (count);
             }         
          
-            Document rss = getDocument ("http://localhost:8080/union.RSS/");
+            Document rss = getDocument ("http://localhost:8080/RSS/");
          
             String recentEntries = "";
             NodeList items = rss.getDocumentElement ().getElementsByTagName ("item");

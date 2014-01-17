@@ -32,7 +32,7 @@ be searched easily.
 //         String configPath = applicationSettings.getIndexDirectory ();
 //         File indexDirectory = new File(configPath+"/index");
          
-         String configPath = "/etc/etdportal/union/portal/";
+         String configPath = "/etc/etdportal/portal/";
          File indexDirectory = new File(applicationSettings.getIndexDirectory ()+"/index");
          
       

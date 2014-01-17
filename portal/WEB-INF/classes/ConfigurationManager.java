@@ -114,7 +114,7 @@
             //read in the xml config file
             DocumentBuilderFactory docBuilderFac = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docBuilderFac.newDocumentBuilder();
-            Document doc = docBuilder.parse("/etc/etdportal/union/config.xml");
+            Document doc = docBuilder.parse("/etc/etdportal/config.xml");
             
             //normalize text representation
             doc.getDocumentElement().normalize();
@@ -435,7 +435,7 @@
        private List<String> readStopWords()
       {
          List<String> stopWordsTemp = new ArrayList<String>();
-         File stopWordsFile = new File("/etc/etdportal/union/portal/stopwords.xml");	
+         File stopWordsFile = new File("/etc/etdportal/portal/stopwords.xml");	
         
 		   Document newStopWordsFile=null;
       

@@ -34,7 +34,7 @@ public class Config
    public Config ()
    {
       // find relative position of settings file
-      settingsFile = "/etc/etdportal/union/config.xml";
+      settingsFile = "/etc/etdportal/config.xml";
       loadDatabaseProperties (); // load the database properties
       openLogFile ("");
    }
@@ -89,7 +89,7 @@ public class Config
          //read in the xml config file
          DocumentBuilderFactory docBuilderFac = DocumentBuilderFactory.newInstance();
          DocumentBuilder docBuilder = docBuilderFac.newDocumentBuilder();
-         Document doc = docBuilder.parse("/etc/etdportal/union/config.xml");
+         Document doc = docBuilder.parse("/etc/etdportal/config.xml");
             
          //normalize text representation
          doc.getDocumentElement().normalize();
