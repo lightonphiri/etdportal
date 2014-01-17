@@ -65,14 +65,14 @@
       
          out.println ("<html>"+
                    "<head>"+
-                     "<title>NDLTD Union Archive of ETD Metadata</title>"+
+                     "<title>South African National ETD Portal</title>"+
                      "<link rel=\"stylesheet\" title=\"style\" type=\"text/css\" href=\"style/style.css\"/>"+
                    "</head>"+
                    "<body>"+
                    "<div id=\"page\">"+
                    "<div id=\"header\">"+
-                     "<h1>NDLTD Union Archive</h1>"+
-                     "<div class=\"description\">electronic theses and dissertations metadata</div>"+
+                     "<h1>National ETD Portal</h1>"+
+                     "<div class=\"description\">South African theses and dissertations</div>"+
                    "</div>"+
                    "<div id=\"mainarea\">"+
                    "<div id=\"sidebar\">"+

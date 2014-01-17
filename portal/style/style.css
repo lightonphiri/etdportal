@@ -9,7 +9,7 @@ color:#555555;
 
 #page {
 width:900px;
-background-image:url(http://union.ndltd.org/portal/images/page.png);
+background-image:url(/images/page.png);
 margin:auto;
 padding:auto;
 }
@@ -18,7 +18,7 @@ padding:auto;
 clear:both;
 width:840px;
 height:107px;
-background-image:url(http://union.ndltd.org/portal/images/header.png);
+background-image:url(/images/header.png);
 padding-left:60px;
 padding-top:50px;
 }
@@ -157,7 +157,7 @@ height:62px;
 padding-top:30px;
 text-align:center;
 line-height:14pt;
-background-image:url(http://union.ndltd.org/portal/images/footer.png);
+background-image:url(/images/footer.png);
 background-repeat:no-repeat;
 color:#FFFFFF;
 }
