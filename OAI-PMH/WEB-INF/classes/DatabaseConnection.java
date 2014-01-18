@@ -427,7 +427,7 @@ public class DatabaseConnection
         Statement stm = con.createStatement();
         
         //lets get the total number of records we are going to need
-        // use countcache to speed up counting of rows
+        // use CountCache to speed up counting of rows
 //        int totalRecords = 0;
         ResultSet rs;
 
@@ -444,7 +444,7 @@ public class DatabaseConnection
            totalRecords = rs.getInt("COUNT(*)");
         }
 
-/*        rs = stm.executeQuery ("select count from countcache where MetaType="+quote (metaType)+" AND SetSpec="+quote (set)+" AND fromdate="+quote (fullfrom)+" AND untildate="+quote (fulluntil)+" AND NOW()-Date<3600;");
+/*        rs = stm.executeQuery ("select count from CountCache where MetaType="+quote (metaType)+" AND SetSpec="+quote (set)+" AND fromdate="+quote (fullfrom)+" AND untildate="+quote (fulluntil)+" AND NOW()-Date<3600;");
         if (rs.next())
         {
            totalRecords = rs.getInt ("count");
@@ -461,7 +461,7 @@ public class DatabaseConnection
            }
            rs.next();
            totalRecords = rs.getInt("COUNT(*)");
-           rs = stm.executeQuery ("replace into countcache values (null, "+quote (metaType)+", "+quote (fullfrom)+", "+quote (fulluntil)+", "+quote (set)+", "+totalRecords+");");
+           rs = stm.executeQuery ("replace into CountCache values (null, "+quote (metaType)+", "+quote (fullfrom)+", "+quote (fulluntil)+", "+quote (set)+", "+totalRecords+");");
         }
 */        
         //if there are more than 100 records, we are going to use flow control,

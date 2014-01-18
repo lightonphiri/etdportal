@@ -1,3 +1,4 @@
-DELETE FROM `Archive`;
-DELETE FROM `Repositories`;
-                    
+TRUNCATE `Archive`;
+TRUNCATE `Counter`;
+TRUNCATE `Repositories`;
+TRUNCATE `CountCache`;

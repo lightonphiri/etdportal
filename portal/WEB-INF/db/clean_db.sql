@@ -1,0 +1,12 @@
+TRUNCATE Title;
+TRUNCATE Creator;
+TRUNCATE Subject;
+TRUNCATE Description;
+TRUNCATE RecordDate;
+TRUNCATE RecordXML;
+TRUNCATE RecordTitle;
+TRUNCATE RecordLastHarvestDate;
+TRUNCATE RecordAffiliation;
+TRUNCATE Type;
+TRUNCATE Format;
+TRUNCATE Properties;

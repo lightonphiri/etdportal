@@ -1,15 +1,15 @@
-drop table if exists Title;
-drop table if exists Creator;
-drop table if exists Subject;
-drop table if exists Description;
-drop table if exists RecordDate;
-drop table if exists RecordXML;
-drop table if exists RecordTitle;
-drop table if exists RecordLastHarvestDate;
-drop table if exists RecordAffiliation;
-drop table if exists Type;
-drop table if exists Format;
-drop table if exists Properties;
+DROP TABLE IF EXISTS Title;
+DROP TABLE IF EXISTS Creator;
+DROP TABLE IF EXISTS Subject;
+DROP TABLE IF EXISTS Description;
+DROP TABLE IF EXISTS RecordDate;
+DROP TABLE IF EXISTS RecordXML;
+DROP TABLE IF EXISTS RecordTitle;
+DROP TABLE IF EXISTS RecordLastHarvestDate;
+DROP TABLE IF EXISTS RecordAffiliation;
+DROP TABLE IF EXISTS Type;
+DROP TABLE IF EXISTS Format;
+DROP TABLE IF EXISTS Properties;
 
 
 --
