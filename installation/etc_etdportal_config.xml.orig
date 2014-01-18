@@ -3,7 +3,7 @@
 
    <repository> 
       <database>
-         <URL>jdbc:mysql://localhost:3306/dba</URL>
+         <URL>jdbc:mysql://localhost:3306/dba?useUnicode=true&amp;characterEncoding=utf-8</URL>
          <username>dba</username>
          <password>dba</password>
          <driver>com.mysql.jdbc.Driver</driver>
@@ -45,4 +45,3 @@
    </portal>
 
 </configuration>
-                                                                    
