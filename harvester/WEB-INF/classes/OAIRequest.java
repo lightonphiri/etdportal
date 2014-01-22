@@ -97,14 +97,14 @@ public class OAIRequest
                 String response = sendRequest(request, rep.getTimeout());
                 updateHarvestStatus();
                 OAIResponseHandler handler = new OAIResponseHandler (conf, response, rep); // create a response handler to parse and store the response
-                conf.log.add("Storing the responses...");
+                conf.log.add(rep.getBaseURL () + ": Storing the responses...");
                 handler.store(); // store the entries in the response in the database
                 //update harvest status
 
-                conf.log.add("Getting resumption token...");
+                conf.log.add(rep.getBaseURL () + ": Getting resumption token...");
                 rtoken = handler.getResumptionToken(); // get the resumption token from the response
                 if (! rtoken.equals (""))
-                   conf.log.add ("resumptionToken: " + rtoken);
+                   conf.log.add (rep.getBaseURL () + ": resumptionToken: " + rtoken);
                 //wr.close();
                 //response.close();
             } while (!rtoken.equals("")); // if there is no resumption token, end the harvest
@@ -158,7 +158,7 @@ public class OAIRequest
         while (state < maxretries)
         {
            if (state > 0)
-              conf.log.add ("Retry request number: "+state);
+              conf.log.add (rep.getBaseURL () + ": Retry request number: "+state);
            try
            {
               url = new URL (rep.getBaseURL() + "?" + request); // create URL with the base url of the server to harvest from
@@ -184,7 +184,7 @@ public class OAIRequest
                  return response;
               else
               {
-                 conf.log.add("Partial response received: "+response.length ()+" bytes. Retrying...");
+                 conf.log.add(rep.getBaseURL () + ": Partial response received: "+response.length ()+" bytes. Retrying...");
                  state++;
               }
            }
@@ -204,21 +204,21 @@ public class OAIRequest
                  { state++; }
                  else
                  {
-                    conf.log.add ("Sleeping for "+sleep+" seconds");
+                    conf.log.add (rep.getBaseURL () + ": Sleeping for "+sleep+" seconds");
                     Thread.sleep (sleep * 1000);
                  }
               }
               else if (eString.indexOf ("java.io.IOException: Server returned HTTP response code: 407") != -1)
               {
                  Thread.sleep (2000);
-                 conf.log.add ("Proxy authentication error received : HTTP 407");
+                 conf.log.add (rep.getBaseURL () + ": Proxy authentication error received : HTTP 407");
               }
               else
               { state++; }
                 
               if (state >= maxretries)
               {
-                 conf.log.add("Error sending request to remote repository: "+e,
+                 conf.log.add(rep.getBaseURL () + ": Error sending request to remote repository: "+e,
                               "Error sending request to remote repository: "+e);
                  throw new Exception("Failed to communicate with remote server");
               }

@@ -52,9 +52,9 @@ public class OAIResponseHandler
          response.append(in.nextLine() + "\n");
       }
 */
-      conf.log.add("Downloaded document with size: "+response.length ());
+      conf.log.add(rep.getBaseURL() + ": Downloaded document with size: "+response.length ());
       if (response.indexOf ("<error") >= 0)
-         conf.log.add("OAI-PMH error in response: "+response);
+         conf.log.add(rep.getBaseURL() + ": OAI-PMH error in response: "+response);
 
 /*      InputStreamReader isr = new InputStreamReader(is);
       BufferedReader br = new BufferedReader(isr);
