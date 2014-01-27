@@ -115,7 +115,7 @@ public class Database {
          stm = conn.createStatement ();
          conf.log.add (rep.getBaseURL() + ": Storing record: "+aRecord.getID());
       } catch (Exception e){
-          conf.log.add(rep.getBaseURL() + ": Error saving record: "+e);
+          conf.log.add(rep.getID() + ": Error saving record: "+e);
       }
    }
 
