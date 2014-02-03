@@ -97,11 +97,11 @@ public class OAIRequest
                 String response = sendRequest(request, rep.getTimeout());
                 updateHarvestStatus();
                 OAIResponseHandler handler = new OAIResponseHandler (conf, response, rep); // create a response handler to parse and store the response
-                conf.log.add(rep.getBaseURL () + ": Storing the responses...");
+                conf.log.add(rep.getID () + ": Storing the responses...");
                 handler.store(); // store the entries in the response in the database
                 //update harvest status
 
-                conf.log.add(rep.getBaseURL () + ": Getting resumption token...");
+                conf.log.add(rep.getID () + ": Getting resumption token...");
                 rtoken = handler.getResumptionToken(); // get the resumption token from the response
                 if (! rtoken.equals (""))
                    conf.log.add (rep.getBaseURL () + ": resumptionToken: " + rtoken);
@@ -184,7 +184,7 @@ public class OAIRequest
                  return response;
               else
               {
-                 conf.log.add(rep.getBaseURL () + ": Partial response received: "+response.length ()+" bytes. Retrying...");
+                 conf.log.add(rep.getID () + ": Partial response received: "+response.length ()+" bytes. Retrying...");
                  state++;
               }
            }
@@ -218,8 +218,8 @@ public class OAIRequest
                 
               if (state >= maxretries)
               {
-                 conf.log.add(rep.getBaseURL () + ": Error sending request to remote repository: "+e,
-                              "Error sending request to remote repository: "+e);
+                 conf.log.add(rep.getID () + ": Error sending request to remote repository: "+e,
+                              rep.getID() + ": Error sending request to remote repository: "+e);
                  throw new Exception("Failed to communicate with remote server");
               }
               //else
