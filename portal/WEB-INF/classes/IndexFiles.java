@@ -53,7 +53,7 @@ be searched easily.
          }
              catch(SQLException sqle)
             {
-               ConfigurationManager.log.add("Error: \n"+sqle.toString());
+               sqle.printStackTrace();
             }
       
          List<Record> recordsToIndex = browse(applicationSettings.getDatabaseConnection(),applicationSettings.getLastHarvest());//calls the method that gets all the records
@@ -73,12 +73,46 @@ be searched easily.
             writer.close();
          
          } 
-             catch (IOException e)
-             {
-                 ConfigurationManager.log.add("Error: \n"+e.toString());
+             catch (IOException e) {
+               System.out.println(" caught a " + e.getClass() +
+                  "\n with message: " + e.getMessage());
             }	
       
       } 
+
+       public void createIndexIncrement ( ConfigurationManager applicationSettings, List<Record> recordsToIndex )
+      {	
+         String configPath = "/etc/etdportal/portal/";
+         File indexDirectory = new File(applicationSettings.getIndexDirectory ()+"/index");
+               
+         try {         
+            IndexWriter writer = new IndexWriter(indexDirectory, new StandardAnalyzer());
+            indexDocs(writer, recordsToIndex,configPath);				//writing records to index
+            //writer.optimize();								//optimizing the index
+            writer.close();
+         } catch (IOException e) {
+            System.out.println(" caught a " + e.getClass() +
+            "\n with message: " + e.getMessage());
+         }	
+      }
+
+       public void createIndexIncrementOptimal ( ConfigurationManager applicationSettings, List<Record> recordsToIndex )
+      {	
+         String configPath = "/etc/etdportal/portal/";
+         File indexDirectory = new File(applicationSettings.getIndexDirectory ()+"/index");
+               
+         try {         
+            IndexWriter writer = new IndexWriter(indexDirectory, new StandardAnalyzer());
+            indexDocs(writer, recordsToIndex,configPath);				//writing records to index
+            writer.optimize();								//optimizing the index
+            writer.close();
+         } catch (IOException e) {
+            System.out.println(" caught a " + e.getClass() +
+            "\n with message: " + e.getMessage());
+         }	
+      }
+      
+      
    
    /**
    *Writes all the Lucene Documents,that are created using the getDocument()
@@ -96,6 +130,7 @@ be searched easily.
             {	
                Term older = new Term("repository_identifier_updater",myrecords.get(i).getRepositoryIdentifier());
             //the updating of the index occurs here, the old document is replaced in the index 
+            //System.out.println (myrecords.get(i));
                writer.updateDocument(older,doc_Objects.getDocument(myrecords.get(i),configPath));
             
             }
@@ -146,8 +181,8 @@ be searched easily.
             
          }
              catch(SQLException sqle)
-            {            
-                 ConfigurationManager.log.add("Error: \n"+sqle.toString());
+            {
+               sqle.printStackTrace();
             }
       
          return allRecords;

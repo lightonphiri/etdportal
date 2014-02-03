@@ -1,5 +1,5 @@
 ## Ignore application-specific backup files from version tracking
-*.~
+*~
 *.swp
 *.backup
 

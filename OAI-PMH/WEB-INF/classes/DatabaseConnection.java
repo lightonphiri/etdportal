@@ -40,6 +40,11 @@ public class DatabaseConnection
         con = DriverManager.getConnection (url, username, password);  
     }
     
+    public void disconnect () throws SQLException
+    {
+       con.close ();
+    }
+    
    public String quote ( String data )
    {
       String s = data.replace ("\\", "\\\\");
@@ -113,6 +118,7 @@ public class DatabaseConnection
                       sqlResponse.append(new String (rs.getBytes("MetaData"), "UTF-8"));
                    } catch ( Exception e ) {
                       e.printStackTrace();
+                      disconnect ();
                    }   
                    sqlResponse.append("\n");
                    sqlResponse.append("</metadata>\n");
@@ -124,6 +130,7 @@ public class DatabaseConnection
                           sqlResponse.append(new String (rs.getBytes ("About"), "UTF-8"));
                        } catch ( Exception e ) {
                           e.printStackTrace();
+                          disconnect ();
                        }    
                        sqlResponse.append("\n");
                        sqlResponse.append("</about>");
@@ -144,6 +151,7 @@ public class DatabaseConnection
                        
         }
         rs.close();
+        disconnect ();
         return sqlResponse;
     }
     
@@ -185,6 +193,7 @@ public class DatabaseConnection
         }
         //sqlResponse.append(" </ListMetadataFormats>");
         rs.close();
+        disconnect ();
         return sqlResponse;
     }
     
@@ -238,6 +247,7 @@ public class DatabaseConnection
             sqlResponse.append("<error code=\"idDoesNotExist\" />");
         }
         rs.close();
+        disconnect ();
         return sqlResponse;
     }
     
@@ -330,6 +340,8 @@ public class DatabaseConnection
          }
          identifier = m.group (7);         
       }
+      
+      disconnect ();
       
       return listRecords(from, until, metadataPrefix, headersOnly, set, cursor, totalRecords, identifier);        
     }
@@ -582,6 +594,7 @@ public class DatabaseConnection
                        sqlResponse.append(new String (rs.getBytes ("SetSpec"), "UTF-8"));
                     } catch (Exception e) {
                        e.printStackTrace ();
+                       disconnect ();
                     }   
                     sqlResponse.append("</setSpec>\n");
                     
@@ -593,6 +606,7 @@ public class DatabaseConnection
                        lastIdentifier = new String (rs.getBytes ("ID"), "UTF-8");
                     } catch (Exception e) {
                        e.printStackTrace ();
+                       disconnect ();
                     }   
                     sqlResponse.append("<identifier>"+lastIdentifier+"</identifier>\n");
                     sqlResponse.append("<datestamp>");
@@ -605,6 +619,7 @@ public class DatabaseConnection
                        sqlResponse.append(new String (rs.getBytes ("SetSpec"), "UTF-8"));
                     } catch (Exception e) {
                        e.printStackTrace ();
+                       disconnect ();
                     }
                     sqlResponse.append("</setSpec>\n");
                     
@@ -616,6 +631,7 @@ public class DatabaseConnection
                            metadata = new String (rs.getBytes ("Metadata"), "UTF-8");
                         } catch ( Exception e ) {
                            e.printStackTrace();
+                           disconnect ();
                         }
                         if (metadata.matches ("(?sm)\\s*<\\s*metadata\\s*>.*<\\s*\\/\\s*metadata\\s*>\\s*"))
                            sqlResponse.append (metadata);
@@ -635,6 +651,7 @@ public class DatabaseConnection
                               sqlResponse.append(new String (rs.getBytes ("About"), "UTF-8"));
                            } catch ( Exception e ) {
                               e.printStackTrace();
+                              disconnect ();
                            }    
                            sqlResponse.append("\n");
                            sqlResponse.append("</about>");
@@ -720,6 +737,7 @@ public class DatabaseConnection
             sqlResponse.append(" <error code=\"cannotDisseminateFormat\"/>\n");
         }
         rs.close();
+        disconnect ();
         return sqlResponse;
     }
     
@@ -744,6 +762,7 @@ public class DatabaseConnection
         //format the date and add it to our resp onse
         sqlResponse.append((UTCDateFormatter.format(rs.getTimestamp("Date"))));
         rs.close();
+        disconnect ();
         return sqlResponse;
     }
 
@@ -781,6 +800,8 @@ public class DatabaseConnection
 
         sqlResponse.append("</ListSets>\n");
 
+        disconnect ();
+        
         return sqlResponse;
     }
 }

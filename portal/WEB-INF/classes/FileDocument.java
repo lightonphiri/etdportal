@@ -100,10 +100,10 @@
 		  ConfigurationManager.log.add("Error: \n"+e.toString());
 
 
-		}catch(IOException e)
+		}/*catch(IOException e)
 		{
 		  ConfigurationManager.log.add("Error: \n"+e.toString());
-		  }
+		  }*/
 		
       // returns the document
       return record_document;

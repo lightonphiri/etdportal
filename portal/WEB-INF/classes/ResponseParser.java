@@ -279,6 +279,35 @@
          return new_record;
       }
    
+// @Phiri start
+public String fromStream(InputStream in) throws IOException
+{
+    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+    StringBuilder out = new StringBuilder();
+    String newLine = System.getProperty("line.separator");
+    String line;
+    while ((line = reader.readLine()) != null) {
+        out.append(line);
+        out.append(newLine);
+    }
+    return out.toString();
+}
+
+
+public void printDocument(Document doc, OutputStream out) throws IOException, TransformerException {
+    TransformerFactory tf = TransformerFactory.newInstance();
+    Transformer transformer = tf.newTransformer();
+    transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+    transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+    transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+    transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+    transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+
+    transformer.transform(new DOMSource(doc), 
+         new StreamResult(new OutputStreamWriter(out, "UTF-8")));
+}
+
+// @Phiri end
     /*
     *Extracts a list of MetadataFormats for a specified record.
     */
@@ -291,6 +320,10 @@
        //get a nodelist elements
          NodeList recordList = docEle.getElementsByTagNameNS("*","metadataFormat");
          try{
+            //if(recordList != null && recordList.getLength() > 0) {
+	    System.out.println("RecordList is NOT NULL?: " + (recordList != null));
+	    System.out.println("RecordList.getLength(): " + recordList.getLength());
+	    printDocument(records, System.out);
             if(recordList != null && recordList.getLength() > 0) {
                for(int i = 0 ; i < recordList.getLength();i++) 
                {
@@ -305,6 +338,8 @@
             {//there are no <metadataFormat> elements in the document
                 ConfigurationManager.log.add("Error Condition: Check response,no metadataFormat elements found.",
                         "Error Condition: Check response,no metadataFormat elements found.");
+		//System.out.println(fromStream(response));
+		printDocument(records, System.out);
                System.exit(0);
             }
          }

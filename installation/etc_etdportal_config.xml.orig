@@ -30,7 +30,7 @@
       <repositoryURL>http://localhost:8080/OAI-PMH/</repositoryURL>
       <indexDirectory>/var/db/index</indexDirectory>
       <database>
-         <URL>jdbc:mysql://localhost:3306/dbp</URL>
+         <URL>jdbc:mysql://localhost:3306/dbp?useUnicode=true&amp;characterEncoding=utf-8</URL>
          <username>dbp</username>
          <password>dbp</password>
          <driver>com.mysql.jdbc.Driver</driver>
