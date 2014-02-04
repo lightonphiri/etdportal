@@ -321,9 +321,9 @@ public void printDocument(Document doc, OutputStream out) throws IOException, Tr
          NodeList recordList = docEle.getElementsByTagNameNS("*","metadataFormat");
          try{
             //if(recordList != null && recordList.getLength() > 0) {
-	    System.out.println("RecordList is NOT NULL?: " + (recordList != null));
-	    System.out.println("RecordList.getLength(): " + recordList.getLength());
-	    printDocument(records, System.out);
+	    //System.out.println("RecordList is NOT NULL?: " + (recordList != null));
+	    //System.out.println("RecordList.getLength(): " + recordList.getLength());
+	    //printDocument(records, System.out);
             if(recordList != null && recordList.getLength() > 0) {
                for(int i = 0 ; i < recordList.getLength();i++) 
                {
