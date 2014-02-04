@@ -157,7 +157,13 @@
          
             if(query_etd.next())				
             {	    record_found.setRepositoryIdentifier(query_etd.getString ("identifier_etd"));//setting the identifier
-               record_found.setPortalXML(query_etd.getString ("description_etd"));//setting the PortalXML;  
+               //record_found.setPortalXML(query_etd.getString ("description_etd"));//setting the PortalXML;  
+	       try {
+                  record_found.setPortalXML(new String(query_etd.getBytes ("description_etd"),"UTF-8"));//setting the PortalXML;  
+               }
+               catch(Exception e) {
+                  e.printStackTrace();
+	       }
              //sanitizing record	
                record_found.setPortalXML(record_found.getPortalXML().replaceAll("&lt;.*?&gt;",""));
             
@@ -229,8 +235,13 @@
      
 	            ResultSet xml_etd = stm.executeQuery ("Select description_etd from RecordXML where identifier_etd=\""+record_found.getRepositoryIdentifier()+"\"");
                xml_etd.next();//accessing the description returned
-               record_found.setPortalXML(xml_etd.getString ("description_etd"));//setting the description of the record
-               
+               //record_found.setPortalXML(xml_etd.getString ("description_etd"));//setting the description of the record
+	       try {
+                  record_found.setPortalXML(new String(xml_etd.getBytes ("description_etd"), "UTF-8"));//setting the description of the record
+               }
+               catch(Exception e) {
+                  e.printStackTrace();
+               }
 					//sanitizing record
                record_found.setPortalXML(record_found.getPortalXML().replaceAll("&lt;.*?&gt;",""));
                allRecords.add(record_found);	

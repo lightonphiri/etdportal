@@ -20,7 +20,7 @@ CREATE TABLE `Creator` (
   `creator_etd` varchar(255) NOT NULL DEFAULT '',
   `oai_identifier` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`oai_identifier`,`creator_etd`)
-);
+) DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `Description`
@@ -30,7 +30,7 @@ CREATE TABLE `Description` (
   `description_etd` blob,
   `oai_identifier` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`oai_identifier`)
-);
+) DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `Format`
@@ -40,7 +40,7 @@ CREATE TABLE `Format` (
   `format_etd` varchar(255) NOT NULL DEFAULT '',
   `oai_identifier` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`oai_identifier`,`format_etd`)
-);
+) DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `Properties`
@@ -50,7 +50,7 @@ CREATE TABLE `Properties` (
   `name` varchar(255) NOT NULL DEFAULT '',
   `value` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`name`)
-);
+) DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `RecordAffiliation`
@@ -60,7 +60,7 @@ CREATE TABLE `RecordAffiliation` (
   `affiliation_etd` varchar(255) DEFAULT NULL,
   `identifier_etd` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`identifier_etd`)
-);
+) DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `RecordDate`
@@ -73,7 +73,7 @@ CREATE TABLE `RecordDate` (
   `date_etd` date NOT NULL DEFAULT '0000-00-00',
   `identifier_etd` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`identifier_etd`,`date_etd`)
-);
+) DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `RecordLastHarvestDate`
@@ -83,7 +83,7 @@ CREATE TABLE `RecordLastHarvestDate` (
   `harvest_etd` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `identifier_etd` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`identifier_etd`)
-);
+) DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `RecordTitle`
@@ -94,7 +94,7 @@ CREATE TABLE `RecordTitle` (
   `title_etd_browse` varchar(255) DEFAULT NULL,
   `identifier_etd` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`identifier_etd`)
-);
+) DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `RecordXML`
@@ -104,7 +104,7 @@ CREATE TABLE `RecordXML` (
   `description_etd` blob,
   `identifier_etd` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`identifier_etd`)
-);
+) DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `Subject`
@@ -116,7 +116,7 @@ CREATE TABLE `Subject` (
   `title_etd` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`oai_identifier`,`title_etd`,`subject_etd`),
   KEY `subject_title_etd` (`title_etd`)
-);
+) DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `Title`
@@ -126,7 +126,7 @@ CREATE TABLE `Title` (
   `title_etd` varchar(255) DEFAULT NULL,
   `oai_identifier` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`oai_identifier`)
-);
+) DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `Type`
@@ -136,4 +136,4 @@ CREATE TABLE `Type` (
   `type_etd` varchar(255) NOT NULL DEFAULT '',
   `oai_identifier` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`oai_identifier`,`type_etd`)
-);
+) DEFAULT CHARSET=utf8;
