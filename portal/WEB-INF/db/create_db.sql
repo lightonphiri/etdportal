@@ -19,7 +19,7 @@ DROP TABLE IF EXISTS Properties;
 CREATE TABLE `Creator` (
   `creator_etd` varchar(255) NOT NULL DEFAULT '',
   `oai_identifier` varchar(255) NOT NULL DEFAULT '',
-  PRIMARY KEY (`oai_identifier`,`creator_etd`)
+  PRIMARY KEY (`oai_identifier`(100),`creator_etd`(100))
 ) DEFAULT CHARSET=utf8;
 
 --
@@ -39,7 +39,7 @@ CREATE TABLE `Description` (
 CREATE TABLE `Format` (
   `format_etd` varchar(255) NOT NULL DEFAULT '',
   `oai_identifier` varchar(255) NOT NULL DEFAULT '',
-  PRIMARY KEY (`oai_identifier`,`format_etd`)
+  PRIMARY KEY (`oai_identifier`(100),`format_etd`(100))
 ) DEFAULT CHARSET=utf8;
 
 --
@@ -114,7 +114,7 @@ CREATE TABLE `Subject` (
   `subject_etd` varchar(255) NOT NULL DEFAULT '',
   `oai_identifier` varchar(255) NOT NULL DEFAULT '',
   `title_etd` varchar(255) NOT NULL DEFAULT '',
-  PRIMARY KEY (`oai_identifier`,`title_etd`,`subject_etd`),
+  PRIMARY KEY (`oai_identifier`(80),`title_etd`(80),`subject_etd`(80)),
   KEY `subject_title_etd` (`title_etd`)
 ) DEFAULT CHARSET=utf8;
 
@@ -135,5 +135,5 @@ CREATE TABLE `Title` (
 CREATE TABLE `Type` (
   `type_etd` varchar(255) NOT NULL DEFAULT '',
   `oai_identifier` varchar(255) NOT NULL DEFAULT '',
-  PRIMARY KEY (`oai_identifier`,`type_etd`)
+  PRIMARY KEY (`oai_identifier`(100),`type_etd`(100))
 ) DEFAULT CHARSET=utf8;
