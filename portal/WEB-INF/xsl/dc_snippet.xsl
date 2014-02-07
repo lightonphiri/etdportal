@@ -5,6 +5,8 @@
  xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/"
  xmlns="http://www.w3.org/1999/xhtml" 
  xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+ xmlns:exslt="http://exslt.org/common"
+ xmlns:encoder="xalan://java.net.URLEncoder"
  exclude-result-prefixes=""
 >
    <xsl:output method="html" indent="yes"/>
@@ -12,7 +14,7 @@
    <xsl:template match="oai_dc:dc">
       <div class="snippet">
          <span class="snippet_title">
-            <a href="{concat ('?action=view&amp;identifier=', ../../oai:header/oai:identifier)}">
+            <a href="{concat ('?action=view&amp;identifier=', encoder:encode (../../oai:header/oai:identifier))}">
                <xsl:choose>
                   <xsl:when test="dc:title"><xsl:value-of select="dc:title"/></xsl:when>
                   <xsl:otherwise>No title</xsl:otherwise>
