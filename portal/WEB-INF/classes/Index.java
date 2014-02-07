@@ -209,6 +209,8 @@
                 catch (UnsupportedEncodingException e) {
                     ConfigurationManager.log.add("Error: \n"+e.toString());
                }
+               
+            ConfigurationManager.log.add (record_to_view.getPortalXML());    
          
             String record=(new ResultFormat()).viewRecord(record_to_transform,"/etc/etdportal/portal/viewfull.xsl","/etc/etdportal/portal/");
          

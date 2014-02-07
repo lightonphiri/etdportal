@@ -89,12 +89,13 @@ public class OAIHarvest
             conf.log.add("Harvesting: " + repositoryName + " @ " + rep.getBaseURL ());
             rep.updateHarvestStatus ("Starting harvest");
             rep.updateRunning(1); // update the isRunning variable
-
+//conf.log.add ("1");
             try
             {
             	/* backup the original repository settings */
             	String metadataFormat = rep.getMetadataFormat();
             	String setInfo = rep.getSetSpec();
+//conf.log.add ("2" + metadataFormat + " "+ setInfo);
             	
                /* creates list of metadataPrefixes */
                ArrayList<String> metadataPrefixes = new ArrayList<String>();
@@ -104,6 +105,7 @@ public class OAIHarvest
                // no idea why this was here in the first place!
                //if (metadataPrefixes.size () == 0)
                //   metadataPrefixes.add ("");
+//conf.log.add ("3");
 
                /* creates list of sets */
                ArrayList<String> sets = new ArrayList<String>();
@@ -112,6 +114,7 @@ public class OAIHarvest
                   sets.add (s_st.nextToken ());
                if (sets.size () == 0)
                   sets.add ("");
+//conf.log.add ("4");
                
                /* create one request to the server for each mdp/set pair */
                for ( int m = 0; m<metadataPrefixes.size(); m++ )
