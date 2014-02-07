@@ -279,7 +279,7 @@ public class RSS extends HttpServlet
                     }
 
                     //set up our date formatting tools
-                    SimpleDateFormat UTCDateFormatter = new SimpleDateFormat("EEE, dd MMM yyyy hh:mm:ss zzz");
+                    SimpleDateFormat UTCDateFormatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
                     TimeZone tz = TimeZone.getTimeZone("UTC");
                     UTCDateFormatter.setTimeZone(tz);
 
