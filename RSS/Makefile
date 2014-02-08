@@ -4,7 +4,6 @@
 
 # variables
 
-TOMCAT = tomcat7
 SERVLETAPI = /usr/share/$(TOMCAT)/lib
 
 JFLAGS = -classpath WEB-INF/lib/mysql-connector-java.jar:$(SERVLETAPI)/servlet-api.jar:. \

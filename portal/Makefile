@@ -4,7 +4,6 @@
 
 # variables
 
-TOMCAT = tomcat7
 SERVLETAPI = /usr/share/$(TOMCAT)/lib
 
 JFLAGS = -classpath WEB-INF/lib/mysql-connector-java.jar:WEB-INF/lib/servlet-api.jar:WEB-INF/lib/lucene-analyzers.jar:WEB-INF/lib/lucene-core.jar:. \
