@@ -12,6 +12,8 @@ The latest release of ETDPortal can be downloaded from the [Official code reposi
 
 The latest ETDPortal Installation instructions are in the code repository, under the docs directory.
 
+A video demonstration of how to setup and configure ETDPortal is [available here](https://www.youtube.com/watch?v=o_UBEvxUoKo)
+
 ETDPortal requires a relational database (only MySQL is presently supported) and a servlet container (only Tomcat 6 has been successfully tested) in order to function.
 More information about these and all other prerequisites tools and services can be found in the Installation instructions above.
 
