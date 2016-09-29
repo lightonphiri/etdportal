@@ -1,5 +1,6 @@
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+SET SQL_MODE='ALLOW_INVALID_DATES';
 
 DROP TABLE IF EXISTS Archive;
 DROP TABLE IF EXISTS Counter;
